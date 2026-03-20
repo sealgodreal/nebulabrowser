@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nebula</title>
+<style>
+* {
+    margin: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+body {
+    background: #1b1625;
+    color: #eee;
+}
+.frame {
+    background: linear-gradient(180deg, #2a1f3d, #1b1625);
+    padding: 6px 10px 0;
+    border-bottom: 1px solid rgba(150,120,255,0.2);
+}
+.tabs {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+}
+.tab {
+    background: #2c2340;
+    padding: 8px 14px;
+    border-radius: 10px 10px 0 0;
+    font-size: 13px;
+    color: #cbbcff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    border: 1px solid rgba(150,120,255,0.25);
+    border-bottom: none;
+    transition: 0.2s;
+    transform-origin: left;
+    animation: tabEnter 0.25s ease;
+}
+.tab.active {
+    background: #1b1625;
+    color: white;
+    box-shadow: 0 0 10px rgba(150,120,255,0.25);
+}
+.tab:hover {
+    background: #3a2c5a;
+}
+.close {
+    opacity: 0.6;
+}
+.close:hover {
+    opacity: 1;
+}
+.new-tab {
+    font-size: 18px;
+    color: #cbbcff;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.navbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-top: 1px solid rgba(150,120,255,0.15);
+}
+.nav-btn {
+    background: transparent;
+    border: 1px solid rgba(150,120,255,0.2);
+    color: #cbbcff;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.nav-btn:hover {
+    background: rgba(150,120,255,0.15);
+}
+.omnibox {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: #2c2340;
+    border-radius: 24px;
+    padding: 4px 8px;
+    border: 1px solid rgba(150,120,255,0.3);
+}
+.omnibox input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    outline: none;
+    font-size: 14px;
+    padding: 6px 10px;
+    border-radius: 24px;
+}
+.page {
+    height: calc(100vh - 110px);
+    background: #1b1625;
+    position: relative;
+}
+.webview {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: none;
+}
+@keyframes tabEnter {
+    from { opacity: 0; transform: scaleX(0.6) translateY(10px); }
+    to   { opacity: 1; transform: scaleX(1) translateY(0); }
+}
+.tab.closing {
+    animation: tabClose 0.2s ease forwards;
+}
+@keyframes tabClose {
+    to { opacity: 0; transform: scaleX(0.6) translateY(10px); }
+}
+</style>
+</head>
+<body>
+<div class="frame">
+    <div class="tabs" id="tabs"></div>
+    <div class="navbar">
+        <button class="nav-btn" onclick="goBack()">←</button>
+        <button class="nav-btn" onclick="goForward()">→</button>
+        <button class="nav-btn" onclick="doReload()">⟳</button>
+        <div class="omnibox">
+            <input id="url" placeholder="Search or enter URL" onkeydown="navigate(event)">
+            <button class="nav-btn" onclick="searchClick()">Search</button>
+        </div>
+    </div>
+</div>
+<div class="page" id="page"></div>
+
+<script>
+const PROXY = "https://nebulaproxy-r1cb.onrender.com/nebula/proxy?url=";
+
+function toProxy(url) {
+    if (!url || url === "about:blank") return url;
+    if (isAlreadyProxied(url)) return url;
+    return PROXY + encodeURIComponent(url);
+}
+
+function isAlreadyProxied(url) {
+    return url.startsWith("https://nebulaproxy-r1cb.onrender.com");
+}
+
+function extractOriginal(url) {
+    if (!url) return "";
+    try {
+        if (isAlreadyProxied(url)) {
+            const u = new URL(url);
+            return u.searchParams.get("url") || url;
+        }
+    } catch {}
+    return url;
+}
+
+let tabs = [];
+let activeTab = null;
+let tabId = 0;
+const tabsContainer = document.getElementById("tabs");
+const page = document.getElementById("page");
+const urlInput = document.getElementById("url");
+
+const newTabBtn = document.createElement("div");
+newTabBtn.className = "new-tab";
+newTabBtn.textContent = "+";
+newTabBtn.onclick = () => createTab();
+tabsContainer.appendChild(newTabBtn);
+
+function updateNewTabPosition() {
+    tabsContainer.appendChild(newTabBtn);
+}
+
+function startProxyGuard(tabObj) {
+    tabObj._guardInterval = setInterval(() => {
+        const iframe = tabObj.iframe;
+        if (!iframe) return;
+        try {
+            const currentSrc = iframe.contentWindow?.location?.href;
+            if (currentSrc && currentSrc !== "about:blank" && !isAlreadyProxied(currentSrc)) {
+                const original = currentSrc;
+                tabObj.originalURL = original;
+                iframe.src = toProxy(original);
+                syncURLWithIframe(tabObj);
+            }
+        } catch {
+            const attrSrc = iframe.getAttribute("src") || "";
+            if (attrSrc && attrSrc !== "about:blank" && !isAlreadyProxied(attrSrc)) {
+                const original = attrSrc;
+                tabObj.originalURL = original;
+                iframe.src = toProxy(original);
+                syncURLWithIframe(tabObj);
+            }
+        }
+    }, 300);
+}
+
+function syncURLWithIframe(tabObj) {
+    if (!tabObj) return;
+    let current = "";
+    try {
+        current = tabObj.iframe.contentWindow.location.href;
+    } catch {
+        current = tabObj.iframe.getAttribute("src") || "";
+    }
+    const real = extractOriginal(current);
+    if (real && real !== "about:blank") {
+        tabObj.originalURL = real;
+        if (activeTab?.id === tabObj.id) {
+            urlInput.value = real;
+        }
+    }
+}
+
+function injectIframeHooks(tabObj) {
+    const iframe = tabObj.iframe;
+    try {
+        const win = iframe.contentWindow;
+        const doc = iframe.contentDocument || win.document;
+        if (!doc || !win) return;
+
+        doc.addEventListener("click", function(e) {
+            const a = e.target.closest("a");
+            if (!a) return;
+            const href = a.getAttribute("href");
+            if (!href || href.startsWith("#") || href.startsWith("javascript:")) return;
+
+            let resolved;
+            try {
+                resolved = new URL(href, win.location.href).href;
+            } catch {
+                resolved = href;
+            }
+
+            if (!isAlreadyProxied(resolved)) {
+                e.preventDefault();
+                e.stopPropagation();
+                loadURL(tabObj.id, resolved);
+            }
+        }, true);
+
+        win.open = function(url) {
+            if (url) createTab(url);
+            return null;
+        };
+    } catch {}
+}
+
+function createTab(url = "") {
+    const id = tabId++;
+    const tab = document.createElement("div");
+    tab.className = "tab";
+    tab.innerHTML = `New Tab <span class="close">✕</span>`;
+
+    const iframe = document.createElement("iframe");
+    iframe.className = "webview";
+    iframe.setAttribute("sandbox", "allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox");
+    page.appendChild(iframe);
+    tabsContainer.insertBefore(tab, newTabBtn);
+
+    const tabObj = { id, tab, iframe, originalURL: url };
+    tabs.push(tabObj);
+
+    tab.onclick = () => switchTab(id);
+    tab.querySelector(".close").onclick = (e) => {
+        e.stopPropagation();
+        closeTab(id);
+    };
+
+    const observer = new MutationObserver(() => {
+        const src = iframe.getAttribute("src") || "";
+        if (src && src !== "about:blank" && !isAlreadyProxied(src)) {
+            const original = extractOriginal(src) || src;
+            tabObj.originalURL = original;
+            iframe.src = toProxy(original);
+            syncURLWithIframe(tabObj);
+        }
+        if (isAlreadyProxied(src)) {
+            const orig = extractOriginal(src);
+            if (orig) tabObj.originalURL = orig;
+            syncURLWithIframe(tabObj);
+        }
+    });
+    observer.observe(iframe, { attributes: true, attributeFilter: ["src"] });
+
+    iframe.addEventListener("load", () => {
+        injectIframeHooks(tabObj);
+        syncURLWithIframe(tabObj);
+    });
+
+    startProxyGuard(tabObj);
+    switchTab(id);
+    updateNewTabPosition();
+
+    if (url) loadURL(id, url);
+}
+
+function switchTab(id) {
+    tabs.forEach(t => { t.tab.classList.remove("active"); t.iframe.style.display = "none"; });
+    const t = tabs.find(t => t.id === id);
+    if (!t) return;
+    t.tab.classList.add("active");
+    t.iframe.style.display = "block";
+    activeTab = t;
+    urlInput.value = t.originalURL || "";
+}
+
+function closeTab(id) {
+    const index = tabs.findIndex(t => t.id === id);
+    if (index === -1) return;
+    const t = tabs[index];
+    clearInterval(t._guardInterval);
+    t.tab.classList.add("closing");
+    setTimeout(() => {
+        t.tab.remove();
+        t.iframe.remove();
+        tabs.splice(index, 1);
+        if (tabs.length) switchTab(tabs[Math.max(0, index - 1)].id);
+        updateNewTabPosition();
+    }, 180);
+}
+
+function formatURL(input) {
+    input = input.trim();
+    if (!input) return "";
+    if (input.startsWith("http://") || input.startsWith("https://")) return input;
+    const domainPattern = /^[^\s]+\.[^\s]+$/;
+    if (domainPattern.test(input)) return "https://" + input;
+    return "https://duckduckgo.com/?q=" + encodeURIComponent(input);
+}
+
+function loadURL(tabId, rawURL) {
+    const t = tabs.find(t => t.id === tabId);
+    if (!t) return;
+    const url = formatURL(rawURL);
+    t.originalURL = url;
+    t.iframe.src = toProxy(url);
+    if (activeTab?.id === tabId) urlInput.value = url;
+}
+
+function navigate(e) {
+    if (e.key === "Enter" && activeTab) {
+        loadURL(activeTab.id, e.target.value);
+    }
+}
+
+function searchClick() {
+    if (activeTab && urlInput.value.trim()) {
+        loadURL(activeTab.id, urlInput.value);
+    }
+}
+
+function goBack() { activeTab?.iframe.contentWindow?.history.back(); }
+function goForward() { activeTab?.iframe.contentWindow?.history.forward(); }
+function doReload() { activeTab?.iframe.contentWindow?.location.reload(); }
+
+createTab();
+</script>
+</body>
+</html>
