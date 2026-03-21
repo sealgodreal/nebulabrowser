@@ -156,7 +156,13 @@ newTabBtn.textContent = "+";
 newTabBtn.onclick = () => createTab();
 tabsContainer.appendChild(newTabBtn);
 
+const HOMEPAGE = "https://sealgodreal.github.io/nebulabrowser/assets/homepage.html";
+
 function createTab(url = "") {
+    if (!url) {
+        url = HOMEPAGE;
+    }
+
     const id = tabId++;
 
     const tab = document.createElement("div");
@@ -187,7 +193,7 @@ function createTab(url = "") {
 
     switchTab(id);
 
-    if (url) loadURL(id, url);
+    loadURL(id, url);
 }
 
 function switchTab(id) {
@@ -231,7 +237,7 @@ function formatURL(input) {
         return "https://" + input;
     }
 
-    return "https://duckduckgo.com/?q=" + encodeURIComponent(input);
+    return "https://duckduckgo.com/?q=" + encodeURIComponent(input) + "&ia=web";
 }
 
 function loadURL(tabId, raw) {
