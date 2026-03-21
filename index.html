@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Nebula | Fun Educational Lessons and Tutoring</title>
+<title>Nebula Browser</title>
 
 <style>
 * {
@@ -112,6 +112,9 @@ body {
     border: none;
     display: none;
 }
+.settings-item:hover {
+    background: #50535a;
+}
 </style>
 </head>
 
@@ -128,6 +131,12 @@ body {
         <div class="omnibox">
             <input id="url" placeholder="Search or type URL" onkeydown="navigate(event)">
         </div>
+        <div class="settings-container" style="position: relative;">
+    <button class="nav-btn" id="settingsBtn">⚙</button>
+    <div id="settingsMenu" style="display:none; position:absolute; top:36px; right:0; background:#3c4043; border-radius:6px; padding:4px 0; min-width:120px; box-shadow:0 2px 6px rgba(0,0,0,0.5); z-index:100;">
+        <div class="settings-item" style="padding:6px 12px; cursor:pointer;">about:blank cloak</div>
+    </div>
+</div>
     </div>
 </div>
 
@@ -273,6 +282,57 @@ function doReload() {
 }
 
 createTab();
+
+const settingsBtn = document.getElementById("settingsBtn");
+const settingsMenu = document.getElementById("settingsMenu");
+const settingsItem = settingsMenu.querySelector(".settings-item");
+
+settingsBtn.onclick = (e) => {
+    e.stopPropagation();
+    settingsMenu.style.display = settingsMenu.style.display === "block" ? "none" : "block";
+};
+
+document.addEventListener("click", () => {
+    settingsMenu.style.display = "none";
+});
+
+settingsItem.onclick = () => {
+    const newTab = window.open("about:blank", "_blank");
+    if (newTab) {
+        newTab.document.write(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <title>about:blank</title>
+                <style>
+                    body, html { margin:0; padding:0; height:100%; }
+                    iframe { width:100%; height:100%; border:none; }
+                </style>
+            </head>
+            <body>
+                <iframe src="https://sealgodreal.github.io/nebulabrowser/" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+            </body>
+            </html>
+        `);
+        newTab.document.close();
+    }
+
+    settingsMenu.style.display = "none";
+
+        const sites = [
+        "https://www.clever.com/",
+        "https://classroom.google.com/",
+        "https://login.i-ready.com/",
+        "https://www.blooket.com/",
+        "https://drive.google.com/",
+        "https://kahoot.it"
+    ];
+
+    setTimeout(() => {
+        window.location.href = sites[Math.floor(Math.random() * sites.length)];
+    }, 500);
+};
 </script>
 
 </body>
