@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nebula | Homepage</title>
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: system-ui, sans-serif;
+}
+
+body {
+    background: #202124;
+    color: #e8eaed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+}
+
+h1 {
+    font-size: 4rem;
+    color: #ffffff;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+.search-container {
+    width: 90%;
+    max-width: 500px;
+    margin-bottom: 30px;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 16px;
+    border-radius: 999px;
+    border: none;
+    outline: none;
+    background: #3c4043;
+    color: #e8eaed;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+.search-container input::placeholder {
+    color: #9aa0a6;
+}
+
+.app-links {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #e8eaed;
+    transition: transform 0.2s, opacity 0.2s;
+    opacity: 0.9;
+}
+
+.app img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 6px;
+    background: #3c4043;
+    padding: 10px;
+}
+
+.app:hover {
+    transform: translateY(-4px);
+    opacity: 1;
+}
+
+.app-name {
+    font-size: 0.85rem;
+    margin-top: 2px;
+    color: #e8eaed;
+}
+
+.cta-btn {
+    padding: 12px 20px;
+    background: #5865f2;
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.cta-btn:hover {
+    background: #4752c4;
+}
+
+.footer {
+    margin-top: 35px;
+    font-size: 12px;
+    color: #9aa0a6;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+</style>
+</head>
+<body>
+
+<h1>Nebula</h1>
+
+<div class="app-links">
+    <a class="app" href="https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=https://www.google.com">
+        <img src="logos/google.webp" alt="Google">
+        <div class="app-name">Google</div>
+    </a>
+
+    <a class="app" href="https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=https://www.youtube.com">
+        <img src="logos/youtube.webp" alt="YouTube">
+        <div class="app-name">YouTube</div>
+    </a>
+
+    <a class="app" href="https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=https://www.tiktok.com">
+        <img src="logos/tiktok.webp" alt="TikTok">
+        <div class="app-name">TikTok</div>
+    </a>
+
+    <a class="app" href="https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=https://discord.com">
+        <img src="logos/discord.webp" alt="Discord">
+        <div class="app-name">Discord</div>
+    </a>
+</div>
+
+</body>
+</html>
