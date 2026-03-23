@@ -2,127 +2,217 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Nebula Browser</title>
+<title>Nebula | Educational Learning Program</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
 * {
     margin: 0;
     box-sizing: border-box;
-    font-family: system-ui, sans-serif;
+}
+
+:root {
+    --bg: #000000;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #222222;
+    --text: #ffffff;
+    --text-muted: #888888;
+    --accent: #ffffff;
+    --tab-bg: #141414;
+    --tab-active: #000000;
+    --input-bg: #111111;
+    --hover: #1e1e1e;
+    --radius: 12px;
 }
 
 body {
-    background: #202124;
-    color: #e8eaed;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 14px;
+    overflow: hidden;
 }
 
 .topbar {
-    background: #2b2c2f;
-    border-bottom: 1px solid #3c4043;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    user-select: none;
 }
 
 .tabs {
     display: flex;
-    padding: 6px 6px 0;
-    gap: 4px;
+    align-items: flex-end;
+    padding: 8px 8px 0;
+    gap: 2px;
 }
 
 .tab {
-    background: #3c4043;
-    padding: 6px 12px;
-    border-radius: 8px 8px 0 0;
-    font-size: 13px;
+    background: var(--tab-bg);
+    border: 1px solid transparent;
+    padding: 7px 14px;
+    border-radius: 10px 10px 0 0;
+    font-size: 12.5px;
+    font-weight: 400;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    color: var(--text-muted);
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+}
+
+.tab:hover {
+    background: var(--surface2);
+    color: var(--text);
 }
 
 .tab.active {
-    background: #202124;
-    color: white;
+    background: var(--surface);
+    border-color: var(--border);
+    border-bottom-color: var(--surface);
+    color: var(--text);
+    font-weight: 500;
+}
+
+.tab-favicon {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    background: var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
 }
 
 .close {
-    opacity: 0.6;
+    margin-left: 2px;
+    opacity: 0;
+    font-size: 11px;
+    line-height: 1;
+    padding: 1px 3px;
+    border-radius: 4px;
+    transition: opacity 0.1s, background 0.1s;
+    flex-shrink: 0;
 }
 
-.close:hover {
-    opacity: 1;
-}
+.tab:hover .close { opacity: 0.5; }
+.close:hover { opacity: 1 !important; background: var(--surface2); }
 
 .new-tab {
     padding: 6px 10px;
     cursor: pointer;
-    opacity: 0.7;
+    color: var(--text-muted);
+    border-radius: 8px 8px 0 0;
+    font-size: 16px;
+    line-height: 1;
+    transition: color 0.15s, background 0.15s;
 }
 
 .new-tab:hover {
-    opacity: 1;
+    color: var(--text);
+    background: var(--surface2);
 }
 
 .navbar {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 6px;
-    border-top: 1px solid #3c4043;
+    gap: 4px;
+    padding: 8px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
 }
 
 .nav-btn {
     background: none;
     border: none;
-    color: #e8eaed;
-    font-size: 14px;
-    padding: 6px;
+    color: var(--text-muted);
+    font-size: 15px;
+    padding: 6px 8px;
     cursor: pointer;
+    border-radius: 8px;
+    line-height: 1;
+    transition: background 0.15s, color 0.15s;
 }
 
 .nav-btn:hover {
-    background: #3c4043;
-    border-radius: 6px;
+    background: var(--hover);
+    color: var(--text);
 }
 
 .omnibox {
     flex: 1;
     display: flex;
-    background: #3c4043;
-    border-radius: 20px;
-    padding: 4px 10px;
+    align-items: center;
+    gap: 8px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 40px;
+    padding: 7px 14px;
+    transition: border-color 0.15s;
+}
+
+.omnibox:focus-within {
+    border-color: #444;
+}
+
+.omnibox-icon {
+    color: var(--text-muted);
+    font-size: 13px;
+    flex-shrink: 0;
 }
 
 .omnibox input {
     flex: 1;
     background: transparent;
     border: none;
-    color: white;
+    color: var(--text);
     outline: none;
-    font-size: 14px;
+    font-size: 13.5px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.01em;
 }
+
+.omnibox input::placeholder { color: var(--text-muted); }
 
 .subtabs {
     display: flex;
-    gap: 6px;
-    padding: 6px;
-    border-top: 1px solid #3c4043;
-    background: #2b2c2f;
+    gap: 4px;
+    padding: 6px 8px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
 }
 
 .subtab {
-    background: #3c4043;
-    padding: 6px 12px;
-    border-radius: 6px;
+    background: transparent;
+    padding: 5px 12px;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-muted);
+    border: 1px solid transparent;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .subtab:hover {
-    background: #50535a;
+    background: var(--hover);
+    border-color: var(--border);
+    color: var(--text);
 }
 
 .page {
-    height: calc(100vh - 120px);
+    height: calc(100vh - 108px);
     position: relative;
+    background: var(--bg);
 }
 
 .webview {
@@ -134,50 +224,136 @@ body {
 }
 
 .overlay {
-    position: absolute;
-    top: 120px;
-    left: 0;
-    width: 100%;
-    height: calc(100% - 120px);
-    background: #202124;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     z-index: 999;
     display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.overlay-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 400px;
+    max-height: 75vh;
+    display: flex;
     flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .overlay-header {
     display: flex;
     justify-content: space-between;
-    padding: 10px;
-    background: #2b2c2f;
-    border-bottom: 1px solid #3c4043;
+    align-items: center;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
 }
+
+.overlay-header span {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.overlay-close {
+    background: var(--hover);
+    border: none;
+    color: var(--text-muted);
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+}
+
+.overlay-close:hover { background: var(--surface2); color: var(--text); }
 
 .overlay-content {
     padding: 10px;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
 }
+
+.overlay-content::-webkit-scrollbar { width: 4px; }
+.overlay-content::-webkit-scrollbar-track { background: transparent; }
+.overlay-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
 .menu-btn {
     display: block;
     width: 100%;
-    background: #3c4043;
+    background: transparent;
     border: none;
-    color: white;
-    padding: 10px;
-    margin-bottom: 6px;
-    border-radius: 6px;
+    color: var(--text);
+    padding: 9px 12px;
+    margin-bottom: 2px;
+    border-radius: 8px;
     cursor: pointer;
     text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    transition: background 0.12s;
 }
 
-.menu-btn:hover {
-    background: #50535a;
+.menu-btn:hover { background: var(--hover); }
+
+.proxy-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    cursor: pointer;
 }
 
-.settings-item:hover {
-    background: #50535a;
+.proxy-toggle input { accent-color: white; cursor: pointer; }
+
+.settings-container { position: relative; }
+
+#settingsMenu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    min-width: 160px;
+    z-index: 100;
+    display: none;
+    animation: fadeIn 0.15s ease;
 }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+.settings-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 7px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+    transition: background 0.12s, color 0.12s;
+}
+
+.settings-item:hover { background: var(--hover); color: var(--text); }
 </style>
 </head>
 
@@ -187,18 +363,19 @@ body {
     <div class="tabs" id="tabs"></div>
 
     <div class="navbar">
-        <button class="nav-btn" onclick="goBack()">←</button>
-        <button class="nav-btn" onclick="goForward()">→</button>
-        <button class="nav-btn" onclick="doReload()">⟳</button>
+        <button class="nav-btn" onclick="goBack()" title="Back">&#8592;</button>
+        <button class="nav-btn" onclick="goForward()" title="Forward">&#8594;</button>
+        <button class="nav-btn" onclick="doReload()" title="Reload">&#8635;</button>
 
         <div class="omnibox">
-            <input id="url" placeholder="Search or type URL" onkeydown="navigate(event)">
+            <span class="omnibox-icon">&#128269;</span>
+            <input id="url" placeholder="Search or type a URL" onkeydown="navigate(event)">
         </div>
 
-        <div class="settings-container" style="position: relative;">
-            <button class="nav-btn" id="settingsBtn">⚙</button>
-            <div id="settingsMenu" style="display:none; position:absolute; top:36px; right:0; background:#3c4043; border-radius:6px; padding:4px 0; min-width:120px;">
-                <div class="settings-item" style="padding:6px 12px; cursor:pointer;">about:blank cloak</div>
+        <div class="settings-container">
+            <button class="nav-btn" id="settingsBtn" title="Settings">&#8943;</button>
+            <div id="settingsMenu">
+                <div class="settings-item" onclick="cloakTab()">about:blank cloak</div>
             </div>
         </div>
     </div>
@@ -212,12 +389,14 @@ body {
 
 <div class="page" id="page"></div>
 
-<div id="overlayMenu" class="overlay">
-    <div class="overlay-header">
-        <span id="overlayTitle">Menu</span>
-        <button onclick="closeMenu()">✕</button>
+<div id="overlayMenu" class="overlay" onclick="overlayBgClick(event)">
+    <div class="overlay-panel">
+        <div class="overlay-header">
+            <span id="overlayTitle">Menu</span>
+            <button class="overlay-close" onclick="closeMenu()">&#10005;</button>
+        </div>
+        <div id="overlayContent" class="overlay-content"></div>
     </div>
-    <div id="overlayContent" class="overlay-content"></div> 
 </div>
 
 <script>
@@ -247,12 +426,11 @@ const HOMEPAGE = "https://sealgodreal.github.io/nebulabrowser/assets/homepage.ht
 
 function createTab(url = "") {
     if (!url) url = HOMEPAGE;
-
     const id = tabId++;
 
     const tab = document.createElement("div");
     tab.className = "tab";
-    tab.innerHTML = `New Tab <span class="close">✕</span>`;
+    tab.innerHTML = `<span class="tab-favicon">&#127760;</span><span class="tab-label">New Tab</span><span class="close">&#10005;</span>`;
 
     const iframe = document.createElement("iframe");
     iframe.className = "webview";
@@ -260,7 +438,7 @@ function createTab(url = "") {
     page.appendChild(iframe);
     tabsContainer.insertBefore(tab, newTabBtn);
 
-    const tabObj = { id, tab, iframe, url };
+    const tabObj = { id, tab, iframe, url, label: tab.querySelector(".tab-label") };
     tabs.push(tabObj);
 
     tab.onclick = () => switchTab(id);
@@ -278,13 +456,10 @@ function switchTab(id) {
         t.tab.classList.remove("active");
         t.iframe.style.display = "none";
     });
-
     const t = tabs.find(t => t.id === id);
     if (!t) return;
-
     t.tab.classList.add("active");
     t.iframe.style.display = "block";
-
     activeTab = t;
     urlInput.value = t.url || "";
 }
@@ -292,17 +467,14 @@ function switchTab(id) {
 function closeTab(id) {
     const index = tabs.findIndex(t => t.id === id);
     if (index === -1) return;
-
     tabs[index].tab.remove();
     tabs[index].iframe.remove();
     tabs.splice(index, 1);
-
-    if (tabs.length) {
-        switchTab(tabs[Math.max(0, index - 1)].id);
-    }
+    if (tabs.length) switchTab(tabs[Math.max(0, index - 1)].id);
 }
 
 function formatURL(input) {
+    input = input.trim();
     if (input.startsWith("http")) return input;
     if (/^[^\s]+\.[^\s]+$/.test(input)) return "https://" + input;
     return "https://duckduckgo.com/?q=" + encodeURIComponent(input);
@@ -311,43 +483,62 @@ function formatURL(input) {
 function loadURL(tabId, raw) {
     const t = tabs.find(t => t.id === tabId);
     if (!t) return;
-
     const url = formatURL(raw);
     t.url = url;
     t.iframe.src = toProxy(url);
+    if (activeTab?.id === tabId) urlInput.value = url;
 
-    if (activeTab?.id === tabId) {
-        urlInput.value = url;
+    try {
+        const u = new URL(url);
+        t.label.textContent = u.hostname.replace("www.", "") || "New Tab";
+    } catch {
+        t.label.textContent = "New Tab";
     }
 }
 
 function navigate(e) {
-    if (e.key === "Enter" && activeTab) {
-        loadURL(activeTab.id, e.target.value);
-    }
+    if (e.key === "Enter" && activeTab) loadURL(activeTab.id, e.target.value);
 }
 
-function goBack() { activeTab?.iframe.contentWindow.history.back(); }
+function goBack()    { activeTab?.iframe.contentWindow.history.back(); }
 function goForward() { activeTab?.iframe.contentWindow.history.forward(); }
-function doReload() { activeTab?.iframe.contentWindow.location.reload(); }
+function doReload()  { activeTab?.iframe.contentWindow.location.reload(); }
+
+function cloakTab() {
+    const w = window.open("about:blank");
+    if (w) {
+        w.document.write(`<iframe src="${window.location.href}" style="position:fixed;inset:0;width:100%;height:100%;border:none"></iframe>`);
+    }
+    closeSettingsMenu();
+}
+
+const settingsBtn = document.getElementById("settingsBtn");
+const settingsMenu = document.getElementById("settingsMenu");
+settingsBtn.onclick = (e) => {
+    e.stopPropagation();
+    const open = settingsMenu.style.display === "block";
+    settingsMenu.style.display = open ? "none" : "block";
+};
+document.addEventListener("click", () => { settingsMenu.style.display = "none"; });
+function closeSettingsMenu() { settingsMenu.style.display = "none"; }
 
 const overlay = document.getElementById("overlayMenu");
 const overlayContent = document.getElementById("overlayContent");
 const overlayTitle = document.getElementById("overlayTitle");
+
+function overlayBgClick(e) { if (e.target === overlay) closeMenu(); }
 
 function openMenu(type) {
     overlay.style.display = "flex";
 
     if (type === "games") {
         overlayTitle.textContent = "Games";
-
         overlayContent.innerHTML = `
-            <label style="display:block; margin-bottom:10px;">
-                <input type="checkbox" id="proxyToggle"> Proxy Link
+            <label class="proxy-toggle">
+                <input type="checkbox" id="proxyToggle"> Use proxy link
             </label>
-            <div id="gamesList">Loading...</div>
+            <div id="gamesList"><div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div></div>
         `;
-
         loadList(
             "https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/gameslist.txt",
             (link) => {
@@ -361,60 +552,50 @@ function openMenu(type) {
 
     if (type === "socials") {
         overlayTitle.textContent = "Socials";
+        overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div>`;
         loadList(
             "https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/socialslist.txt",
-            (link) => {
-                loadURL(activeTab.id, link);
-                closeMenu();
-            }
+            (link) => { loadURL(activeTab.id, link); closeMenu(); }
         );
     }
 
     if (type === "proxies") {
         overlayTitle.textContent = "Other Proxies";
+        overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div>`;
         loadList(
             "https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/proxylist.txt",
-            (link) => {
-                window.open(link);
-                closeMenu();
-            }
+            (link) => { window.open(link); closeMenu(); }
         );
     }
 }
 
-function closeMenu() {
-    overlay.style.display = "none";
-}
+function closeMenu() { overlay.style.display = "none"; }
 
 function loadList(url, onClick, containerId = null) {
     fetch(url)
         .then(res => res.text())
         .then(text => {
-            const container = containerId 
-                ? document.getElementById(containerId) 
+            const container = containerId
+                ? document.getElementById(containerId)
                 : overlayContent;
-
+            if (!container) return;
             container.innerHTML = "";
-
             text.split("\n").forEach(link => {
                 link = link.trim();
                 if (!link) return;
-
                 const btn = document.createElement("button");
                 btn.className = "menu-btn";
                 btn.textContent = link;
                 btn.onclick = () => onClick(link);
-
                 container.appendChild(btn);
             });
         })
         .catch(() => {
-            overlayContent.innerHTML = "Failed to load " + url;
+            overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Failed to load.</div>`;
         });
 }
 
 createTab();
 </script>
-
 </body>
 </html>
