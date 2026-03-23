@@ -540,7 +540,7 @@ function openMenu(type) {
             <div id="gamesList"><div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div></div>
         `;
         loadList(
-            "https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/gameslist.txt",
+            "https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/gameslist.txt",
             (link) => {
                 const useProxy = document.getElementById("proxyToggle")?.checked;
                 window.open(useProxy ? toProxy(link) : link);
@@ -554,7 +554,7 @@ function openMenu(type) {
         overlayTitle.textContent = "Socials";
         overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div>`;
         loadList(
-            "https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/socialslist.txt",
+            "https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/socialslist.txt",
             (link) => { loadURL(activeTab.id, link); closeMenu(); }
         );
     }
@@ -563,7 +563,7 @@ function openMenu(type) {
         overlayTitle.textContent = "Other Proxies";
         overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div>`;
         loadList(
-            "https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/proxylist.txt",
+            "https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/proxylist.txt",
             (link) => { window.open(link); closeMenu(); }
         );
     }
