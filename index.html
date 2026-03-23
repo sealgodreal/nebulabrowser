@@ -100,8 +100,28 @@ body {
     font-size: 14px;
 }
 
+.subtabs {
+    display: flex;
+    gap: 6px;
+    padding: 6px;
+    border-top: 1px solid #3c4043;
+    background: #2b2c2f;
+}
+
+.subtab {
+    background: #3c4043;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.subtab:hover {
+    background: #50535a;
+}
+
 .page {
-    height: calc(100vh - 90px);
+    height: calc(100vh - 120px);
     position: relative;
 }
 
@@ -112,6 +132,49 @@ body {
     border: none;
     display: none;
 }
+
+.overlay {
+    position: absolute;
+    top: 120px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 120px);
+    background: #202124;
+    z-index: 999;
+    display: none;
+    flex-direction: column;
+}
+
+.overlay-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: #2b2c2f;
+    border-bottom: 1px solid #3c4043;
+}
+
+.overlay-content {
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.menu-btn {
+    display: block;
+    width: 100%;
+    background: #3c4043;
+    border: none;
+    color: white;
+    padding: 10px;
+    margin-bottom: 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.menu-btn:hover {
+    background: #50535a;
+}
+
 .settings-item:hover {
     background: #50535a;
 }
@@ -131,16 +194,31 @@ body {
         <div class="omnibox">
             <input id="url" placeholder="Search or type URL" onkeydown="navigate(event)">
         </div>
+
         <div class="settings-container" style="position: relative;">
-    <button class="nav-btn" id="settingsBtn">⚙</button>
-    <div id="settingsMenu" style="display:none; position:absolute; top:36px; right:0; background:#3c4043; border-radius:6px; padding:4px 0; min-width:120px; box-shadow:0 2px 6px rgba(0,0,0,0.5); z-index:100;">
-        <div class="settings-item" style="padding:6px 12px; cursor:pointer;">about:blank cloak</div>
+            <button class="nav-btn" id="settingsBtn">⚙</button>
+            <div id="settingsMenu" style="display:none; position:absolute; top:36px; right:0; background:#3c4043; border-radius:6px; padding:4px 0; min-width:120px;">
+                <div class="settings-item" style="padding:6px 12px; cursor:pointer;">about:blank cloak</div>
+            </div>
+        </div>
     </div>
-</div>
+
+    <div class="subtabs">
+        <div class="subtab" onclick="openMenu('games')">Games</div>
+        <div class="subtab" onclick="openMenu('proxies')">Other Proxies</div>
+        <div class="subtab" onclick="openMenu('socials')">Socials</div>
     </div>
 </div>
 
 <div class="page" id="page"></div>
+
+<div id="overlayMenu" class="overlay">
+    <div class="overlay-header">
+        <span id="overlayTitle">Menu</span>
+        <button onclick="closeMenu()">✕</button>
+    </div>
+    <div id="overlayContent" class="overlay-content"></div> 
+</div>
 
 <script>
 const PROXY = "https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=";
@@ -168,9 +246,7 @@ tabsContainer.appendChild(newTabBtn);
 const HOMEPAGE = "https://sealgodreal.github.io/nebulabrowser/assets/homepage.html";
 
 function createTab(url = "") {
-    if (!url) {
-        url = HOMEPAGE;
-    }
+    if (!url) url = HOMEPAGE;
 
     const id = tabId++;
 
@@ -185,7 +261,6 @@ function createTab(url = "") {
     tabsContainer.insertBefore(tab, newTabBtn);
 
     const tabObj = { id, tab, iframe, url };
-
     tabs.push(tabObj);
 
     tab.onclick = () => switchTab(id);
@@ -194,14 +269,7 @@ function createTab(url = "") {
         closeTab(id);
     };
 
-    iframe.onload = () => {
-        try {
-            urlInput.value = iframe.contentWindow.location.href;
-        } catch {}
-    };
-
     switchTab(id);
-
     loadURL(id, url);
 }
 
@@ -225,10 +293,8 @@ function closeTab(id) {
     const index = tabs.findIndex(t => t.id === id);
     if (index === -1) return;
 
-    const t = tabs[index];
-    t.tab.remove();
-    t.iframe.remove();
-
+    tabs[index].tab.remove();
+    tabs[index].iframe.remove();
     tabs.splice(index, 1);
 
     if (tabs.length) {
@@ -237,16 +303,9 @@ function closeTab(id) {
 }
 
 function formatURL(input) {
-    input = input.trim();
-    if (!input) return "";
-
     if (input.startsWith("http")) return input;
-
-    if (/^[^\s]+\.[^\s]+$/.test(input)) {
-        return "https://" + input;
-    }
-
-    return "https://duckduckgo.com/?q=" + encodeURIComponent(input) + "&ia=web";
+    if (/^[^\s]+\.[^\s]+$/.test(input)) return "https://" + input;
+    return "https://duckduckgo.com/?q=" + encodeURIComponent(input);
 }
 
 function loadURL(tabId, raw) {
@@ -254,7 +313,6 @@ function loadURL(tabId, raw) {
     if (!t) return;
 
     const url = formatURL(raw);
-
     t.url = url;
     t.iframe.src = toProxy(url);
 
@@ -269,70 +327,93 @@ function navigate(e) {
     }
 }
 
-function goBack() {
-    activeTab?.iframe.contentWindow.history.back();
+function goBack() { activeTab?.iframe.contentWindow.history.back(); }
+function goForward() { activeTab?.iframe.contentWindow.history.forward(); }
+function doReload() { activeTab?.iframe.contentWindow.location.reload(); }
+
+const overlay = document.getElementById("overlayMenu");
+const overlayContent = document.getElementById("overlayContent");
+const overlayTitle = document.getElementById("overlayTitle");
+
+function openMenu(type) {
+    overlay.style.display = "flex";
+
+    if (type === "games") {
+        overlayTitle.textContent = "Games";
+
+        overlayContent.innerHTML = `
+            <label style="display:block; margin-bottom:10px;">
+                <input type="checkbox" id="proxyToggle"> Proxy Link
+            </label>
+            <div id="gamesList">Loading...</div>
+        `;
+
+        loadList(
+            "https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/gameslist.txt",
+            (link) => {
+                const useProxy = document.getElementById("proxyToggle")?.checked;
+                window.open(useProxy ? toProxy(link) : link);
+                closeMenu();
+            },
+            "gamesList"
+        );
+    }
+
+    if (type === "socials") {
+        overlayTitle.textContent = "Socials";
+        loadList(
+            "https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/socialslist.txt",
+            (link) => {
+                loadURL(activeTab.id, link);
+                closeMenu();
+            }
+        );
+    }
+
+    if (type === "proxies") {
+        overlayTitle.textContent = "Other Proxies";
+        loadList(
+            "https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/proxylist.txt",
+            (link) => {
+                window.open(link);
+                closeMenu();
+            }
+        );
+    }
 }
 
-function goForward() {
-    activeTab?.iframe.contentWindow.history.forward();
+function closeMenu() {
+    overlay.style.display = "none";
 }
 
-function doReload() {
-    activeTab?.iframe.contentWindow.location.reload();
+function loadList(url, onClick, containerId = null) {
+    fetch(url)
+        .then(res => res.text())
+        .then(text => {
+            const container = containerId 
+                ? document.getElementById(containerId) 
+                : overlayContent;
+
+            container.innerHTML = "";
+
+            text.split("\n").forEach(link => {
+                link = link.trim();
+                if (!link) return;
+
+                const btn = document.createElement("button");
+                btn.className = "menu-btn";
+                btn.textContent = link;
+                btn.onclick = () => onClick(link);
+
+                container.appendChild(btn);
+            });
+        })
+        .catch(() => {
+            overlayContent.innerHTML = "Failed to load " + url;
+        });
 }
 
 createTab();
-
-const settingsBtn = document.getElementById("settingsBtn");
-const settingsMenu = document.getElementById("settingsMenu");
-const settingsItem = settingsMenu.querySelector(".settings-item");
-
-settingsBtn.onclick = (e) => {
-    e.stopPropagation();
-    settingsMenu.style.display = settingsMenu.style.display === "block" ? "none" : "block";
-};
-
-document.addEventListener("click", () => {
-    settingsMenu.style.display = "none";
-});
-
-settingsItem.onclick = () => {
-    const newTab = window.open("about:blank", "_blank");
-    if (newTab) {
-        newTab.document.write(`
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <meta charset="UTF-8">
-                <title>about:blank</title>
-                <style>
-                    body, html { margin:0; padding:0; height:100%; }
-                    iframe { width:100%; height:100%; border:none; }
-                </style>
-            </head>
-            <body>
-                <iframe src="https://sealgodreal.github.io/nebulabrowser/" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
-            </body>
-            </html>
-        `);
-        newTab.document.close();
-    }
-
-    settingsMenu.style.display = "none";
-
-        const sites = [
-        "https://www.clever.com/",
-        "https://classroom.google.com/",
-        "https://login.i-ready.com/",
-        "https://www.blooket.com/",
-        "https://drive.google.com/",
-        "https://kahoot.it"
-    ];
-
-    setTimeout(() => {
-        window.location.href = sites[Math.floor(Math.random() * sites.length)];
-    }, 500);
-};
 </script>
 
 </body>
