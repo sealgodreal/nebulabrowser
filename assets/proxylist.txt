@@ -1,7 +1,6 @@
 https://s3.amazonaws.com/fernisbest/index.html
 https://apple1.vandrekalenderen.dk
-https://blowthegrass.vercerl.app
-https://nebulaabrowser.netlify.app
+https://blowthegrass.vercel.app
 https://endis.rest/browser
 https://www-proxy.hidester.one
 https://croxyproxy.com
