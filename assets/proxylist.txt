@@ -1,4 +1,5 @@
 https://s3.amazonaws.com/fernisbest/index.html
+https://apple1.vandrekalenderen.dk
 https://blowthegrass.vercerl.app
 https://nebulaabrowser.netlify.app
 https://endis.rest/browser
