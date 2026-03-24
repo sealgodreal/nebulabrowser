@@ -92,6 +92,13 @@ body {
     font-size: 9px;
 }
 
+.tab-favicon img {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    object-fit: contain;
+}
+
 .close {
     margin-left: 2px;
     opacity: 0;
@@ -354,9 +361,74 @@ body {
 }
 
 .settings-item:hover { background: var(--hover); color: var(--text); }
+
+.cloak-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    padding: 10px 12px;
+    margin-bottom: 2px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    transition: background 0.12s;
+}
+
+.cloak-item:hover { background: var(--hover); }
+
+.cloak-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.cloak-icon img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.cloak-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.cloak-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.cloak-desc {
+    font-size: 11.5px;
+    color: var(--text-muted);
+}
+
+.cloak-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 6px 12px 4px;
+}
 </style>
 </head>
-
 <body>
 
 <div class="topbar">
@@ -375,7 +447,7 @@ body {
         <div class="settings-container">
             <button class="nav-btn" id="settingsBtn" title="Settings">&#8943;</button>
             <div id="settingsMenu">
-                <div class="settings-item" onclick="cloakTab()">about:blank cloak</div>
+                <div class="settings-item" onclick="openCloakMenu()">Tab Cloaks</div>
             </div>
         </div>
     </div>
@@ -408,10 +480,21 @@ function toProxy(url) {
     return PROXY + encodeURIComponent(url);
 }
 
-let tabs = [];
-let activeTab = null;
-let tabId = 0;
+function getFavicon(url) {
+    try { return "https://www.google.com/s2/favicons?sz=64&domain=" + new URL(url).hostname; }
+    catch { return ""; }
+}
 
+const CLOAKS = [
+    { name:"about:blank", desc:"about:blank", url:"about:blank", title:"about:blank" },
+    { name:"Clever", desc:"clever.com", url:"https://clever.com", title:"Clever | Log in" },
+    { name:"Khan Academy", desc:"khanacademy.org", url:"https://www.khanacademy.org", title:"Khan Academy" },
+    { name:"Canvas", desc:"instructure.com", url:"https://canvas.instructure.com", title:"Canvas LMS" },
+    { name:"Quizlet", desc:"quizlet.com", url:"https://quizlet.com", title:"Quizlet" },
+    { name:"Kahoot", desc:"kahoot.com", url:"https://kahoot.com", title:"Kahoot!" },
+];
+
+let tabs = [], activeTab=null, tabId=0;
 const tabsContainer = document.getElementById("tabs");
 const page = document.getElementById("page");
 const urlInput = document.getElementById("url");
@@ -424,175 +507,175 @@ tabsContainer.appendChild(newTabBtn);
 
 const HOMEPAGE = "https://sealgodreal.github.io/nebulabrowser/assets/homepage.html";
 
-function createTab(url = "") {
-    if (!url) url = HOMEPAGE;
+function createTab(url="", cloakData=null) {
+    if (!url) url=HOMEPAGE;
     const id = tabId++;
-
     const tab = document.createElement("div");
-    tab.className = "tab";
-    tab.innerHTML = `<span class="tab-favicon">&#127760;</span><span class="tab-label">New Tab</span><span class="close">&#10005;</span>`;
+    tab.className="tab";
+
+    const faviconSrc = cloakData ? getFavicon(cloakData.url) : "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='14'> </text></svg>";
+    const faviconHTML = `<span class="tab-favicon"><img src="${faviconSrc}"></span>`;
+    const labelText = cloakData ? cloakData.title : "New Tab";
+    tab.innerHTML = `${faviconHTML}<span class="tab-label">${labelText}</span><span class="close">&#10005;</span>`;
 
     const iframe = document.createElement("iframe");
-    iframe.className = "webview";
+    iframe.className="webview";
 
     page.appendChild(iframe);
-    tabsContainer.insertBefore(tab, newTabBtn);
+    tabsContainer.insertBefore(tab,newTabBtn);
 
-    const tabObj = { id, tab, iframe, url, label: tab.querySelector(".tab-label") };
+    const tabObj={id,tab,iframe,url,label:tab.querySelector(".tab-label"),cloak:cloakData};
     tabs.push(tabObj);
 
-    tab.onclick = () => switchTab(id);
-    tab.querySelector(".close").onclick = (e) => {
-        e.stopPropagation();
-        closeTab(id);
-    };
+    tab.onclick=()=>switchTab(id);
+    tab.querySelector(".close").onclick=(e)=>{ e.stopPropagation(); closeTab(id); };
+
+    if(cloakData) {
+        document.title=cloakData.title;
+        let link=document.querySelector("link[rel~='icon']");
+        if(!link){ link=document.createElement("link"); link.rel="icon"; document.head.appendChild(link);}
+        link.href=faviconSrc;
+    }
 
     switchTab(id);
-    loadURL(id, url);
+    loadURL(id,url,cloakData);
 }
 
-function switchTab(id) {
-    tabs.forEach(t => {
-        t.tab.classList.remove("active");
-        t.iframe.style.display = "none";
-    });
-    const t = tabs.find(t => t.id === id);
-    if (!t) return;
-    t.tab.classList.add("active");
-    t.iframe.style.display = "block";
-    activeTab = t;
-    urlInput.value = t.url || "";
+function switchTab(id){
+    tabs.forEach(t=>{t.tab.classList.remove("active"); t.iframe.style.display="none";});
+    const t=tabs.find(t=>t.id===id);
+    if(!t) return;
+    t.tab.classList.add("active"); t.iframe.style.display="block"; activeTab=t;
+    urlInput.value=t.url||"";
+    if(t.cloak) document.title=t.cloak.title;
+    else document.title="Nebula | Educational Learning Program";
 }
 
-function closeTab(id) {
-    const index = tabs.findIndex(t => t.id === id);
-    if (index === -1) return;
-    tabs[index].tab.remove();
-    tabs[index].iframe.remove();
-    tabs.splice(index, 1);
-    if (tabs.length) switchTab(tabs[Math.max(0, index - 1)].id);
+function closeTab(id){
+    const index=tabs.findIndex(t=>t.id===id); if(index===-1) return;
+    tabs[index].tab.remove(); tabs[index].iframe.remove(); tabs.splice(index,1);
+    if(tabs.length) switchTab(tabs[Math.max(0,index-1)].id);
 }
 
-function formatURL(input) {
-    input = input.trim();
-    if (input.startsWith("http")) return input;
-    if (/^[^\s]+\.[^\s]+$/.test(input)) return "https://" + input;
-    return "https://duckduckgo.com/?q=" + encodeURIComponent(input);
+function formatURL(input){
+    input=input.trim();
+    if(input.startsWith("http")) return input;
+    if(/^[^\s]+\.[^\s]+$/.test(input)) return "https://"+input;
+    return "https://duckduckgo.com/?q="+encodeURIComponent(input);
 }
 
-function loadURL(tabId, raw) {
-    const t = tabs.find(t => t.id === tabId);
-    if (!t) return;
-    const url = formatURL(raw);
-    t.url = url;
-    t.iframe.src = toProxy(url);
-    if (activeTab?.id === tabId) urlInput.value = url;
-
-    try {
-        const u = new URL(url);
-        t.label.textContent = u.hostname.replace("www.", "") || "New Tab";
-    } catch {
-        t.label.textContent = "New Tab";
+function loadURL(tabId, raw, cloakData=null){
+    const t=tabs.find(t=>t.id===tabId);
+    if(!t) return;
+    const url=formatURL(raw);
+    t.url=url;
+    t.iframe.src=toProxy(url);
+    if(activeTab?.id===tabId) urlInput.value=url;
+    if(!cloakData){
+        try{t.label.textContent=new URL(url).hostname.replace("www.","")||"New Tab";}
+        catch{t.label.textContent="New Tab";}
     }
 }
 
-function navigate(e) {
-    if (e.key === "Enter" && activeTab) loadURL(activeTab.id, e.target.value);
-}
+function navigate(e){if(e.key==="Enter"&&activeTab) loadURL(activeTab.id,e.target.value);}
+function goBack(){activeTab?.iframe.contentWindow.history.back();}
+function goForward(){activeTab?.iframe.contentWindow.history.forward();}
+function doReload(){activeTab?.iframe.contentWindow.location.reload();}
 
-function goBack()    { activeTab?.iframe.contentWindow.history.back(); }
-function goForward() { activeTab?.iframe.contentWindow.history.forward(); }
-function doReload()  { activeTab?.iframe.contentWindow.location.reload(); }
-
-function cloakTab() {
-    const w = window.open("about:blank");
-    if (w) {
-        w.document.write(`<iframe src="${window.location.href}" style="position:fixed;inset:0;width:100%;height:100%;border:none"></iframe>`);
-    }
+function openCloakMenu(){
     closeSettingsMenu();
-}
+    overlay.style.display="flex";
+    overlayTitle.textContent="Cloaks";
+    overlayContent.innerHTML=`<div class="cloak-section-label">Open as...</div>`;
+    CLOAKS.forEach(cloak=>{
+        const btn=document.createElement("button");
+        btn.className="cloak-item";
+        const favicon=getFavicon(cloak.url);
+        btn.innerHTML=`
+        <div class="cloak-icon"><img src="${favicon}" alt=""></div>
+        <div class="cloak-info">
+            <span class="cloak-name">${cloak.name}</span>
+            <span class="cloak-desc">${cloak.desc}</span>
+        </div>`;
+    btn.onclick = () => {
+        closeMenu();
+        const w = window.open();
+        if (!w) return;
 
-const settingsBtn = document.getElementById("settingsBtn");
-const settingsMenu = document.getElementById("settingsMenu");
-settingsBtn.onclick = (e) => {
-    e.stopPropagation();
-    const open = settingsMenu.style.display === "block";
-    settingsMenu.style.display = open ? "none" : "block";
+        w.document.write(`<!DOCTYPE html>
+    <html>
+<head>
+<title>${cloak.title}</title>
+</head>
+<body style="margin:0; overflow:hidden;"></body>
+</html>`);
+    w.document.close();
+
+    const link = w.document.createElement("link");
+    link.rel = "icon";
+    link.href = "https://www.google.com/s2/favicons?sz=64&domain=" + new URL(cloak.url).hostname;
+    w.document.head.appendChild(link);
+
+    const iframe = w.document.createElement("iframe");
+    iframe.src = window.location.href;
+    iframe.style.cssText = "position:fixed;inset:0;width:100%;height:100%;border:none";
+    w.document.body.appendChild(iframe);
 };
-document.addEventListener("click", () => { settingsMenu.style.display = "none"; });
-function closeSettingsMenu() { settingsMenu.style.display = "none"; }
+        overlayContent.appendChild(btn);
+    });
+}
 
-const overlay = document.getElementById("overlayMenu");
-const overlayContent = document.getElementById("overlayContent");
-const overlayTitle = document.getElementById("overlayTitle");
+const settingsBtn=document.getElementById("settingsBtn");
+const settingsMenu=document.getElementById("settingsMenu");
+settingsBtn.onclick=(e)=>{ e.stopPropagation(); settingsMenu.style.display=(settingsMenu.style.display==="block"?"none":"block"); };
+document.addEventListener("click",()=>{settingsMenu.style.display="none";});
+function closeSettingsMenu(){settingsMenu.style.display="none";}
 
-function overlayBgClick(e) { if (e.target === overlay) closeMenu(); }
+const overlay=document.getElementById("overlayMenu");
+const overlayContent=document.getElementById("overlayContent");
+const overlayTitle=document.getElementById("overlayTitle");
 
-function openMenu(type) {
-    overlay.style.display = "flex";
-
-    if (type === "games") {
-        overlayTitle.textContent = "Games";
-        overlayContent.innerHTML = `
-            <label class="proxy-toggle">
-                <input type="checkbox" id="proxyToggle"> Use proxy link
-            </label>
-            <div id="gamesList"><div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div></div>
-        `;
-        loadList(
-            "https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/gameslist.txt",
-            (link) => {
-                const useProxy = document.getElementById("proxyToggle")?.checked;
-                window.open(useProxy ? toProxy(link) : link);
-                closeMenu();
-            },
-            "gamesList"
-        );
+function overlayBgClick(e){if(e.target===overlay) closeMenu();}
+function openMenu(type){
+    overlay.style.display="flex";
+    if(type==="games"){
+        overlayTitle.textContent="Games";
+        overlayContent.innerHTML=`<label class="proxy-toggle"><input type="checkbox" id="proxyToggle"> Use proxy link</label>
+        <div id="gamesList"><div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div></div>`;
+        loadList(PROXY+"https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/gameslist.txt",
+            (link)=>{const useProxy=document.getElementById("proxyToggle")?.checked; window.open(useProxy?toProxy(link):link); closeMenu();}, "gamesList");
     }
-
-    if (type === "socials") {
-        overlayTitle.textContent = "Socials";
-        overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div>`;
-        loadList(
-            "https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/socialslist.txt",
-            (link) => { loadURL(activeTab.id, link); closeMenu(); }
-        );
+    if(type==="socials"){
+        overlayTitle.textContent="Socials";
+        overlayContent.innerHTML=`<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div>`;
+        loadList(PROXY+"https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/socialslist.txt",
+            (link)=>{loadURL(activeTab.id,link); closeMenu();});
     }
-
-    if (type === "proxies") {
-        overlayTitle.textContent = "Other Proxies";
-        overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div>`;
-        loadList(
-            "https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/proxylist.txt",
-            (link) => { window.open(link); closeMenu(); }
-        );
+    if(type==="proxies"){
+        overlayTitle.textContent="Other Proxies";
+        overlayContent.innerHTML=`<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div>`;
+        loadList(PROXY+"https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/proxylist.txt",
+            (link)=>{window.open(link); closeMenu();});
     }
 }
 
-function closeMenu() { overlay.style.display = "none"; }
+function closeMenu(){overlay.style.display="none";}
 
-function loadList(url, onClick, containerId = null) {
-    fetch(url)
-        .then(res => res.text())
-        .then(text => {
-            const container = containerId
-                ? document.getElementById(containerId)
-                : overlayContent;
-            if (!container) return;
-            container.innerHTML = "";
-            text.split("\n").forEach(link => {
-                link = link.trim();
-                if (!link) return;
-                const btn = document.createElement("button");
-                btn.className = "menu-btn";
-                btn.textContent = link;
-                btn.onclick = () => onClick(link);
-                container.appendChild(btn);
-            });
-        })
-        .catch(() => {
-            overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Failed to load.</div>`;
+function loadList(url,onClick,containerId=null){
+    fetch(url).then(res=>res.text()).then(text=>{
+        const container=containerId?document.getElementById(containerId):overlayContent;
+        if(!container) return;
+        container.innerHTML="";
+        text.split("\n").forEach(link=>{
+            link=link.trim();
+            if(!link) return;
+            const btn=document.createElement("button");
+            btn.className="menu-btn";
+            btn.textContent=link;
+            btn.onclick=()=>onClick(link);
+            container.appendChild(btn);
         });
+    }).catch(()=>{overlayContent.innerHTML=`<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Failed to load.</div>`;});
 }
 
 createTab();
