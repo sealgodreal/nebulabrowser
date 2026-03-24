@@ -427,9 +427,36 @@ body {
     color: var(--text-muted);
     padding: 6px 12px 4px;
 }
+
+#startupScreen {
+    position: fixed;
+    inset: 0;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.6s ease;
+}
+
+.startup-text {
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+#startupScreen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
 </style>
 </head>
 <body>
+
+<div id="startupScreen">
+    <div class="startup-text">Starting Nebula...</div>
+</div>
 
 <div class="topbar">
     <div class="tabs" id="tabs"></div>
@@ -506,6 +533,62 @@ newTabBtn.onclick = () => createTab();
 tabsContainer.appendChild(newTabBtn);
 
 const HOMEPAGE = "https://sealgodreal.github.io/nebulabrowser/assets/homepage.html";
+
+const startupScreen = document.getElementById("startupScreen");
+
+function getProxyBase() {
+    try {
+        const url = new URL(PROXY);
+        return url.origin + "/";
+    } catch {
+        return PROXY;
+    }
+}
+
+async function waitForProxyReady() {
+    return new Promise((resolve) => {
+        const testFrame = document.createElement("iframe");
+        testFrame.style.display = "none";
+        testFrame.src = getProxyBase();
+        document.body.appendChild(testFrame);
+
+        testFrame.onload = () => {
+            document.body.removeChild(testFrame);
+            resolve();
+        };
+
+        setTimeout(() => {
+            if (testFrame.parentNode) document.body.removeChild(testFrame);
+            resolve();
+        }, 5000);
+    });
+}
+
+function waitForNebulaTitle() {
+    return new Promise((resolve) => {
+        if (document.title.includes("Nebula")) {
+            resolve();
+            return;
+        }
+
+        const interval = setInterval(() => {
+            if (document.title.includes("Nebula")) {
+                clearInterval(interval);
+                resolve();
+            }
+        }, 1000);
+    });
+}
+
+async function startNebula() {
+    await waitForNebulaTitle();
+    await waitForProxyReady();
+    createTab();
+
+    setTimeout(() => startupScreen.classList.add("fade-out"), 200);
+}
+
+startNebula();
 
 function createTab(url="", cloakData=null) {
     if (!url) url=HOMEPAGE;
@@ -677,8 +760,6 @@ function loadList(url,onClick,containerId=null){
         });
     }).catch(()=>{overlayContent.innerHTML=`<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Failed to load.</div>`;});
 }
-
-createTab();
 </script>
 </body>
 </html>
