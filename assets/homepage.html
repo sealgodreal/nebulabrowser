@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
 * {
@@ -14,101 +14,123 @@
 }
 
 body {
-    background: #000000;
-    color: #ffffff;
-    font-family: 'DM Sans', system-ui, sans-serif;
+    background: #050505;
+    color: #fff;
+    font-family: 'Geist', system-ui, sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
     text-align: center;
+    overflow: hidden;
+}
+
+#bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.35;
+}
+
+.content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 0;
 }
 
 .wordmark {
-    font-size: 5rem;
-    font-weight: 600;
-    letter-spacing: -0.04em;
-    color: #ffffff;
+    font-size: 2.6rem;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    color: #fff;
     line-height: 1;
-    margin-bottom: 6px;
-    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    margin-bottom: 32px;
+    animation: fadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.wordmark-underline {
-    width: 60px;
-    height: 2px;
-    background: #ffffff;
-    margin: 0 auto 36px;
-    border-radius: 2px;
-    animation: fadeUp 0.6s 0.05s cubic-bezier(0.16, 1, 0.3, 1) both;
+.wordmark span {
+    color: rgba(255,255,255,0.2);
+    font-weight: 300;
 }
 
-.search-container {
-    width: 90%;
-    max-width: 480px;
-    margin-bottom: 40px;
+/* ── Search bar ── */
+.search-wrap {
+    width: 90vw;
+    max-width: 520px;
+    margin-bottom: 48px;
+    animation: fadeUp 0.55s 0.08s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.search-box {
     position: relative;
-    animation: fadeUp 0.6s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    display: flex;
+    align-items: center;
 }
 
 .search-icon {
     position: absolute;
     left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #555;
-    font-size: 14px;
+    color: #444;
     pointer-events: none;
+    flex-shrink: 0;
 }
 
-.search-container input {
+.search-box input {
     width: 100%;
-    padding: 13px 20px 13px 42px;
+    padding: 14px 52px 14px 44px;
     font-size: 14px;
-    font-family: 'DM Sans', sans-serif;
-    border-radius: 999px;
-    border: 1px solid #222;
+    font-family: 'Geist', sans-serif;
+    font-weight: 400;
+    border-radius: 14px;
+    border: 1px solid #181818;
     outline: none;
-    background: #111;
-    color: #ffffff;
-    transition: border-color 0.2s;
+    background: #0c0c0c;
+    color: #fff;
     letter-spacing: 0.01em;
+    transition: border-color 0.2s, background 0.2s;
 }
 
-.search-container input:focus {
-    border-color: #444;
+.search-box input:focus {
+    border-color: #2a2a2a;
+    background: #0f0f0f;
 }
 
-.search-container input::placeholder {
-    color: #555;
+.search-box input::placeholder {
+    color: #383838;
 }
 
-.search-engine {
+.search-btn {
     position: absolute;
-    right: 6px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
-    color: #888;
-    font-size: 12px;
-    font-family: 'DM Sans', sans-serif;
-    padding: 5px 12px;
-    border-radius: 999px;
+    right: 8px;
+    background: #161616;
+    border: 1px solid #242424;
+    color: #555;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
-.search-engine:hover { background: #222; color: #fff; }
+.search-btn:hover {
+    background: #1e1e1e;
+    border-color: #333;
+    color: #fff;
+}
 
-.app-links {
+.apps {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     justify-content: center;
-    flex-wrap: wrap;
-    animation: fadeUp 0.6s 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: fadeUp 0.55s 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .app {
@@ -116,180 +138,227 @@ body {
     flex-direction: column;
     align-items: center;
     text-decoration: none;
-    color: #aaa;
-    gap: 8px;
-    padding: 14px 12px 12px;
-    border-radius: 16px;
+    color: #444;
+    gap: 9px;
+    padding: 14px 10px 12px;
+    border-radius: 14px;
     border: 1px solid transparent;
-    transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
-    width: 80px;
+    transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.18s;
+    width: 78px;
+    cursor: pointer;
 }
 
 .app:hover {
-    background: #111;
-    border-color: #222;
-    color: #fff;
+    background: rgba(255,255,255,0.03);
+    border-color: #1a1a1a;
+    color: #bbb;
     transform: translateY(-2px);
 }
 
 .app-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 50%;
-    background: #111;
-    border: 1px solid #222;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #0e0e0e;
+    border: 1px solid #1a1a1a;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    transition: border-color 0.2s;
+    transition: border-color 0.18s;
+    flex-shrink: 0;
 }
 
-.app:hover .app-icon { border-color: #333; }
+.app:hover .app-icon {
+    border-color: #282828;
+}
 
 .app-icon img {
     width: 26px;
     height: 26px;
     object-fit: contain;
-    filter: grayscale(20%);
 }
 
 .app-name {
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 400;
     letter-spacing: 0.01em;
-}
-
-.app-add .app-icon {
-    background: transparent;
-    border-style: dashed;
-    border-color: #2a2a2a;
-    color: #444;
-    font-size: 20px;
-    font-weight: 300;
-}
-
-.app-add:hover .app-icon {
-    border-color: #444;
-    color: #888;
+    white-space: nowrap;
 }
 
 .footer {
     position: fixed;
-    bottom: 20px;
-    left: 0;
-    right: 0;
+    bottom: 22px;
+    left: 0; right: 0;
     display: flex;
     justify-content: center;
-    gap: 20px;
-    font-size: 11.5px;
-    color: #3a3a3a;
-    animation: fadeUp 0.6s 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+    align-items: center;
+    gap: 16px;
+    font-size: 11px;
+    color: #282828;
+    z-index: 1;
+    animation: fadeUp 0.55s 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .footer a {
-    color: #3a3a3a;
+    color: inherit;
     text-decoration: none;
     transition: color 0.15s;
 }
 
-.footer a:hover { color: #888; }
+.footer a:hover { color: #555; }
 
-.footer-dot {
-    width: 6px;
-    height: 6px;
+.footer-sep {
+    width: 3px;
+    height: 3px;
     border-radius: 50%;
-    background: #1e1e1e;
-    align-self: center;
-}
-
-.footer-online {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.online-indicator {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #e74c3c;
-    animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
+    background: #252525;
 }
 
 @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(14px); }
+    from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 </style>
 </head>
 <body>
 
-<div class="wordmark">nebula</div>
-<div class="wordmark-underline"></div>
+<canvas id="bg"></canvas>
 
-<div class="search-container">
-    <input id="searchInput" placeholder="Search or Enter a URL" onkeydown="doSearch(event)">
-</div>
+<div class="content">
 
-<div class="app-links">
-    <a class="app" href="https://www.youtube.com">
-        <div class="app-icon">
-            <img src="logos/youtube.webp" alt="YouTube" onerror="this.parentElement.innerHTML='&#9654;'">
+    <div class="wordmark">nebula<span>.</span></div>
+
+    <div class="search-wrap">
+        <div class="search-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="7" cy="7" r="4.5" stroke="#444" stroke-width="1.4"/>
+                <line x1="10.5" y1="10.5" x2="13.5" y2="13.5" stroke="#444" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            <input id="searchInput" placeholder="Search or enter a URL…" onkeydown="doSearch(event)" autocomplete="off" spellcheck="false">
+            <button class="search-btn" onclick="triggerSearch()" title="Go">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <path d="M2 6.5h9M7.5 3L11 6.5 7.5 10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </div>
-        <div class="app-name">YouTube</div>
-    </a>
+    </div>
 
-    <a class="app" href="https://www.google.com">
-        <div class="app-icon">
-            <img src="logos/google.webp" alt="Google" onerror="this.parentElement.innerHTML='&#127760;'">
-        </div>
-        <div class="app-name">Google</div>
-    </a>
+    <div class="apps">
+        <a class="app" href="https://www.youtube.com">
+            <div class="app-icon">
+                <img src="logos/youtube.webp" alt="YouTube">
+            </div>
+            <div class="app-name">YouTube</div>
+        </a>
 
-    <a class="app" href="https://www.tiktok.com">
-        <div class="app-icon">
-            <img src="logos/tiktok.webp" alt="TikTok" onerror="this.parentElement.innerHTML='&#127911;'">
-        </div>
-        <div class="app-name">TikTok</div>
-    </a>
+        <a class="app" href="https://www.google.com">
+            <div class="app-icon">
+                <img src="logos/google.webp" alt="Google">
+            </div>
+            <div class="app-name">Google</div>
+        </a>
 
-    <a class="app" href="https://discord.com">
-        <div class="app-icon">
-            <img src="logos/discord.webp" alt="Discord" onerror="this.parentElement.innerHTML='&#128172;'">
-        </div>
-        <div class="app-name">Discord</div>
-    </a>
+        <a class="app" href="https://www.tiktok.com">
+            <div class="app-icon">
+                <img src="logos/tiktok.webp" alt="TikTok">
+            </div>
+            <div class="app-name">TikTok</div>
+        </a>
+
+        <a class="app" href="https://discord.com">
+            <div class="app-icon">
+                <img src="logos/discord.webp" alt="Discord">
+            </div>
+            <div class="app-name">Discord</div>
+        </a>
+
+        <a class="app" href="https://reddit.com">
+            <div class="app-icon">
+                <img src="logos/reddit.webp" alt="Reddit">
+            </div>
+            <div class="app-name">Reddit</div>
+        </a>
+    </div>
 </div>
 
 <div class="footer">
-    <a href="">Nebula : Made by Sealgod with love ❤</a>
+    <a href="">Nebula</a>
+    <div class="footer-sep"></div>
+    <a href="">Made by Sealgod ❤</a>
 </div>
 
 <script>
 const PROXY = "https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=";
 
-function doSearch(e) {
-    if (e.key !== "Enter") return;
-    const val = e.target.value.trim();
+function navigate(val) {
+    val = val.trim();
     if (!val) return;
-
     let targetUrl;
-
     if (/^[^\s]+\.[^\s]+$/.test(val) && !val.includes(" ")) {
         targetUrl = val.startsWith("http") ? val : "https://" + val;
     } else {
         targetUrl = "https://duckduckgo.com/?q=" + encodeURIComponent(val);
     }
-
     window.location.href = PROXY + encodeURIComponent(targetUrl);
 }
-</script>
 
+function doSearch(e) {
+    if (e.key === "Enter") navigate(e.target.value);
+}
+
+function triggerSearch() {
+    navigate(document.getElementById("searchInput").value);
+}
+
+const canvas = document.getElementById("bg");
+const ctx = canvas.getContext("2d");
+let particles = [];
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+for (let i = 0; i < 50; i++) {
+    particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: (Math.random() - 0.5) * 0.25
+    });
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 110) {
+                ctx.strokeStyle = `rgba(255,255,255,${(1 - dist/110) * 0.06})`;
+                ctx.beginPath();
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.stroke();
+            }
+        }
+    }
+    particles.forEach(p => {
+        ctx.fillStyle = "rgba(255,255,255,0.3)";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+    });
+    requestAnimationFrame(draw);
+}
+draw();
+</script>
 </body>
 </html>
