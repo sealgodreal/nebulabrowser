@@ -1022,7 +1022,7 @@ const clearDataItem = document.createElement("div");
 clearDataItem.className = "settings-item";
 clearDataItem.textContent = "Clear Nebula Data";
 clearDataItem.onclick = () => {
-    const confirmed = confirm("Are you sure you want to clear your local data? This will remove all saved tabs, Reset the Panic Button, etc.");
+    const confirmed = confirm("Are you sure you want to clear your local data? This will remove all saved tabs, reset the panic button, etc.");
     if (confirmed) {
         localStorage.clear();
         location.reload();
