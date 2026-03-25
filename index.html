@@ -5,7 +5,7 @@
 <title>Nebula | Educational Learning Program</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
 * {
@@ -14,166 +14,193 @@
 }
 
 :root {
-    --bg: #000000;
+    --bg: #0a0a0a;
     --surface: #111111;
-    --surface2: #1a1a1a;
-    --border: #222222;
+    --surface2: #161616;
+    --border: #1f1f1f;
+    --border-subtle: #171717;
     --text: #ffffff;
-    --text-muted: #888888;
-    --accent: #ffffff;
-    --tab-bg: #141414;
-    --tab-active: #000000;
-    --input-bg: #111111;
-    --hover: #1e1e1e;
-    --radius: 12px;
+    --text-muted: #666666;
+    --text-dim: #404040;
+    --hover: #141414;
+    --radius: 8px;
+    --tab-h: 36px;
 }
 
 body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'DM Sans', system-ui, sans-serif;
-    font-size: 14px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 13px;
     overflow: hidden;
+    -webkit-font-smoothing: antialiased;
 }
 
 .topbar {
     background: var(--bg);
-    border-bottom: 1px solid var(--border);
     user-select: none;
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .tabs {
     display: flex;
-    align-items: flex-end;
-    padding: 8px 8px 0;
-    gap: 2px;
+    align-items: stretch;
+    height: var(--tab-h);
+    padding: 0 6px;
+    gap: 1px;
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .tab {
-    background: var(--tab-bg);
-    border: 1px solid transparent;
-    padding: 7px 14px;
-    border-radius: 10px 10px 0 0;
-    font-size: 12.5px;
+    background: transparent;
+    border: none;
+    padding: 0 12px;
+    border-radius: 6px 6px 0 0;
+    font-size: 12px;
     font-weight: 400;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     color: var(--text-muted);
     max-width: 200px;
+    min-width: 80px;
     overflow: hidden;
     white-space: nowrap;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.1s, color 0.1s;
+    position: relative;
+    flex-shrink: 1;
 }
 
 .tab:hover {
-    background: var(--surface2);
-    color: var(--text);
+    background: var(--hover);
+    color: #999;
 }
 
 .tab.active {
     background: var(--surface);
-    border-color: var(--border);
-    border-bottom-color: var(--surface);
     color: var(--text);
     font-weight: 500;
 }
 
+.tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0; right: 0;
+    height: 1px;
+    background: var(--surface);
+}
+
 .tab-favicon {
-    width: 14px;
-    height: 14px;
-    border-radius: 3px;
-    background: var(--border);
-    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    font-size: 14px;
+    line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 9px;
+    overflow: visible;
 }
 
 .tab-favicon img {
-    width: 14px;
-    height: 14px;
-    border-radius: 3px;
+    width: 13px;
+    height: 13px;
+    border-radius: 2px;
     object-fit: contain;
+    opacity: 0.7;
+}
+
+.tab-label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .close {
-    margin-left: 2px;
     opacity: 0;
     font-size: 11px;
     line-height: 1;
-    padding: 1px 3px;
-    border-radius: 4px;
-    transition: opacity 0.1s, background 0.1s;
+    padding: 2px 3px;
+    border-radius: 3px;
+    color: var(--text-muted);
     flex-shrink: 0;
+    transition: opacity 0.1s, background 0.1s;
 }
-
-.tab:hover .close { opacity: 0.5; }
-.close:hover { opacity: 1 !important; background: var(--surface2); }
+.tab:hover .close { opacity: 1; }
+.close:hover { background: var(--surface2); color: var(--text); }
 
 .new-tab {
-    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
     cursor: pointer;
-    color: var(--text-muted);
-    border-radius: 8px 8px 0 0;
-    font-size: 16px;
-    line-height: 1;
-    transition: color 0.15s, background 0.15s;
+    color: var(--text-dim);
+    font-size: 18px;
+    font-weight: 300;
+    border-radius: 4px;
+    margin: auto 2px;
+    height: 24px;
+    transition: color 0.1s, background 0.1s;
+    flex-shrink: 0;
 }
-
-.new-tab:hover {
-    color: var(--text);
-    background: var(--surface2);
-}
+.new-tab:hover { color: var(--text-muted); background: var(--hover); }
 
 .navbar {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 8px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
+    gap: 2px;
+    padding: 6px 8px;
+    height: 44px;
 }
 
 .nav-btn {
     background: none;
     border: none;
-    color: var(--text-muted);
-    font-size: 15px;
-    padding: 6px 8px;
+    color: var(--text-dim);
+    font-size: 14px;
+    width: 28px;
+    height: 28px;
     cursor: pointer;
-    border-radius: 8px;
-    line-height: 1;
-    transition: background 0.15s, color 0.15s;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s, color 0.1s;
+    flex-shrink: 0;
 }
+.nav-btn:hover { background: var(--hover); color: var(--text-muted); }
+.nav-btn svg { pointer-events: none; }
 
-.nav-btn:hover {
-    background: var(--hover);
-    color: var(--text);
+.omnibox-wrap {
+    flex: 1;
+    display: flex;
+    padding: 0 6px;
 }
 
 .omnibox {
-    flex: 1;
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: var(--input-bg);
+    gap: 7px;
+    background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 40px;
-    padding: 7px 14px;
-    transition: border-color 0.15s;
+    border-radius: 6px;
+    padding: 5px 12px;
+    width: 100%;
+    max-width: none;
+    transition: border-color 0.15s, background 0.15s;
 }
-
 .omnibox:focus-within {
-    border-color: #444;
+    border-color: #2a2a2a;
+    background: #131313;
 }
 
 .omnibox-icon {
-    color: var(--text-muted);
-    font-size: 13px;
+    color: var(--text-dim);
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
 }
 
 .omnibox input {
@@ -182,42 +209,51 @@ body {
     border: none;
     color: var(--text);
     outline: none;
-    font-size: 13.5px;
-    font-family: 'DM Sans', sans-serif;
+    font-size: 12.5px;
+    font-family: 'Inter', sans-serif;
     font-weight: 400;
     letter-spacing: 0.01em;
+    text-align: left;
 }
+.omnibox input:focus { text-align: left; }
+.omnibox input::placeholder {
+    color: var(--text-dim);
+    text-align: left;
+}
+.omnibox input:focus::placeholder { text-align: left; }
 
-.omnibox input::placeholder { color: var(--text-muted); }
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
 
 .subtabs {
     display: flex;
-    gap: 4px;
-    padding: 6px 8px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
+    gap: 2px;
+    padding: 4px 10px;
+    border-top: 1px solid var(--border-subtle);
 }
 
 .subtab {
     background: transparent;
-    padding: 5px 12px;
-    border-radius: 20px;
+    padding: 4px 10px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 12.5px;
-    font-weight: 500;
-    color: var(--text-muted);
-    border: 1px solid transparent;
-    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    font-size: 11.5px;
+    font-weight: 400;
+    color: var(--text-dim);
+    border: none;
+    transition: background 0.1s, color 0.1s;
+    letter-spacing: 0.01em;
 }
-
 .subtab:hover {
     background: var(--hover);
-    border-color: var(--border);
-    color: var(--text);
+    color: var(--text-muted);
 }
 
 .page {
-    height: calc(100vh - 108px);
+    height: calc(100vh - 121px);
     position: relative;
     background: var(--bg);
 }
@@ -233,9 +269,9 @@ body {
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     z-index: 999;
     display: none;
     align-items: center;
@@ -245,17 +281,17 @@ body {
 .overlay-panel {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    width: 400px;
-    max-height: 75vh;
+    border-radius: 12px;
+    width: 380px;
+    max-height: 72vh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: slideUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(12px) scale(0.97); }
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
@@ -263,42 +299,39 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 18px;
+    padding: 14px 16px;
     border-bottom: 1px solid var(--border);
 }
 
 .overlay-header span {
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
 }
 
 .overlay-close {
     background: var(--hover);
     border: none;
     color: var(--text-muted);
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.1s, color 0.1s;
 }
-
 .overlay-close:hover { background: var(--surface2); color: var(--text); }
 
 .overlay-content {
-    padding: 10px;
+    padding: 8px;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
 }
-
-.overlay-content::-webkit-scrollbar { width: 4px; }
-.overlay-content::-webkit-scrollbar-track { background: transparent; }
+.overlay-content::-webkit-scrollbar { width: 3px; }
 .overlay-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
 .menu-btn {
@@ -306,87 +339,83 @@ body {
     width: 100%;
     background: transparent;
     border: none;
-    color: var(--text);
-    padding: 9px 12px;
-    margin-bottom: 2px;
-    border-radius: 8px;
+    color: var(--text-muted);
+    padding: 8px 10px;
+    margin-bottom: 1px;
+    border-radius: 6px;
     cursor: pointer;
     text-align: left;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
     font-weight: 400;
-    transition: background 0.12s;
+    transition: background 0.1s, color 0.1s;
 }
-
-.menu-btn:hover { background: var(--hover); }
+.menu-btn:hover { background: var(--hover); color: var(--text); }
 
 .proxy-toggle {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 12px;
-    margin-bottom: 8px;
-    color: var(--text-muted);
-    font-size: 12.5px;
+    padding: 7px 10px;
+    margin-bottom: 6px;
+    color: var(--text-dim);
+    font-size: 12px;
     cursor: pointer;
 }
-
 .proxy-toggle input { accent-color: white; cursor: pointer; }
 
 .settings-container { position: relative; }
 
 #settingsMenu {
     position: absolute;
-    top: calc(100% + 6px);
+    top: calc(100% + 5px);
     right: 0;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 4px;
-    min-width: 160px;
+    border-radius: 8px;
+    padding: 3px;
+    min-width: 150px;
     z-index: 100;
     display: none;
-    animation: fadeIn 0.15s ease;
+    animation: fadeIn 0.12s ease;
 }
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: translateY(0); } }
 
 .settings-item {
-    padding: 8px 12px;
+    padding: 7px 10px;
     cursor: pointer;
-    border-radius: 7px;
-    font-size: 12.5px;
+    border-radius: 5px;
+    font-size: 12px;
     color: var(--text-muted);
-    transition: background 0.12s, color 0.12s;
+    transition: background 0.1s, color 0.1s;
 }
-
 .settings-item:hover { background: var(--hover); color: var(--text); }
 
 .cloak-item {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     width: 100%;
     background: transparent;
     border: none;
     color: var(--text);
-    padding: 10px 12px;
-    margin-bottom: 2px;
-    border-radius: 10px;
+    padding: 8px 10px;
+    margin-bottom: 1px;
+    border-radius: 7px;
     cursor: pointer;
     text-align: left;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
     font-weight: 400;
-    transition: background 0.12s;
+    transition: background 0.1s;
 }
-
 .cloak-item:hover { background: var(--hover); }
 
 .cloak-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 7px;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
     background: var(--surface2);
     border: 1px solid var(--border);
     flex-shrink: 0;
@@ -395,214 +424,122 @@ body {
     justify-content: center;
     overflow: hidden;
 }
+.cloak-icon img { width: 18px; height: 18px; object-fit: contain; }
 
-.cloak-icon img {
-    width: 20px;
-    height: 20px;
-    object-fit: contain;
-}
-
-.cloak-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-}
-
-.cloak-name {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-}
-
-.cloak-desc {
-    font-size: 11.5px;
-    color: var(--text-muted);
-}
-
+.cloak-info { display: flex; flex-direction: column; gap: 1px; }
+.cloak-name { font-size: 12.5px; font-weight: 500; color: var(--text); }
+.cloak-desc { font-size: 11px; color: var(--text-muted); }
 .cloak-section-label {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--text-muted);
-    padding: 6px 12px 4px;
+    color: var(--text-dim);
+    padding: 6px 10px 4px;
 }
 
 #startupScreen {
     position: fixed;
     inset: 0;
-    background: black;
+    background: var(--bg);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     z-index: 9999;
-    transition: opacity 0.6s ease;
+    transition: opacity 0.5s ease;
 }
-
 .startup-text {
     color: white;
-    font-size: 20px;
-    font-weight: 500;
-    opacity: 0.9;
-}
-
-.startup-subtext {
-    color: #555555;
-    font-size: 11px;
+    font-size: 15px;
     font-weight: 400;
+    opacity: 0.7;
+    letter-spacing: 0.02em;
+}
+.startup-subtext {
+    color: #333;
+    font-size: 11px;
     text-align: center;
-    max-width: 340px;
-    line-height: 1.5;
+    max-width: 320px;
+    line-height: 1.6;
 }
-
-#startupScreen.fade-out {
-    opacity: 0;
-    pointer-events: none;
-}
+#startupScreen.fade-out { opacity: 0; pointer-events: none; }
 
 #panicOverlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.75);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     z-index: 1000;
     display: none;
     align-items: center;
     justify-content: center;
 }
-
 #panicOverlay.open { display: flex; }
 
 .panic-panel {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 16px;
-    width: 360px;
-    padding: 0;
+    border-radius: 12px;
+    width: 340px;
     overflow: hidden;
-    animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: slideUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
 .panic-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 18px;
+    padding: 14px 16px;
     border-bottom: 1px solid var(--border);
 }
-
-.panic-header span {
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-}
-
-.panic-body {
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.panic-desc {
-    font-size: 12.5px;
-    color: var(--text-muted);
-    line-height: 1.55;
-}
-
-.panic-combo-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.panic-combo-row label {
-    font-size: 12.5px;
-    color: var(--text-muted);
-    flex-shrink: 0;
-    width: 70px;
-}
-
+.panic-header span { font-size: 13px; font-weight: 500; }
+.panic-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.panic-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+.panic-combo-row { display: flex; align-items: center; gap: 10px; }
+.panic-combo-row label { font-size: 12px; color: var(--text-muted); flex-shrink: 0; width: 60px; }
 .panic-select, .panic-key-input {
     flex: 1;
-    background: var(--input-bg);
+    background: var(--hover);
     border: 1px solid var(--border);
     color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    padding: 7px 10px;
-    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    padding: 6px 10px;
+    border-radius: 6px;
     outline: none;
     transition: border-color 0.15s;
 }
-
-.panic-select:focus, .panic-key-input:focus { border-color: #444; }
-
-.panic-key-input {
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    cursor: pointer;
-    caret-color: transparent;
-}
-
-.panic-key-input.listening {
-    border-color: #555;
-    color: var(--text-muted);
-}
-
+.panic-select:focus, .panic-key-input:focus { border-color: #333; }
+.panic-key-input { text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; caret-color: transparent; }
+.panic-key-input.listening { border-color: #333; color: var(--text-muted); }
 .panic-current {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 9px 12px;
-    background: var(--surface2);
-    border-radius: 8px;
-    font-size: 12.5px;
+    padding: 8px 10px;
+    background: var(--hover);
+    border-radius: 6px;
+    font-size: 12px;
     color: var(--text-muted);
 }
-
 .panic-current span { color: var(--text); font-weight: 500; }
-
-.panic-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: var(--hover);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 3px 8px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text);
-    font-family: monospace;
-}
-
 .panic-save-btn {
     width: 100%;
-    background: #ffffff14;
+    background: #ffffff0d;
     border: 1px solid var(--border);
     color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
     font-weight: 500;
-    padding: 9px 0;
-    border-radius: 8px;
+    padding: 8px 0;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background 0.15s;
+    transition: background 0.1s;
 }
-
-.panic-save-btn:hover { background: #ffffff22; }
-
-.panic-status {
-    font-size: 12px;
-    color: #4caf50;
-    text-align: center;
-    height: 14px;
-    transition: opacity 0.3s;
-}
+.panic-save-btn:hover { background: #ffffff16; }
+.panic-status { font-size: 11.5px; color: #4caf50; text-align: center; height: 14px; }
 </style>
 </head>
 <body>
@@ -610,30 +547,39 @@ body {
 <div id="startupScreen">
     <div class="startup-text">Starting Nebula...</div>
     <div class="startup-subtext">If the proxy shows render.com it's because my broke ass can't afford $7 a month.</div>
-    <div class="startup-subtext">You need to tap the top of Nebula Browser for the Panic Button to work. (I'll try to fix that soon)</div>
+    <div class="startup-subtext">You need to tap the top of Nebula Browser for the Panic Button to work.</div>
 </div>
 
 <div class="topbar">
     <div class="tabs" id="tabs"></div>
-
     <div class="navbar">
-        <button class="nav-btn" onclick="goBack()" title="Back">&#8592;</button>
-        <button class="nav-btn" onclick="goForward()" title="Forward">&#8594;</button>
-        <button class="nav-btn" onclick="doReload()" title="Reload">&#8635;</button>
-
-        <div class="omnibox">
-            <input id="url" placeholder="Search or type a URL" onkeydown="navigate(event)">
+        <button class="nav-btn" onclick="goBack()" title="Back">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="nav-btn" onclick="goForward()" title="Forward">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <button class="nav-btn" onclick="doReload()" title="Reload">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        </button>
+        <div class="omnibox-wrap">
+            <div class="omnibox">
+                <span class="omnibox-icon">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </span>
+                <input id="url" placeholder="Search or type a URL" onkeydown="navigate(event)">
+            </div>
         </div>
-
-        <div class="settings-container">
-            <button class="nav-btn" id="settingsBtn" title="Settings">&#8943;</button>
-            <div id="settingsMenu">
-                <div class="settings-item" onclick="openCloakMenu()">Tab Cloaks</div>
-                <div class="settings-item" onclick="openPanicSettings()">Panic Button</div>
+        <div class="nav-right">
+            <div class="settings-container">
+                <button class="nav-btn" id="settingsBtn" title="Settings"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+                <div id="settingsMenu">
+                    <div class="settings-item" onclick="openCloakMenu()">Tab Cloaks</div>
+                    <div class="settings-item" onclick="openPanicSettings()">Panic Button</div>
+                </div>
             </div>
         </div>
     </div>
-
     <div class="subtabs">
         <div class="subtab" onclick="openMenu('games')">Games</div>
         <div class="subtab" onclick="openMenu('proxies')">Other Proxies</div>
@@ -660,27 +606,23 @@ body {
             <button class="overlay-close" onclick="closePanicSettings()">&#10005;</button>
         </div>
         <div class="panic-body">
-            <p class="panic-desc">Redirects you to a random but common educational website that schools use.</p>
-
+            <p class="panic-desc">Redirects you to a random educational website that schools use.</p>
             <div class="panic-combo-row">
                 <label>Command</label>
                 <select class="panic-select" id="panicModifier">
                     <option value="Alt">Alt</option>
                     <option value="Control">Ctrl</option>
                     <option value="Shift">Shift</option>
-                    <option value="Meta">Meta / Win</option>
+                    <option value="Meta">Win</option>
                 </select>
             </div>
-
             <div class="panic-combo-row">
                 <label>Key</label>
-                <input class="panic-key-input" id="panicKeyInput" placeholder="Click &amp; press a key" readonly>
+                <input class="panic-key-input" id="panicKeyInput" placeholder="select a key" readonly>
             </div>
-
             <div class="panic-current" id="panicCurrentDisplay">
-                Current Set: <span id="panicCurrentLabel">none</span>
+                Current: <span id="panicCurrentLabel">none</span>
             </div>
-
             <button class="panic-save-btn" onclick="savePanicCombo()">Save</button>
             <div class="panic-status" id="panicStatus"></div>
         </div>
@@ -704,47 +646,32 @@ let panicKeyCapture = null;
 
 function openPanicSettings() {
     closeSettingsMenu();
-    const el = document.getElementById("panicOverlay");
-    el.classList.add("open");
+    document.getElementById("panicOverlay").classList.add("open");
     updatePanicDisplay();
-
-    const keyInput = document.getElementById("panicKeyInput");
-    keyInput.value = panicCombo?.key || "";
+    document.getElementById("panicKeyInput").value = panicCombo?.key || "";
     document.getElementById("panicModifier").value = panicCombo?.modifier || "Alt";
     document.getElementById("panicStatus").textContent = "";
 }
-
 function closePanicSettings() {
     document.getElementById("panicOverlay").classList.remove("open");
     stopKeyCapture();
 }
-
 function panicOverlayBgClick(e) {
     if (e.target === document.getElementById("panicOverlay")) closePanicSettings();
 }
-
 function updatePanicDisplay() {
     const lbl = document.getElementById("panicCurrentLabel");
-    if (panicCombo && panicCombo.modifier && panicCombo.key) {
-        lbl.textContent = `${panicCombo.modifier} + ${panicCombo.key}`;
-    } else {
-        lbl.textContent = "none";
-    }
+    lbl.textContent = (panicCombo?.modifier && panicCombo?.key) ? `${panicCombo.modifier} + ${panicCombo.key}` : "none";
 }
-
 function savePanicCombo() {
     const modifier = document.getElementById("panicModifier").value;
     const key = document.getElementById("panicKeyInput").value.trim();
-    if (!key) {
-        showPanicStatus("Pick a key first.", "#e74c3c");
-        return;
-    }
+    if (!key) { showPanicStatus("Pick a key first.", "#e74c3c"); return; }
     panicCombo = { modifier, key };
     localStorage.setItem("nebula_panic", JSON.stringify(panicCombo));
     updatePanicDisplay();
     showPanicStatus("Saved!", "#4caf50");
 }
-
 function showPanicStatus(msg, color) {
     const el = document.getElementById("panicStatus");
     el.style.color = color;
@@ -753,63 +680,40 @@ function showPanicStatus(msg, color) {
 }
 
 const panicKeyInput = document.getElementById("panicKeyInput");
-
 panicKeyInput.addEventListener("click", () => {
     panicKeyInput.classList.add("listening");
-    panicKeyInput.value = "Press any key...";
+    panicKeyInput.value = "press a key";
     panicKeyCapture = true;
 });
-
-panicKeyInput.addEventListener("blur", () => {
-    stopKeyCapture();
-});
-
+panicKeyInput.addEventListener("blur", stopKeyCapture);
 function stopKeyCapture() {
     panicKeyCapture = false;
     panicKeyInput.classList.remove("listening");
-    if (panicKeyInput.value === "Press any key...") {
-        panicKeyInput.value = panicCombo?.key || "";
-    }
+    if (panicKeyInput.value === "press a key") panicKeyInput.value = panicCombo?.key || "";
 }
-
 panicKeyInput.addEventListener("keydown", (e) => {
     if (!panicKeyCapture) return;
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     if (["Alt","Control","Shift","Meta"].includes(e.key)) return;
     panicKeyInput.value = e.key.toUpperCase();
     panicKeyCapture = false;
     panicKeyInput.classList.remove("listening");
     panicKeyInput.blur();
 });
-
 document.addEventListener("keydown", (e) => {
-    if (!panicCombo || !panicCombo.modifier || !panicCombo.key) return;
-    const modMap = {
-        "Alt": e.altKey,
-        "Control": e.ctrlKey,
-        "Shift": e.shiftKey,
-        "Meta": e.metaKey,
-    };
-    const modHeld = modMap[panicCombo.modifier];
-    const keyMatch = e.key.toUpperCase() === panicCombo.key.toUpperCase();
-    if (modHeld && keyMatch) {
+    if (!panicCombo?.modifier || !panicCombo?.key) return;
+    const modMap = { "Alt": e.altKey, "Control": e.ctrlKey, "Shift": e.shiftKey, "Meta": e.metaKey };
+    if (modMap[panicCombo.modifier] && e.key.toUpperCase() === panicCombo.key.toUpperCase()) {
         e.preventDefault();
-        triggerPanic();
+        window.location.href = PANIC_URLS[Math.floor(Math.random() * PANIC_URLS.length)];
     }
 });
-
-function triggerPanic() {
-    const url = PANIC_URLS[Math.floor(Math.random() * PANIC_URLS.length)];
-    window.location.href = url;
-}
 
 function toProxy(url) {
     if (!url || url === "about:blank") return url;
     if (url.startsWith(PROXY)) return url;
     return PROXY + encodeURIComponent(url);
 }
-
 function getFavicon(url) {
     try { return "https://www.google.com/s2/favicons?sz=64&domain=" + new URL(url).hostname; }
     catch { return ""; }
@@ -839,46 +743,28 @@ const HOMEPAGE = "https://sealgodreal.github.io/nebulabrowser/assets/homepage.ht
 const STORAGE_KEY = "nebula_saved_tabs";
 
 function saveTabs() {
-    const data = tabs.map(t => ({
-        url: t.url,
-        label: t.label.textContent,
-        active: t.id === activeTab?.id,
-    }));
+    const data = tabs.map(t => ({ url: t.url, label: t.label.textContent, active: t.id === activeTab?.id }));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
-
 function restoreTabs() {
     try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
         if (!saved || !Array.isArray(saved) || saved.length === 0) return false;
-
         let activeIndex = saved.findIndex(t => t.active);
         if (activeIndex === -1) activeIndex = saved.length - 1;
-
-        saved.forEach((t, i) => {
-            createTab(t.url, null, t.label, i === activeIndex);
-        });
+        saved.forEach((t, i) => createTab(t.url, null, t.label, i === activeIndex));
         return true;
-    } catch {
-        return false;
-    }
+    } catch { return false; }
 }
 
 const startupScreen = document.getElementById("startupScreen");
-
 const restored = restoreTabs();
 if (!restored) createTab();
-
 setTimeout(() => startupScreen.classList.add("fade-out"), 1500);
 
 let tabPressTimer = null;
-
 function addLongPress(tabElement, tabId) {
-    tabElement.addEventListener("mousedown", () => {
-        tabPressTimer = setTimeout(() => {
-            closeTab(tabId);
-        }, 1000);
-    });
+    tabElement.addEventListener("mousedown", () => { tabPressTimer = setTimeout(() => closeTab(tabId), 1000); });
     tabElement.addEventListener("mouseup", () => clearTimeout(tabPressTimer));
     tabElement.addEventListener("mouseleave", () => clearTimeout(tabPressTimer));
 }
@@ -890,27 +776,34 @@ function createTab(url = "", cloakData = null, savedLabel = null, makeActive = t
     tab.className = "tab";
 
     const labelText = cloakData ? cloakData.title : (savedLabel || "New Tab");
-    tab.innerHTML = `<span class="tab-label">${labelText}</span><span class="close">&#10005;</span>`;
+
+    const faviconEl = document.createElement("span");
+    faviconEl.className = "tab-favicon";
+    faviconEl.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>`;
+
+    const labelSpan = document.createElement("span");
+    labelSpan.className = "tab-label";
+    labelSpan.textContent = labelText;
+
+    const closeSpan = document.createElement("span");
+    closeSpan.className = "close";
+    closeSpan.innerHTML = "&#10005;";
+    closeSpan.onclick = (e) => { e.stopPropagation(); closeTab(id); };
+
+    tab.appendChild(faviconEl);
+    tab.appendChild(labelSpan);
+    tab.appendChild(closeSpan);
 
     const iframe = document.createElement("iframe");
     iframe.className = "webview";
-
     page.appendChild(iframe);
     tabsContainer.insertBefore(tab, newTabBtn);
 
-    const tabObj = { id, tab, iframe, url, label: tab.querySelector(".tab-label"), cloak: cloakData };
+    const tabObj = { id, tab, iframe, url, label: labelSpan, favicon: faviconEl, cloak: cloakData };
     tabs.push(tabObj);
 
     tab.onclick = () => switchTab(id);
-    tab.querySelector(".close").onclick = (e) => { e.stopPropagation(); closeTab(id); };
-
     addLongPress(tab, id);
-
-    if (cloakData) {
-        document.title = cloakData.title;
-        const existingLink = document.querySelector("link[rel~='icon']");
-        if (existingLink) existingLink.remove();
-    }
 
     if (makeActive) switchTab(id);
     loadURL(id, url, cloakData, false);
@@ -924,8 +817,7 @@ function switchTab(id) {
     t.iframe.style.display = "block";
     activeTab = t;
     urlInput.value = t.url || "";
-    if (t.cloak) document.title = t.cloak.title;
-    else document.title = "Nebula | Educational Learning Program";
+    document.title = t.cloak ? t.cloak.title : "Nebula | Educational Learning Program";
     saveTabs();
 }
 
@@ -935,11 +827,8 @@ function closeTab(id) {
     tabs[index].tab.remove();
     tabs[index].iframe.remove();
     tabs.splice(index, 1);
-    if (tabs.length) {
-        switchTab(tabs[Math.max(0, index - 1)].id);
-    } else {
-        saveTabs();
-    }
+    if (tabs.length) switchTab(tabs[Math.max(0, index - 1)].id);
+    else saveTabs();
 }
 
 function formatURL(input) {
@@ -960,7 +849,6 @@ function loadURL(tabId, raw, cloakData = null) {
         try { t.label.textContent = new URL(url).hostname.replace("www.", "") || "New Tab"; }
         catch { t.label.textContent = "New Tab"; }
     }
-
     saveTabs();
 }
 
@@ -968,7 +856,6 @@ function navigate(e) { if (e.key === "Enter" && activeTab) loadURL(activeTab.id,
 function goBack() { activeTab?.iframe.contentWindow.history.back(); }
 function goForward() { activeTab?.iframe.contentWindow.history.forward(); }
 function doReload() { activeTab?.iframe.contentWindow.location.reload(); }
-
 
 function openCloakMenu() {
     closeSettingsMenu();
@@ -989,21 +876,12 @@ function openCloakMenu() {
             closeMenu();
             const w = window.open();
             if (!w) return;
-
-            w.document.write(`<!DOCTYPE html>
-<html>
-<head>
-<title>${cloak.title}</title>
-</head>
-<body style="margin:0; overflow:hidden;"></body>
-</html>`);
+            w.document.write(`<!DOCTYPE html><html><head><title>${cloak.title}</title></head><body style="margin:0;overflow:hidden;"></body></html>`);
             w.document.close();
-
             const link = w.document.createElement("link");
             link.rel = "icon";
             link.href = "https://www.google.com/s2/favicons?sz=64&domain=" + new URL(cloak.url).hostname;
             w.document.head.appendChild(link);
-
             const iframe = w.document.createElement("iframe");
             iframe.src = window.location.href;
             iframe.style.cssText = "position:fixed;inset:0;width:100%;height:100%;border:none";
@@ -1015,7 +893,10 @@ function openCloakMenu() {
 
 const settingsBtn = document.getElementById("settingsBtn");
 const settingsMenu = document.getElementById("settingsMenu");
-settingsBtn.onclick = (e) => { e.stopPropagation(); settingsMenu.style.display = (settingsMenu.style.display === "block" ? "none" : "block"); };
+settingsBtn.onclick = (e) => {
+    e.stopPropagation();
+    settingsMenu.style.display = settingsMenu.style.display === "block" ? "none" : "block";
+};
 document.addEventListener("click", () => { settingsMenu.style.display = "none"; });
 function closeSettingsMenu() { settingsMenu.style.display = "none"; }
 
@@ -1023,8 +904,7 @@ const clearDataItem = document.createElement("div");
 clearDataItem.className = "settings-item";
 clearDataItem.textContent = "Clear Nebula Data";
 clearDataItem.onclick = () => {
-    const confirmed = confirm("Are you sure you want to clear your local data? This will remove all saved tabs, reset the panic button, etc.");
-    if (confirmed) {
+    if (confirm("Clear all local data? This removes saved tabs, panic button settings, etc.")) {
         localStorage.clear();
         location.reload();
     }
@@ -1042,19 +922,19 @@ function openMenu(type) {
     if (type === "games") {
         overlayTitle.textContent = "Games";
         overlayContent.innerHTML = `<label class="proxy-toggle"><input type="checkbox" id="proxyToggle"> Use proxy link</label>
-        <div id="gamesList"><div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div></div>`;
+        <div id="gamesList"><div style="padding:12px;color:var(--text-muted);text-align:center;font-size:12px;">Loading...</div></div>`;
         loadList(PROXY + "https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/gameslist.txt",
             (link) => { const useProxy = document.getElementById("proxyToggle")?.checked; window.open(useProxy ? toProxy(link) : link); closeMenu(); }, "gamesList");
     }
     if (type === "socials") {
         overlayTitle.textContent = "Socials";
-        overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div>`;
+        overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:12px;">Loading...</div>`;
         loadList(PROXY + "https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/socialslist.txt",
             (link) => { loadURL(activeTab.id, link); closeMenu(); });
     }
     if (type === "proxies") {
         overlayTitle.textContent = "Other Proxies";
-        overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Loading...</div>`;
+        overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:12px;">Loading...</div>`;
         loadList(PROXY + "https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/proxylist.txt",
             (link) => { window.open(link); closeMenu(); });
     }
@@ -1076,7 +956,9 @@ function loadList(url, onClick, containerId = null) {
             btn.onclick = () => onClick(link);
             container.appendChild(btn);
         });
-    }).catch(() => { overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:13px;">Failed to load.</div>`; });
+    }).catch(() => {
+        overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:12px;">Failed to load.</div>`;
+    });
 }
 </script>
 </body>
