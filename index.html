@@ -847,6 +847,7 @@ function saveTabs() {
     }));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
+
 function restoreTabs() {
     try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
@@ -955,11 +956,12 @@ function loadURL(tabId, raw, cloakData = null) {
     const url = formatURL(raw);
     t.url = url;
     t.iframe.src = toProxy(url);
-    if (activeTab?.id === tabId) urlInput.value = url;
+
     if (!cloakData) {
         try { t.label.textContent = new URL(url).hostname.replace("www.", "") || "New Tab"; }
         catch { t.label.textContent = "New Tab"; }
     }
+
     saveTabs();
 }
 
