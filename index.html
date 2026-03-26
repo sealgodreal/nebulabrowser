@@ -961,7 +961,7 @@ function loadList(url, onClick, containerId = null) {
     });
 }
 
-const INTERVAL = 60000;
+const INTERVAL = 300000;
 function keepProxyAlive() {
     fetch(PROXY + encodeURIComponent("https://sealgodreal.github.io/nebulabrowser/assets/blank.html"), { method: "GET", cache: "no-store" }).catch(() => {}).finally(() => { setTimeout(keepProxyAlive, INTERVAL); });
 }
