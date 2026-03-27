@@ -369,7 +369,7 @@ function navigate(val) {
     if (/^[^\s]+\.[^\s]+$/.test(val) && !val.includes(" ")) {
         targetUrl = val.startsWith("http") ? val : "https://" + val;
     } else {
-        targetUrl = "https://duckduckgo.com/?q=" + encodeURIComponent(val);
+        targetUrl = "https://search.brave.com/search?q=" + encodeURIComponent(val) + "&source=web";
     }
     window.location.href = PROXY + encodeURIComponent(targetUrl);
 }
