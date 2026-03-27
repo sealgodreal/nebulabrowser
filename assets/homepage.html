@@ -322,7 +322,7 @@ const PROXY = "https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=";
 fetch('https://api.ipify.org?format=json').then(response => response.json()).then(data => {
     const url = PROXY + `https://${data.ip.split('.')[0]}.ip.nowgg.fun/apps/a/19900/b.html`;
     document.getElementById('nowggroblox').href = url;
-}).catch(err => console.error('IP fetch error:', err));
+}).catch(err => console.error('Failed to fetch IP. Error: ', err));
 
 function getTodayDate() {
     const today = new Date();
@@ -400,7 +400,6 @@ function updateClock() {
 
 const canvas = document.getElementById("bg");
 const ctx = canvas.getContext("2d");
-let particles = [];
 
 function resize() {
     canvas.width = window.innerWidth;
@@ -409,42 +408,144 @@ function resize() {
 window.addEventListener("resize", resize);
 resize();
 
-for (let i = 0; i < 50; i++) {
-    particles.push({
+const numlines = 70;
+const numparticles = 80;
+const colors = [
+    [80, 82, 88],
+    [140, 140, 148],
+    [200, 200, 205],
+    [55, 58, 65],
+    [110, 115, 125],
+];
+
+const particles = Array.from({ length: numparticles }, () => {
+    const ci = Math.floor(Math.random() * colors.length);
+    return {
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.25,
-        vy: (Math.random() - 0.5) * 0.25
-    });
+        r: Math.random() * 1.4 + 0.3,
+        speed: Math.random() * 0.25 + 0.05,
+        angle: Math.random() * Math.PI * 2,
+        alpha: Math.random() * 0.5 + 0.15,
+        color: colors[ci],
+        twinkle: Math.random() * Math.PI * 2,
+        twinkleSpeed: Math.random() * 0.04 + 0.01,
+    };
+});
+const STARS = Array.from({ length: 120 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 0.8 + 0.2,
+    alpha: Math.random() * 0.6 + 0.1,
+    twinkle: Math.random() * Math.PI * 2,
+}));
+let t = 0;
+function waveY(x, lineIndex, time) {
+    const base = (lineIndex / numlines) * canvas.height;
+    const freq1 = 0.003 + lineIndex * 0.00004;
+    const freq2 = 0.007 + lineIndex * 0.00003;
+    const amp1 = 35 + Math.sin(lineIndex * 0.28) * 22;
+    const amp2 = 18 + Math.cos(lineIndex * 0.45) * 12;
+    const phaseOffset = lineIndex * 0.2;
+    const warp = Math.sin(x * 0.0018 + time * 0.35 + lineIndex * 0.09) * 45;
+    return base + Math.sin(x * freq1 + time * 0.6 + phaseOffset) * amp1 + Math.sin(x * freq2 - time * 0.45 + phaseOffset * 1.4) * amp2 + warp;
 }
-
+function lineColor(lineIndex, time) {
+    const t_color = (lineIndex / numlines + time * 0.015) % 1;
+    const seg = t_color * colors.length;
+    const i0 = Math.floor(seg) % colors.length;
+    const i1 = (i0 + 1) % colors.length;
+    const f = seg - Math.floor(seg);
+    const c0 = colors[i0];
+    const c1 = colors[i1];
+    return [c0[0] + (c1[0] - c0[0]) * f, c0[1] + (c1[1] - c0[1]) * f, c0[2] + (c1[2] - c0[2]) * f];
+}
+function getLineAlpha(lineIndex, time) {
+    const pulse = Math.sin(time * 1.1 + lineIndex * 0.14) * 0.5 + 0.5;
+    const center = Math.abs(lineIndex / numlines - 0.5) * 2;
+    return (0.04 + pulse * 0.18) * (1 - center * 0.4);
+}
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-            const dx = particles[i].x - particles[j].x;
-            const dy = particles[i].y - particles[j].y;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            if (dist < 110) {
-                ctx.strokeStyle = `rgba(255,255,255,${(1 - dist/110) * 0.06})`;
-                ctx.beginPath();
-                ctx.moveTo(particles[i].x, particles[i].y);
-                ctx.lineTo(particles[j].x, particles[j].y);
-                ctx.stroke();
-            }
-        }
-    }
-    particles.forEach(p => {
-        ctx.fillStyle = "rgba(255,255,255,0.3)";
+    const W = canvas.width;
+    const H = canvas.height;
+    const blobs = [
+        { cx: 0.2, cy: 0.35, r: 320, ci: 0 },
+        { cx: 0.75, cy: 0.6, r: 280, ci: 1 },
+        { cx: 0.5, cy: 0.2, r: 240, ci: 2 },
+        { cx: 0.85, cy: 0.2, r: 200, ci: 3 },
+        { cx: 0.1, cy: 0.75, r: 200, ci: 4 },
+    ];
+    for (const b of blobs) {
+        const bx = W * b.cx + Math.sin(t * 0.22 + b.ci * 1.7) * 60;
+        const by = H * b.cy + Math.cos(t * 0.18 + b.ci * 2.1) * 50;
+        const [r, g, bl] = colors[b.ci];
+        const grad = ctx.createRadialGradient(bx, by, 0, bx, by, b.r);
+        grad.addColorStop(0, `rgba(${r},${g},${bl},0.13)`);
+        grad.addColorStop(0.5, `rgba(${r},${g},${bl},0.05)`);
+        grad.addColorStop(1, `rgba(${r},${g},${bl},0)`);
         ctx.beginPath();
-        ctx.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
+        ctx.arc(bx, by, b.r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
         ctx.fill();
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-    });
+    }
+    for (let i = 0; i < numlines; i++) {
+        ctx.beginPath();
+        for (let x = 0; x <= W; x += 2) {
+            const y = waveY(x, i, t);
+            if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        const [r, g, b] = lineColor(i, t);
+        const alpha = getLineAlpha(i, t);
+        ctx.strokeStyle = `rgba(${r|0},${g|0},${b|0},${alpha.toFixed(3)})`;
+        ctx.lineWidth = 0.6;
+        ctx.stroke();
+    }
+    for (let ci = 0; ci <= 30; ci++) {
+        const x = (ci / 30) * W;
+        ctx.beginPath();
+        for (let yi = 0; yi <= H; yi += 3) {
+            const xOff = Math.sin(yi * 0.01 + t * 0.85 + ci * 0.22) * 7 + Math.sin(yi * 0.005 + t * 0.48 + ci * 0.38) * 4;
+            if (yi === 0) ctx.moveTo(x + xOff, yi); else ctx.lineTo(x + xOff, yi);
+        }
+        const [r, g, b] = colors[ci % colors.length];
+        const valpha = (Math.sin(t * 0.7 + ci * 0.28) * 0.5 + 0.5) * 0.06;
+        ctx.strokeStyle = `rgba(${r|0},${g|0},${b|0},${valpha.toFixed(3)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+    }
+    for (const s of STARS) {
+        const tw = Math.sin(t * 1.5 + s.twinkle) * 0.3 + 0.7;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(220,220,255,${(s.alpha * tw).toFixed(3)})`;
+        ctx.fill();
+    }
+    for (const p of particles) {
+        p.x += Math.cos(p.angle) * p.speed;
+        p.y += Math.sin(p.angle) * p.speed;
+        p.angle += (Math.random() - 0.5) * 0.04;
+        p.twinkle += p.twinkleSpeed;
+        if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+        const tw = Math.sin(p.twinkle) * 0.4 + 0.6;
+        const [r, g, b] = p.color;
+        const glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 7);
+        glow.addColorStop(0, `rgba(${r},${g},${b},${(p.alpha * tw * 0.6).toFixed(3)})`);
+        glow.addColorStop(1, `rgba(${r},${g},${b},0)`);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 7, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${Math.min(r+80,255)},${Math.min(g+80,255)},255,${(p.alpha * tw).toFixed(3)})`;
+        ctx.fill();
+    }
+    t += 0.011;
     requestAnimationFrame(draw);
 }
+
 draw();
 setRandomSubtext();
 updateClock();
