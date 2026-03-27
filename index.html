@@ -569,8 +569,92 @@ body {
     bottom: 0;
     height: calc(100% - 121px);
 }
+#appNotif {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    right: auto;
+    background: #1c1c1c;
+    border: 1px solid #2e2e2e;
+    border-radius: 5px;
+    padding: 14px 16px 12px;
+    width: 260px;
+    z-index: 99999;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.6);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    overflow: hidden;
+}
+#appNotif.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+#appNotif.hiding {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+#appNotif .notif-timer {
+    position: absolute;
+    top: 0; left: 0;
+    height: 2.5px;
+    width: 100%;
+    background: #3a3a3a;
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+}
+#appNotif .notif-timer-bar {
+    height: 100%;
+    width: 100%;
+    background: #fff;
+    border-radius: 10px 10px 0 0;
+}
+@keyframes timerShrink {
+    from { width: 100%; }
+    to   { width: 0%; }
+}
+#appNotif .notif-close {
+    position: absolute;
+    top: 10px; right: 8px;
+    background: none; border: none;
+    color: #555; font-size: 11px;
+    cursor: pointer; padding: 2px 5px;
+    border-radius: 3px;
+    line-height: 1;
+}
+#appNotif .notif-close:hover { color: #999; }
+#appNotif .notif-title {
+    font-size: 12.5px; font-weight: 500;
+    color: #ffffff; margin-bottom: 5px;
+    padding-right: 18px;
+    margin-top: 6px;
+}
+#appNotif .notif-body {
+    font-size: 12px; color: #888;
+    line-height: 1.5; margin-bottom: 10px;
+}
+#appNotif .notif-btn {
+    background: none;
+    border: none;
+    color: #a0c4ff;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+#appNotif .notif-btn:hover { color: #c8daff; }
 </style>
 </head>
+<div id="appNotif">
+    <div class="notif-timer"><div class="notif-timer-bar" id="notifTimerBar"></div></div>
+    <button class="notif-close" onclick="dismissNotif()">&#10005;</button>
+    <div class="notif-title">Enjoying Nebula?</div>
+    <div class="notif-body">Download the Application for Windows!</div>
+    <button class="notif-btn" onclick="window.location.href='https://github.com/sealgodreal/nebulabrowser/raw/refs/heads/main/assets/nebula-application/Nebula%20Browser.zip'">Tap to Download</button>
+</div>
 <body>
 
 <div id="startupScreen">
@@ -676,6 +760,26 @@ const PANIC_URLS = [
     "https://quizlet.com",
     "https://classroom.google.com",
 ];
+
+function dismissNotif() {
+    const n = document.getElementById('appNotif');
+    if (!n) return;
+    n.classList.add('hiding');
+    setTimeout(() => { if (n) n.remove(); }, 500);
+}
+
+setTimeout(() => {
+    const n = document.getElementById('appNotif');
+    if (!n) return;
+    n.classList.add('visible');
+    const bar = document.getElementById('notifTimerBar');
+    bar.style.transition = 'width 6s linear';
+    bar.style.width = '100%';
+    bar.getBoundingClientRect();
+    bar.style.width = '0%';
+    setTimeout(() => dismissNotif(), 5000);
+
+}, 5000);
 
 let panicCombo = JSON.parse(localStorage.getItem("nebula_panic") || "null");
 let panicKeyCapture = null;
