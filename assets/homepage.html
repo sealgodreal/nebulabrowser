@@ -49,7 +49,17 @@ body {
     letter-spacing: -0.03em;
     color: #fff;
     line-height: 1;
-    margin-bottom: 32px;
+    margin-bottom: 12px;
+    margin-top: 40px;
+    animation: fadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.subtext {
+    font-size:14px;
+    font-weight: 250;
+    letter-spacing: -0.04em;
+    color: #3A3A3A;
+    margin-bottom: 24px;
     animation: fadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -58,7 +68,6 @@ body {
     font-weight: 300;
 }
 
-/* ── Search bar ── */
 .search-wrap {
     width: 90vw;
     max-width: 520px;
@@ -128,8 +137,9 @@ body {
 
 .apps {
     display: flex;
-    gap: 6px;
+    gap: 12px;
     justify-content: center;
+    margin-top: -20px;
     animation: fadeUp 0.55s 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -139,8 +149,8 @@ body {
     align-items: center;
     text-decoration: none;
     color: #444;
-    gap: 9px;
-    padding: 14px 10px 12px;
+    gap: 6px;
+    padding: 10px 10px 8px;
     border-radius: 14px;
     border: 1px solid transparent;
     transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.18s;
@@ -228,6 +238,7 @@ body {
 <div class="content">
 
     <div class="wordmark">nebula<span>.</span></div>
+    <div class="subtext" id="subtext"></div>
 
     <div class="search-wrap">
         <div class="search-box">
@@ -273,6 +284,13 @@ body {
             <div class="app-name">Discord</div>
         </a>
 
+        <a class="app" href="https://github.com">
+            <div class="app-icon">
+                <img src="logos/github.png" alt="GitHub">
+            </div>
+            <div class="app-name">GitHub</div>
+        </a>
+
         <a class="app" href="https://reddit.com">
             <div class="app-icon">
                 <img src="logos/reddit.webp" alt="Reddit">
@@ -285,11 +303,59 @@ body {
 <div class="footer">
     <a href="">Nebula</a>
     <div class="footer-sep"></div>
-    <a href="">Made by Sealgod ❤</a>
+    <a href="">Made by Sealgod with love ❤</a>
 </div>
+
+<div id="clock" style="
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    color: #404040;
+    font-size: 12px;
+    font-family: 'Geist', sans-serif;
+    z-index: 2;
+"></div>
 
 <script>
 const PROXY = "https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=";
+
+function getTodayDate() {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+}
+
+async function getWordleAnswer() {
+    try {
+        const date = getTodayDate();
+        const target = `https://www.nytimes.com/svc/wordle/v2/${date}.json`;
+        const url = PROXY + encodeURIComponent(target);
+        const res = await fetch(url);
+        const data = await res.json();
+        return data.solution ? data.solution.toUpperCase() : "FAILED TO FETCH";
+    } catch (err) {
+        return "FAILED TO FETCH";
+    }
+}
+
+async function setRandomSubtext() {
+    const answer = await getWordleAnswer();
+
+    const subtexts = [
+        "Welcome Back!",
+        "Thank you for choosing Nebula! We hope you enjoy.",
+        `Fun Fact: Today's Wordle Answer is "${answer}"`,
+        "Subscribe to our YouTube (@nebulaunblocking)",
+        "Follow us on TikTok (@nebulaunbl0cking)",
+        "Any questions or issues? Email us! (nebulas3rvice@gmail.com)",
+    ];
+
+    const el = document.getElementById("subtext");
+    const randomIndex = Math.floor(Math.random() * subtexts.length);
+    el.textContent = subtexts[randomIndex];
+}
 
 function navigate(val) {
     val = val.trim();
@@ -309,6 +375,22 @@ function doSearch(e) {
 
 function triggerSearch() {
     navigate(document.getElementById("searchInput").value);
+}
+
+function updateClock() {
+    const clockEl = document.getElementById("clock");
+    const now = new Date();
+    const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    const day = days[now.getDay()];
+
+    let hours = now.getHours();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    clockEl.textContent = `${day} | ${hours}:${minutes}:${seconds} ${ampm}`;
 }
 
 const canvas = document.getElementById("bg");
@@ -359,6 +441,9 @@ function draw() {
     requestAnimationFrame(draw);
 }
 draw();
+setRandomSubtext();
+updateClock();
+setInterval(updateClock, 1000);
 </script>
 </body>
 </html>
