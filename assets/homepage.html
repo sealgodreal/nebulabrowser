@@ -284,7 +284,7 @@ body {
             <div class="app-name">Discord</div>
         </a>
 
-        <a class="app" href="https://roblox.com">
+        <a class="app" id="nowggroblox" href="#">
             <div class="app-icon">
                 <img src="logos/roblox.png" alt="Roblox">
             </div>
@@ -318,6 +318,11 @@ body {
 
 <script>
 const PROXY = "https://nebulaproxy-j7xn.onrender.com/nebula/proxy?url=";
+
+fetch('https://api.ipify.org?format=json').then(response => response.json()).then(data => {
+    const url = `https://${data.ip.split('.')[0]}.ip.nowgg.fun/apps/a/19900/b.html`;
+    document.getElementById('nowggroblox').href = url;
+}).catch(err => console.error('IP fetch error:', err));
 
 function getTodayDate() {
     const today = new Date();
