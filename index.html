@@ -871,7 +871,7 @@ function formatURL(input) {
     input = input.trim();
     if (input.startsWith("http")) return input;
     if (/^[^\s]+\.[^\s]+$/.test(input)) return "https://" + input;
-    return "https://duckduckgo.com/?q=" + encodeURIComponent(input) + "&ia=web&rpl=1&start=1&origin=" + ORIGIN;
+    return "https://search.brave.com/search?q=" + encodeURIComponent(input) + "&source=web";
 }
 
 function loadURL(tabId, raw, cloakData = null) {
