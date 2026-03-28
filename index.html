@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <title>Nebula | Educational Learning Program</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nebula | Educational Learning Program">
+<meta property="og:description" content="An educational platform for students to learn. Fast and Reliable Pre-Tests for grades ranging from K-12. Have fun learning, playing educational games, and taking notes.">
+<meta property="og:image" content="assets/logos/nebula.png">
+<meta name="theme-color" content="#171717">
 <link rel="icon" type="image/png" href="assets/logos/nebula.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -646,8 +651,75 @@ body {
     text-underline-offset: 2px;
 }
 #appNotif .notif-btn:hover { color: #c8daff; }
+#warningModal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 99998;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: all;
+}
+
+.warning-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 320px;
+    padding: 20px 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: slideUp 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.warning-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.warning-body {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.warning-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+
+.warning-btn {
+    background: #ffffff0d;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+.warning-btn:hover { background: #ffffff1a; }
 </style>
 </head>
+<div id="warningModal">
+    <div class="warning-panel">
+        <div class="warning-title">Warning</div>
+        <div class="warning-body">The proxy is still in development, so don't expect all websites to work well.</div>
+        <div class="warning-footer">
+            <button class="warning-btn" onclick="dismissWarning()">i gotchu</button>
+        </div>
+    </div>
+</div>
 <div id="appNotif">
     <div class="notif-timer"><div class="notif-timer-bar" id="notifTimerBar"></div></div>
     <button class="notif-close" onclick="dismissNotif()">&#10005;</button>
@@ -689,6 +761,7 @@ body {
                 <div id="settingsMenu">
                     <div class="settings-item" onclick="openCloakMenu()">Tab Cloaks</div>
                     <div class="settings-item" onclick="openPanicSettings()">Panic Button</div>
+                    <div class="settings-item" onclick="openGameCheats()">Game Cheats</div>
                 </div>
             </div>
         </div>
@@ -761,25 +834,37 @@ const PANIC_URLS = [
     "https://classroom.google.com",
 ];
 
+function dismissWarning() {
+    const modal = document.getElementById('warningModal');
+    modal.style.opacity = '0';
+    setTimeout(() => { modal.style.display = 'none'; }, 300);
+    setTimeout(() => {
+        const n = document.getElementById('appNotif');
+        if (!n) return;
+        n.classList.add('visible');
+        const bar = document.getElementById('notifTimerBar');
+        bar.style.transition = 'width 6s linear';
+        bar.style.width = '100%';
+        bar.getBoundingClientRect();
+        bar.style.width = '0%';
+        setTimeout(() => dismissNotif(), 5000);
+    }, 10000);
+}
+
+setTimeout(() => {
+    const modal = document.getElementById('warningModal');
+    modal.style.display = 'flex';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        modal.style.opacity = '1';
+    }));
+}, 3500);
+
 function dismissNotif() {
     const n = document.getElementById('appNotif');
     if (!n) return;
     n.classList.add('hiding');
     setTimeout(() => { if (n) n.remove(); }, 500);
 }
-
-setTimeout(() => {
-    const n = document.getElementById('appNotif');
-    if (!n) return;
-    n.classList.add('visible');
-    const bar = document.getElementById('notifTimerBar');
-    bar.style.transition = 'width 6s linear';
-    bar.style.width = '100%';
-    bar.getBoundingClientRect();
-    bar.style.width = '0%';
-    setTimeout(() => dismissNotif(), 5000);
-
-}, 5000);
 
 let panicCombo = JSON.parse(localStorage.getItem("nebula_panic") || "null");
 let panicKeyCapture = null;
@@ -1114,6 +1199,38 @@ function loadList(url, onClick, containerId = null) {
     }).catch(() => {
         overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:12px;">Failed to load.</div>`;
     });
+}
+
+async function getWordleAnswer() {
+    const now = new Date();
+    const start = new Date(2021, 5, 19);
+    const dayNum = Math.floor((now - start) / 86400000);
+    try {
+        const res = await fetch(PROXY + encodeURIComponent(`https://www.nytimes.com/svc/wordle/v2/${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}.json`));
+        const data = await res.json();
+        alert("\"" + data.solution.toUpperCase() + "\"");
+    } catch {
+        alert("Failed to fetch today's Wordle.");
+    }
+}
+
+function openGameCheats() {
+    closeSettingsMenu();
+    overlay.style.display = "flex";
+    overlayTitle.textContent = "Game Cheats";
+    overlayContent.innerHTML = "";
+
+    const wordleBtn = document.createElement("button");
+    wordleBtn.className = "menu-btn";
+    wordleBtn.textContent = "Obtain Wordle Answer";
+    wordleBtn.onclick = () => { closeMenu(); getWordleAnswer(); };
+    overlayContent.appendChild(wordleBtn);
+
+    const blooketBtn = document.createElement("button");
+    blooketBtn.className = "menu-btn";
+    blooketBtn.textContent = "Launch Blooket Web Cheats (Blooket Bot)";
+    blooketBtn.onclick = () => { closeMenu(); createTab("https://blooketbot.schoolcheats.net", null, "Blooket", true); };
+    overlayContent.appendChild(blooketBtn);
 }
 
 const INTERVAL = 300000;
