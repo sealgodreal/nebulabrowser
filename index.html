@@ -759,14 +759,6 @@ body {
 </div>
 
 <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/assets/proxy-stuff/sw.js')
-    .then(reg => console.log('sw registered!', reg))
-    .catch(err => console.error('sw failed to register: ', err));
-}
-</script>
-
-<script>
 const PROXY = "https://onlinehomeworkhelper.onrender.com/lessons/math?url=";
 const ORIGIN = new URL(PROXY).origin;
 
@@ -1026,7 +1018,7 @@ function loadURL(tabId, raw, cloakData = null) {
     loader.style.opacity = "1";
     loaderFrame.src = LOADINGSCREEN;
 
-    const iframeBootstrap = `/assets/proxy-stuff/iframe-bootstrapper.html?url=${encodeURIComponent(url)}`;
+    const iframeBootstrap = `/assets/proxy-stuff/bootstrapper.html?url=${encodeURIComponent(url)}`;
     t.iframe.src = iframeBootstrap;
 
     t.iframe.onload = () => {
