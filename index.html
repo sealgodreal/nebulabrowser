@@ -1026,7 +1026,7 @@ function loadURL(tabId, raw, cloakData = null) {
     loader.style.opacity = "1";
     loaderFrame.src = LOADINGSCREEN;
 
-    const iframeBootstrap = `/assets/proxy-stuff/iframe.html?url=${encodeURIComponent(url)}`;
+    const iframeBootstrap = `/assets/proxy-stuff/iframe-bootstrapper.html?url=${encodeURIComponent(url)}`;
     t.iframe.src = iframeBootstrap;
 
     t.iframe.onload = () => {
