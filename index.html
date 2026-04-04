@@ -1018,7 +1018,7 @@ function loadURL(tabId, raw, cloakData = null) {
     loader.style.opacity = "1";
     loaderFrame.src = LOADINGSCREEN;
 
-    const iframeBootstrap = `/assets/proxy-stuff/bootstrapper.html?url=${encodeURIComponent(url)}`;
+    const iframeBootstrap = `https://sealgodreal.github.io/nebulabrowser/assets/proxy-stuff/bootstrapper.html?url=${encodeURIComponent(url)}`;
     t.iframe.src = iframeBootstrap;
 
     t.iframe.onload = () => {
