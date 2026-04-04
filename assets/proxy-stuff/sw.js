@@ -1,47 +1,34 @@
-const CACHE_NAME = 'nebula-cache-v1';
+importScripts('/assets/proxy-stuff/config.js');
+importScripts('/assets/proxy-stuff/utils.js');
 
-function proxify(url) {
+const CACHE = "nebula-cache-v1";
+
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", e => e.waitUntil(self.clients.claim()));
+
+self.addEventListener("fetch", event => {
+  const url = new URL(event.request.url);
+
+  if (url.pathname.startsWith(self.__nebula$config.prefix)) {
+    event.respondWith(handleProxy(event.request));
+  }
+});
+
+async function handleProxy(req) {
+  const cache = await caches.open(CACHE);
+  const cached = await cache.match(req);
+  if (cached) return cached;
+
   try {
-    if (!url || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('javascript:') || url.startsWith('#')) return url;
-    if (url.includes('/lessons/math?url=')) return url;
-    return `/lessons/math?url=${encodeURIComponent(url)}`;
-  } catch {
-    return url;
+    const res = await fetch(req);
+    const clone = res.clone();
+
+    if (res.status === 200) {
+      cache.put(req, clone);
+    }
+
+    return res;
+  } catch (e) {
+    return new Response("Proxy failed", { status: 500 });
   }
 }
-
-self.addEventListener('install', event => {
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.map(key => key !== CACHE_NAME && caches.delete(key))
-      )
-    )
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', event => {
-  const request = event.request;
-  const url = new URL(request.url);
-
-  if (url.protocol.startsWith('http')) {
-    const proxiedUrl = proxify(url.href);
-
-    event.respondWith(
-      fetch(proxiedUrl, {
-        method: request.method,
-        headers: request.headers,
-        body: request.method !== 'GET' && request.method !== 'HEAD' ? request.body : undefined,
-        redirect: 'follow',
-      }).catch(async () => {
-        const cached = await caches.match(request);
-        return cached || new Response('Network error', { status: 504 });
-      })
-    );
-  }
-});
