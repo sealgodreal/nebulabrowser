@@ -1011,6 +1011,7 @@ function formatURL(input) {
 function loadURL(tabId, raw, cloakData = null) {
     const t = tabs.find(t => t.id === tabId);
     if (!t) return;
+
     const url = formatURL(raw);
     t.url = url;
 
@@ -1025,7 +1026,9 @@ function loadURL(tabId, raw, cloakData = null) {
     loader.style.opacity = "1";
     loaderFrame.src = LOADINGSCREEN;
 
-    t.iframe.src = toProxy(url);
+    const iframeBootstrap = `/assets/proxy-stuff/iframe.html?url=${encodeURIComponent(url)}`;
+    t.iframe.src = iframeBootstrap;
+
     t.iframe.onload = () => {
         loader.style.opacity = "0";
         setTimeout(() => {
