@@ -11,16 +11,11 @@
         .then(reg => console.log('iframe sw registered: ', reg))
         .catch(err => console.error('iframe sw failed to register: ', err));
     }
-
+    
     const params = new URLSearchParams(window.location.search);
     const target = params.get('url');
     const proxiedtarget = "https://onlinehomeworkhelper.onrender.com/lessons/math?url=" + target;
-    if (proxiedtarget) {
-      location.replace(proxiedtarget);
-    }
+    if (proxiedtarget) { location.replace(proxiedtarget); }
   </script>
 </head>
-<body>
-  loading...
-</body>
 </html>
