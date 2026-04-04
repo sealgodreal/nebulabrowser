@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="/assets/proxy-stuff/config.js"></script>
+  <script src="/assets/proxy-stuff/utils.js"></script>
+  <script src="/assets/proxy-stuff/client.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/assets/proxy-stuff/sw.js', { scope: '/' })
+        .then(reg => console.log('iframe sw registered: ', reg))
+        .catch(err => console.error('iframe sw failed to register: ', err));
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const target = params.get('url');
+    if (target) {
+      location.replace(target);
+    }
+  </script>
+</head>
+<body>
+  Loading…
+</body>
+</html>
