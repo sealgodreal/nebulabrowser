@@ -3,58 +3,137 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body, html { width: 100%; height: 100%; overflow: hidden; background: #000; }
-  #vanta { position: fixed; inset: 0; z-index: 0; }
+  canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
   .wave-text { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; display: flex; align-items: center; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: clamp(1.8rem, 4vw, 3rem); color: #ffffff; white-space: nowrap; letter-spacing: 0.02em; user-select: none; }
-  .wave-char { display: inline-block; will-change: transform; line-height: 1; }
+  .sub-text { position: fixed; top: calc(50% + 2rem); left: 50%; transform: translateX(-50%); z-index: 1; font-family: 'Nunito', sans-serif; font-weight: 400; font-size: clamp(0.9rem, 1.8vw, 1.1rem); color: rgba(255,255,255,0.6); white-space: nowrap; user-select: none; }
 </style>
 </head>
 <body>
-<div id="vanta"></div>
-<div class="wave-text" id="waveText"></div>
+<canvas id="bg"></canvas>
+<div class="wave-text">loading...</div>
+<div class="sub-text">please be patient</div>
 <script>
-  VANTA.FOG({
-    el: "#vanta",
-    mouseControls: true,
-    touchControls: true,
-    gyroControls: false,
-    minHeight: 200,
-    minWidth: 200,
-    highlightColor: 0x333333,
-    midtoneColor: 0x1a1a1a,
-    lowlightColor: 0x0a0a0a,
-    baseColor: 0x000000,
-    blurFactor: 0.95,
-    speed: 1,
-    zoom: 0.5
+  const canvas = document.getElementById("bg");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   });
-</script>
-<script>
-  const text = "loading, please wait...";
-  const container = document.getElementById("waveText");
-  const spans = [];
-  for (let i = 0; i < text.length; i++) {
-    const span = document.createElement("span");
-    span.className = "wave-char";
-    span.textContent = text[i] === " " ? "\u00A0" : text[i];
-    container.appendChild(span);
-    spans.push(span);
+
+  const SHADES = [
+    "rgba(255,255,255,",
+    "rgba(235,235,235,",
+    "rgba(210,210,210,",
+    "rgba(185,185,185,",
+    "rgba(160,160,160,",
+    "rgba(220,220,220,",
+  ];
+
+  function spawnParticle() {
+    const w = canvas.width, h = canvas.height;
+    const edge = Math.random();
+    let x, y, vx, vy;
+    const speed = 0.35 + Math.random() * 0.55;
+
+    if (edge < 0.45) {
+      x = Math.random() * w * 0.65;
+      y = h * (0.92 + Math.random() * 0.08);
+      const angle = -(Math.PI * 0.18 + Math.random() * Math.PI * 0.28);
+      vx = speed * Math.cos(angle) * (0.6 + Math.random() * 0.6);
+      vy = speed * Math.sin(angle) * (0.8 + Math.random() * 0.5);
+    } else if (edge < 0.85) {
+      x = w * (Math.random() * 0.05);
+      y = h * (0.35 + Math.random() * 0.65);
+      const angle = -(Math.PI * 0.08 + Math.random() * Math.PI * 0.3);
+      vx = speed * (0.7 + Math.random() * 0.5);
+      vy = -speed * (0.3 + Math.random() * 0.5);
+    } else {
+      x = w * (Math.random() * 0.1);
+      y = h * (0.85 + Math.random() * 0.15);
+      const angle = -(Math.PI * 0.22 + Math.random() * Math.PI * 0.22);
+      vx = speed * Math.cos(angle) * (0.6 + Math.random() * 0.7);
+      vy = speed * Math.sin(angle) * (0.7 + Math.random() * 0.5);
+    }
+
+    return {
+      x, y, vx, vy,
+      size: 0.8 + Math.random() * 2.2,
+      shade: SHADES[Math.floor(Math.random() * SHADES.length)],
+      alpha: 0.25 + Math.random() * 0.5,
+      frame: 0,
+      wobbleAmp: 0.2 + Math.random() * 0.9,
+      wobbleFreq: 0.015 + Math.random() * 0.025,
+      wobbleOffset: Math.random() * Math.PI * 2,
+      curve: (Math.random() - 0.35) * 0.006,
+    };
   }
-  const AMPLITUDE = 6;
-  const FREQ = 0.45;
-  const PHASE_STEP = 0.38;
-  let startTime = null;
-  function animate(ts) {
-    if (!startTime) startTime = ts;
-    const t = (ts - startTime) / 1000;
-    for (let i = 0; i < spans.length; i++) {
-      const y = Math.sin(t * FREQ * Math.PI * 2 - i * PHASE_STEP) * AMPLITUDE;
-      spans[i].style.transform = `translateY(${y.toFixed(3)}px)`;
+
+  function stepParticle(p) {
+    p.vx += p.curve;
+    p.x += p.vx + Math.sin(p.frame * p.wobbleFreq + p.wobbleOffset) * p.wobbleAmp;
+    p.y += p.vy;
+    p.frame++;
+  }
+
+  function isOffscreen(p) {
+    return p.x > canvas.width + 20 || p.y < -20 || p.x < -20 || p.y > canvas.height + 20;
+  }
+
+  function drawParticle(p) {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+    ctx.fillStyle = p.shade + p.alpha.toFixed(3) + ")";
+    ctx.fill();
+  }
+
+  function seedParticles(count) {
+    const w = canvas.width, h = canvas.height;
+    const cols = Math.ceil(Math.sqrt(count * (w / h)));
+    const rows = Math.ceil(count / cols);
+    const cellW = w / cols;
+    const cellH = h / rows;
+    const result = [];
+
+    for (let row = 0; row < rows && result.length < count; row++) {
+      for (let col = 0; col < cols && result.length < count; col++) {
+        const targetX = col * cellW + Math.random() * cellW;
+        const targetY = row * cellH + Math.random() * cellH;
+
+        let best = null;
+        let bestDist = Infinity;
+        for (let attempt = 0; attempt < 30; attempt++) {
+          const p = spawnParticle();
+          const preFrames = Math.floor(10 + Math.random() * 500);
+          for (let f = 0; f < preFrames; f++) stepParticle(p);
+          if (isOffscreen(p)) continue;
+          const dist = Math.hypot(p.x - targetX, p.y - targetY);
+          if (dist < bestDist) {
+            bestDist = dist;
+            best = p;
+          }
+          if (dist < Math.max(cellW, cellH) * 0.5) break;
+        }
+        result.push(best || spawnParticle());
+      }
+    }
+    return result;
+  }
+
+  const PARTICLE_COUNT = 55;
+  const particles = seedParticles(PARTICLE_COUNT);
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < particles.length; i++) {
+      if (isOffscreen(particles[i])) particles[i] = spawnParticle();
+      stepParticle(particles[i]);
+      drawParticle(particles[i]);
     }
     requestAnimationFrame(animate);
   }
