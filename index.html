@@ -752,7 +752,7 @@ body {
             <div class="settings-container">
                 <button class="nav-btn" id="settingsBtn" title="Settings"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
                 <div id="settingsMenu">
-                    <div class="settings-item" onclick="toggleDevTools()">DevTools (BETA)</div>
+                    <div class="settings-item" onclick="toggleDevTools()">DevTools</div>
                     <div class="settings-item" onclick="openCloakMenu()">Tab Cloaks</div>
                     <div class="settings-item" onclick="openPanicSettings()">Panic Button</div>
                     <div class="settings-item" onclick="openGameCheats()">Game Cheats</div>
@@ -815,7 +815,7 @@ body {
 
 <div id="devtoolsWindow">
     <div id="devtoolsHeader">
-        DevTools (BETA)
+        DevTools
         <span id="devtoolsClose" onclick="toggleDevTools()">✕</span>
     </div>
 
@@ -1223,14 +1223,11 @@ const overlayTitle = document.getElementById("overlayTitle");
 function overlayBgClick(e) { if (e.target === overlay) closeMenu(); }
 
 function openMenu(type) {
-    overlay.style.display = "flex";
     if (type === "games") {
-        overlayTitle.textContent = "Games";
-        overlayContent.innerHTML = `<label class="proxy-toggle"><input type="checkbox" id="proxyToggle"> Use proxy link</label>
-        <div id="gamesList"><div style="padding:12px;color:var(--text-muted);text-align:center;font-size:12px;">Loading...</div></div>`;
-        loadList(PROXY + "https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/gameslist.txt",
-            (link) => { const useProxy = document.getElementById("proxyToggle")?.checked; window.open(useProxy ? toProxy(link) : link); closeMenu(); }, "gamesList");
+        window.location.href = "./assets/educationpage.html";
+        return;
     }
+    overlay.style.display = "flex";
     if (type === "socials") {
         overlayTitle.textContent = "Socials";
         overlayContent.innerHTML = `<div style="padding:12px;color:var(--text-muted);text-align:center;font-size:12px;">Loading...</div>`;
