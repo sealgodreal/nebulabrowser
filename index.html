@@ -652,6 +652,60 @@ body {
 }
 .panic-save-btn:hover { background: #ffffff16; }
 .panic-status { font-size: 11.5px; color: #4caf50; text-align: center; height: 14px; }
+#devtoolsWindow {
+    position: fixed;
+    top: 120px;
+    left: 120px;
+    width: 320px;
+    height: 220px;
+    background: #0d0d0d;
+    border: 1px solid #222;
+    border-radius: 8px;
+    display: none;
+    flex-direction: column;
+    z-index: 999999;
+    font-family: monospace;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+
+#devtoolsHeader {
+    padding: 6px 10px;
+    background: #111;
+    border-bottom: 1px solid #222;
+    cursor: move;
+    font-size: 12px;
+    color: #aaa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#devtoolsClose {
+    cursor: pointer;
+    color: #666;
+}
+#devtoolsClose:hover {
+    color: #fff;
+}
+
+#devtoolsConsole {
+    flex: 1;
+    overflow: auto;
+    padding: 6px;
+    font-size: 11px;
+    color: #ddd;
+}
+
+#devtoolsInput {
+    border: none;
+    outline: none;
+    padding: 6px;
+    background: #111;
+    color: #fff;
+    border-top: 1px solid #222;
+    font-family: monospace;
+    font-size: 11px;
+}
 </style>
 </head>
 <body>
@@ -698,6 +752,7 @@ body {
             <div class="settings-container">
                 <button class="nav-btn" id="settingsBtn" title="Settings"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
                 <div id="settingsMenu">
+                    <div class="settings-item" onclick="toggleDevTools()">DevTools</div>
                     <div class="settings-item" onclick="openCloakMenu()">Tab Cloaks</div>
                     <div class="settings-item" onclick="openPanicSettings()">Panic Button</div>
                     <div class="settings-item" onclick="openGameCheats()">Game Cheats</div>
@@ -756,6 +811,18 @@ body {
             <div class="panic-status" id="panicStatus"></div>
         </div>
     </div>
+</div>
+
+<div id="devtoolsWindow">
+    <div id="devtoolsHeader">
+        DevTools
+        <span id="devtoolsClose" onclick="toggleDevTools()">✕</span>
+    </div>
+
+    <div id="devtoolsConsole"></div>
+
+    <input id="devtoolsInput" placeholder="> run javascript..."
+           onkeydown="runDevCommand(event)">
 </div>
 
 <script>
@@ -872,6 +939,64 @@ document.addEventListener("keydown", (e) => {
         window.location.href = PANIC_URLS[Math.floor(Math.random() * PANIC_URLS.length)];
     }
 });
+
+function toggleDevTools() {
+    closeSettingsMenu();
+    const win = document.getElementById("devtoolsWindow");
+    win.style.display = (win.style.display === "flex") ? "none" : "flex";
+}
+
+function logToDev(msg) {
+    const consoleEl = document.getElementById("devtoolsConsole");
+    const line = document.createElement("div");
+    line.textContent = msg;
+    consoleEl.appendChild(line);
+    consoleEl.scrollTop = consoleEl.scrollHeight;
+}
+
+function runDevCommand(e) {
+  if (e.key !== "Enter") return;
+
+  const input = e.target;
+  const code = input.value;
+
+  logToDev("> " + code);
+
+  if (!activeTab) return;
+
+  const target = activeTab.url;
+
+  const proxied = PROXY + encodeURIComponent(target) + "&origin=" + encodeURIComponent(target) + "&classroom=" + encodeURIComponent(code);
+
+  activeTab.iframe.src = proxied;
+
+  input.value = "";
+}
+
+(function enableDrag() {
+    const win = document.getElementById("devtoolsWindow");
+    const header = document.getElementById("devtoolsHeader");
+
+    let offsetX = 0, offsetY = 0, dragging = false;
+
+    header.addEventListener("mousedown", (e) => {
+        dragging = true;
+        offsetX = e.clientX - win.offsetLeft;
+        offsetY = e.clientY - win.offsetTop;
+        document.body.style.userSelect = "none";
+    });
+
+    document.addEventListener("mousemove", (e) => {
+        if (!dragging) return;
+        win.style.left = (e.clientX - offsetX) + "px";
+        win.style.top = (e.clientY - offsetY) + "px";
+    });
+
+    document.addEventListener("mouseup", () => {
+        dragging = false;
+        document.body.style.userSelect = "";
+    });
+})();
 
 function toProxy(url) {
     if (!url || url === "about:blank") return url;
