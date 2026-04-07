@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Nebula | Educational Learning Program</title>
+  <link rel="icon" href="data:," type="image/x-icon">
+  <link rel="stylesheet" href="TemplateData/style.css">
+  <style>
+    body {
+      margin: 0;
+      background: #0f0f0f;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    #unity-container {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    #unity-canvas {
+      width: 100%;
+      height: 100%;
+      background: black;
+    }
+    #modern-loader {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, #1a1a1a, #0d0d0d);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999999;
+    }
+    .loader-card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 50px 60px;
+      width: 340px;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(0,0,0,0.7);
+      animation: fadeIn 0.5s ease;
+    }
+    .spinner {
+      width: 55px;
+      height: 55px;
+      margin: 0 auto 25px auto;
+      border: 4px solid rgba(255,255,255,0.1);
+      border-top: 4px solid #4da6ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    #loading-text {
+      color: white;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    #unity-progress-bar-full {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #4da6ff, #1a8cff);
+      transition: width 0.1s ease;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div id="modern-loader">
+    <div class="loader-card">
+      <div class="spinner"></div>
+      <div id="loading-text">Loading 0 MB / 155.84 MB</div>
+      <div class="progress-track">
+        <div id="unity-progress-bar-full"></div>
+      </div>
+    </div>
+  </div>
+  <div id="unity-container">
+    <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+  </div>
+  <script>
+    const loadingText = document.querySelector("#loading-text");
+    const progressBarFull = document.querySelector("#unity-progress-bar-full");
+    const loader = document.querySelector("#modern-loader");
+
+    let loadedBytes = 0;
+    const totalBytes = 155.84*1024*1024;
+
+    async function fetchWithProgress(url) {
+      const response = await fetch(url);
+      const reader = response.body.getReader();
+      let chunks = [];
+      while(true){
+        const {done, value} = await reader.read();
+        if(done) break;
+        chunks.push(value);
+        loadedBytes += value.length;
+        let mbDone = (loadedBytes/1024/1024).toFixed(2);
+        loadingText.textContent = `Loading ${mbDone} MB / 155.84 MB`;
+        progressBarFull.style.width = Math.min((loadedBytes/totalBytes)*100,100)+"%";
+      }
+      let totalLength = chunks.reduce((sum,c)=>sum+c.length,0);
+      let buffer = new Uint8Array(totalLength);
+      let offset=0;
+      for(let c of chunks){
+        buffer.set(c, offset);
+        offset+=c.length;
+      }
+      return buffer.buffer;
+    }
+
+    async function mergeFiles(parts){
+      const buffers = await Promise.all(parts.map(p=>fetchWithProgress(p)));
+      return URL.createObjectURL(new Blob(buffers));
+    }
+
+    function getParts(file,start,end){
+      let arr=[];
+      for(let i=start;i<=end;i++) arr.push(file+".part"+i);
+      return arr;
+    }
+
+    (async ()=>{
+      const [dataUrl, wasmUrl, webm] = await Promise.all([
+        mergeFiles(getParts("Build/fnae.data",1,3)),
+        mergeFiles(getParts("Build/fnae.wasm",1,3)),
+        mergeFiles(getParts("StreamingAssets/202512191935.webm",1,3))
+      ]);
+
+      window.randomwebm=webm;
+      const realSrc=Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype,"src");
+      Object.defineProperty(HTMLMediaElement.prototype,"src",{
+        set(value){
+          if(typeof value==="string" && (value.includes("202512191935.mp4")||value.includes("202512191935.webm")))
+            value=window.randomwebm;
+          return realSrc.set.call(this,value);
+        },
+        get(){return realSrc.get.call(this);}
+      });
+
+      const canvas=document.querySelector("#unity-canvas");
+      const loaderUrl="Build/fnae.loader.js";
+      const config={
+        dataUrl:dataUrl,
+        frameworkUrl:"Build/fnae.framework.js",
+        codeUrl:wasmUrl,
+        streamingAssetsUrl:"StreamingAssets",
+        companyName:"DefaultCompany",
+        productName:"fnae",
+        productVersion:"1.0",
+        showBanner:()=>{}
+      };
+
+      const script=document.createElement("script");
+      script.src=loaderUrl;
+      script.onload=()=>{
+        createUnityInstance(canvas, config, progress=>{
+          let percent = Math.max(progress*100,(loadedBytes/totalBytes)*100);
+          progressBarFull.style.width = percent+"%";
+        }).then(()=>loader.style.display="none").catch(()=>{});
+      };
+      document.body.appendChild(script);
+    })();
+  </script>
+</body>
+</html>
