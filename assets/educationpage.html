@@ -303,7 +303,10 @@ function openGame(game) {
     gameIframe.style.display = "none";
     gameIframe.onload = () => {
         loadingScreen.style.opacity = "0";
-        setTimeout(() => loadingScreen.innerHTML = "", 500);
+        loadingScreen.addEventListener("transitionend", function removeLoading() {
+            loadingScreen.innerHTML = "";
+            loadingScreen.removeEventListener("transitionend", removeLoading);
+        });
     };
     gameIframe.src = `https://sealgodreal.github.io/nebulabrowser/assets/education/${game.index}/index.html`;
     gameIframe.style.display = "block";
