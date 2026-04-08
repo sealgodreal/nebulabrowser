@@ -302,12 +302,14 @@ function openGame(game) {
     loadingScreen.innerHTML = `<iframe src="https://sealgodreal.github.io/nebulabrowser/assets/loading.html" style="width:100%;height:100%;border:none;"></iframe>`;
     gameIframe.style.display = "none";
     gameIframe.onload = () => {
-        loadingScreen.style.opacity = "0";
-        loadingScreen.addEventListener("transitionend", function removeLoading() {
-            loadingScreen.innerHTML = "";
-            loadingScreen.removeEventListener("transitionend", removeLoading);
-        });
-    };
+    loadingScreen.style.opacity = "0";
+    loadingScreen.addEventListener("transitionend", function removeLoading() {
+        if (loadingScreen.parentNode) {
+            loadingScreen.parentNode.removeChild(loadingScreen);
+        }
+        loadingScreen.removeEventListener("transitionend", removeLoading);
+    });
+};
     gameIframe.src = `https://sealgodreal.github.io/nebulabrowser/assets/education/${game.index}/index.html`;
     gameIframe.style.display = "block";
 }
