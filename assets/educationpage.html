@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-
 <style>
 * { margin: 0; box-sizing: border-box; }
 :root {
@@ -21,7 +20,6 @@
     --text-dim: #404040;
     --hover: #141414;
 }
-
 body {
     background: var(--bg);
     color: var(--text);
@@ -31,7 +29,6 @@ body {
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
 }
-
 .header {
     border-bottom: 1px solid var(--border-subtle);
     padding: 12px 20px;
@@ -70,7 +67,6 @@ body {
     width: 100%;
 }
 .search-wrap input::placeholder { color: var(--text-dim); }
-
 .content { padding: 20px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 8px; }
 .game-card {
@@ -85,7 +81,6 @@ body {
     transition: border-color 0.15s, background 0.15s;
 }
 .game-card:hover { border-color: #2c2c2c; background: var(--surface2); }
-
 .game-thumb {
     width: 100%;
     aspect-ratio: 16/10;
@@ -102,8 +97,6 @@ body {
 .game-info { padding: 9px 10px 10px; }
 .game-name { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .empty { grid-column: 1 / -1; padding: 48px 0; text-align: center; color: var(--text-dim); font-size: 12px; }
-
-/* Fullscreen iframe overlay */
 #gameOverlay {
     position: fixed;
     top: 0; left: 0;
@@ -119,8 +112,6 @@ body {
     width: 100%; height: 100%;
     border: none;
 }
-
-/* Loading screen on top of iframe */
 #loadingScreen {
     position: absolute;
     width: 100%; height: 100%;
@@ -132,7 +123,6 @@ body {
     transition: opacity 0.5s;
     z-index: 101;
 }
-
 #miniBar {
     position: fixed;
     bottom: 40px;
@@ -154,12 +144,10 @@ body {
     font-family: 'Inter', system-ui, sans-serif;
     border: 1px solid rgba(255, 255, 255, 0.07);
 }
-
 #miniBar.show {
     opacity: 1;
     transform: translate(-50%, 0);
 }
-
 #gameTitle {
     flex-grow: 1;
     background: rgba(255, 255, 255, 0.07);
@@ -179,7 +167,6 @@ body {
     cursor: default;
     min-width: 0;
 }
-
 .miniBtn {
     width: 30px;
     height: 30px;
@@ -193,15 +180,15 @@ body {
     border: none;
     transition: background 0.15s;
 }
-
-.miniBtn:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.miniBtn svg {
-    width: 15px;
-    height: 15px;
-    stroke: white;
+.miniBtn:hover { background: rgba(255, 255, 255, 0.1); }
+.miniBtn svg { width: 15px; height: 15px; stroke: white; }
+#hoverZone {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    z-index: 101;
 }
 </style>
 </head>
@@ -238,20 +225,34 @@ body {
     </svg>
 </div>
 </div>
-<script>
-const GAMES = [
-    { name: "Geometry Dash", index: 1  },
-    { name: "Five Nights at Epsteins", index: 2  },
-    { name: "BitLife", index: 3  },
-    { name: "Paper.io 2", index: 4  },
-    { name: "ULTRAKILL", index: 5  },
-    { name: "PolyTrack", index: 6  },
-    { name: "Ragdoll Archers", index: 7  },
-    { name: "Eaglercraft 1.12.2", index: 8  },
-    { name: "GunSpin", index: 9  },
-    { name: "Stickman Hook", index: 10  },
-];
+<div id="hoverZone"></div>
 
+<script>
+let hideTimeout;
+function hideMiniBar() { miniBar.classList.remove("show"); }
+function showMiniBar() { miniBar.classList.add("show"); }
+function resetHideTimer() {
+    clearTimeout(hideTimeout);
+    hideTimeout = setTimeout(hideMiniBar, 2500);
+}
+resetHideTimer();
+['mousemove','keydown','scroll','touchstart'].forEach(event => document.addEventListener(event, resetHideTimer));
+const hoverZone = document.getElementById("hoverZone");
+hoverZone.addEventListener("mouseenter", showMiniBar);
+hoverZone.addEventListener("mouseleave", resetHideTimer);
+
+const GAMES = [
+    { name: "Geometry Dash", index: 1 },
+    { name: "Five Nights at Epsteins", index: 2 },
+    { name: "BitLife", index: 3 },
+    { name: "Paper.io 2", index: 4 },
+    { name: "ULTRAKILL", index: 5 },
+    { name: "PolyTrack", index: 6 },
+    { name: "Ragdoll Archers", index: 7 },
+    { name: "Eaglercraft 1.12.2", index: 8 },
+    { name: "GunSpin", index: 9 },
+    { name: "Stickman Hook", index: 10 },
+];
 let searchQuery = "";
 const grid = document.getElementById("grid");
 const gameOverlay = document.getElementById("gameOverlay");
@@ -259,12 +260,10 @@ const loadingScreen = document.getElementById("loadingScreen");
 const gameIframe = document.getElementById("gameIframe");
 const miniBar = document.getElementById("miniBar");
 const gameTitleEl = document.getElementById("gameTitle");
-
 document.getElementById("searchInput").addEventListener("input", e => {
     searchQuery = e.target.value.toLowerCase();
     renderGrid();
 });
-
 function renderGrid() {
     const filtered = GAMES.filter(g => g.name.toLowerCase().includes(searchQuery));
     document.getElementById("gameCount").textContent = filtered.length + " game" + (filtered.length !== 1 ? "s" : "");
@@ -274,10 +273,7 @@ function renderGrid() {
         const a = document.createElement("a");
         a.className = "game-card";
         a.href = "#";
-        a.addEventListener("click", e => {
-            e.preventDefault();
-            openGame(game);
-        });
+        a.addEventListener("click", e => { e.preventDefault(); openGame(game); });
         const thumb = document.createElement("div");
         thumb.className = "game-thumb";
         const img = document.createElement("img");
@@ -293,7 +289,6 @@ function renderGrid() {
         grid.appendChild(a);
     });
 }
-
 function openGame(game) {
     gameTitleEl.textContent = game.name;
     miniBar.classList.add("show");
@@ -302,29 +297,24 @@ function openGame(game) {
     loadingScreen.innerHTML = `<iframe src="https://sealgodreal.github.io/nebulabrowser/assets/loading.html" style="width:100%;height:100%;border:none;"></iframe>`;
     gameIframe.style.display = "none";
     gameIframe.onload = () => {
-    loadingScreen.style.opacity = "0";
-    loadingScreen.addEventListener("transitionend", function removeLoading() {
-        if (loadingScreen.parentNode) {
-            loadingScreen.parentNode.removeChild(loadingScreen);
-        }
-        loadingScreen.removeEventListener("transitionend", removeLoading);
-    });
-};
+        loadingScreen.style.opacity = "0";
+        loadingScreen.addEventListener("transitionend", function removeLoading() {
+            if (loadingScreen.parentNode) { loadingScreen.parentNode.removeChild(loadingScreen); }
+            loadingScreen.removeEventListener("transitionend", removeLoading);
+        });
+    };
     gameIframe.src = `https://sealgodreal.github.io/nebulabrowser/assets/education/${game.index}/index.html`;
     gameIframe.style.display = "block";
 }
-
 document.getElementById("homeBtn").addEventListener("click", () => {
     gameOverlay.style.display = "none";
     gameIframe.src = "";
     miniBar.classList.remove("show");
 });
-
 document.getElementById("refreshBtn").addEventListener("click", () => {
     const currentGame = GAMES.find(g => g.name === gameTitleEl.textContent);
     if (currentGame) openGame(currentGame);
 });
-
 renderGrid();
 </script>
 </body>
