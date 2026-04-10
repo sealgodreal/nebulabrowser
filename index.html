@@ -293,10 +293,21 @@ body.settings-open .main-page {
     color: #fff;
     margin-bottom: 10px;
     animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) both;
+    margin-bottom: 0px;
 }
 .wordmark span {
     color: rgba(255,255,255,0.18);
     font-weight: 300;
+}
+
+.subtext {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    opacity: 0.8;
+    animation: fadeUp 0.55s 0.12s cubic-bezier(0.16,1,0.3,1) both;
+    margin-top: 0px;
 }
 
 .search-wrap {
@@ -304,6 +315,7 @@ body.settings-open .main-page {
     max-width: 480px;
     margin-bottom: 18px;
     animation: fadeUp 0.55s 0.08s cubic-bezier(0.16,1,0.3,1) both;
+    margin-top: 8px;
 }
 
 .search-box {
@@ -555,6 +567,12 @@ body.settings-open .settings-panel {
 }
 .bottom-btn:hover { border-color: #2e2e2e; color: #888; background: #101010; }
 .bottom-btn.active { border-color: var(--search-focus); color: #999; }
+.bottom-btn svg {
+    opacity: 0.9;
+}
+.bottom-btn:hover svg {
+    opacity: 1;
+}
 
 .corner-gif {
     position: fixed;
@@ -786,7 +804,8 @@ body.settings-open .corner-gif {
 
 <div class="main-page" id="mainPage">
     <div class="content">
-        <div class="wordmark" style="margin-top:10px;">nebula <span>v2</span></div>
+        <div class="wordmark" style="margin-top:10px;">nebula<span>.</span></div>
+        <div class="subtext"></div>
         <div class="search-wrap">
             <div class="search-box">
                 <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -858,11 +877,10 @@ body.settings-open .corner-gif {
     <div class="bottom-right">
         <div id="clock"></div>
         <button class="bottom-btn" id="settingsBtn" title="Settings" onclick="toggleSettings()">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="8" cy="8" r="2.2" stroke="currentColor" stroke-width="1.3"/>
-                <path d="M8 1.5V3M8 13v1.5M1.5 8H3M13 8h1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-                <path d="M3.4 3.4l1.06 1.06M11.54 11.54l1.06 1.06M12.6 3.4l-1.06 1.06M4.46 11.54l-1.06 1.06" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-                <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2 2"/>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <circle cx="3" cy="8" r="1.3"/>
+                <circle cx="8" cy="8" r="1.3"/>
+                <circle cx="13" cy="8" r="1.3"/>
             </svg>
         </button>
     </div>
@@ -892,6 +910,23 @@ body.settings-open .corner-gif {
 </a>
 
 <script>
+const subtexts = [
+    "welcome to nebula!",
+    "enjoy using nebula!",
+    "try out our games!",
+    "\"(sealgods name) thats my maannn\" - michael",
+    "\"ur so cute\" - michael",
+    "does anyone actually read this?",
+    "python -m pip install opsec",
+];
+
+window.addEventListener("DOMContentLoaded", () => {
+    const el = document.querySelector(".subtext");
+    if (!el) return;
+    const random = subtexts[Math.floor(Math.random() * subtexts.length)];
+    el.textContent = random;
+});
+
 const PROXY = "https://onlinehomeworkhelper.onrender.com/lessons/math?url=";
 
 let historyStack = [];
