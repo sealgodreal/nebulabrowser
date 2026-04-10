@@ -574,20 +574,6 @@ body.settings-open .settings-panel {
     opacity: 1;
 }
 
-.corner-gif {
-    position: fixed;
-    top: 10px; left: 10px;
-    width: 60px; height: auto;
-    z-index: 35;
-    pointer-events: none;
-    border-radius: 8px;
-    transition: opacity 0.3s ease;
-}
-
-body.settings-open .corner-gif {
-    opacity: 0;
-}
-
 #browserView {
     position: fixed;
     inset: 0;
@@ -785,8 +771,6 @@ body.settings-open .corner-gif {
 </head>
 <body>
 
-<img class="corner-gif" src="./assets/CatEatingChips.gif" alt="cat eating chips">
-
 <nav class="topbar">
     <img class="topbar-logo" src="./assets/logos/nebula.png" alt="Nebula" onclick="goHome()">
     <div class="topbar-sep"></div>
@@ -913,18 +897,41 @@ body.settings-open .corner-gif {
 const subtexts = [
     "welcome to nebula!",
     "enjoy using nebula!",
-    "try out our games!",
+    "try out the games!",
+    "enjoying nebula? click this to download the application for windows!",
+    "sub to our youtube (@nebulaunblocking)",
+    "follow our tiktok (@nebulaunbl0cking)",
+    "any questions or issues? email us (nebulas3rvices@gmail.com)",
+    "need more links? head over to canva.link/yobzqnsexvxl9xe",
+    "\"michael knows how to be tuff, why cant you\" - luis (ur not tuff tho lmao)",
     "\"(sealgods name) thats my maannn\" - michael",
-    "\"ur so cute\" - michael",
+    "\"(sealgods name) ur so cute\" - michael",
+    "if it takes you to render.com its because i cant afford $7 a month",
     "does anyone actually read this?",
     "python -m pip install opsec",
+    "so like",
+    "yall got me wit a mc chicken wit no lettuce and light mayo?",
+    "meow",
+    "yo thats crazy",
+    "goin down to southpark",
+    "\"im more protected, i use socks5\" - punchmade dev",
+    "\"ill stalk ur socials till my eyes are numb\" - s0rrow",
+    "ye let me get uhhhhhhhhhhhhhh",
+    "short term memory loss is a bad thing but yk whats even worse? short term memory loss",
+    '<img src="./assets/CatEatingChips.gif" style="width: 80px;">',
 ];
 
 window.addEventListener("DOMContentLoaded", () => {
     const el = document.querySelector(".subtext");
     if (!el) return;
     const random = subtexts[Math.floor(Math.random() * subtexts.length)];
-    el.textContent = random;
+    el.innerHTML = random;
+    if (random.includes("application for windows")) {
+        el.style.cursor = "pointer";
+        el.addEventListener("click", () => {
+            window.location.href = "./assets/nebula-application/Nebula Browser.zip";
+        });
+    }
 });
 
 const PROXY = "https://onlinehomeworkhelper.onrender.com/lessons/math?url=";
