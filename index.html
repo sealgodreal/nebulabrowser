@@ -144,6 +144,40 @@ body.theme-light .search-box input {
     color: #222;
 }
 
+body.theme-teto {
+    --bg:         #120000;
+    --topbar-bg:  #1a0000;
+    --topbar-border: #400000;
+    --sep:        #400000;
+    --search-bg:  #1a0000;
+    --search-border: #400000;
+    --search-focus: #ff2a2a;
+    --search-placeholder: #662222;
+    --btn-bg:     #220000;
+    --btn-border: #550000;
+    --app-bg:     #1a0000;
+    --app-border: #400000;
+    --bottombar-bg: #140000;
+    --bottombar-border: #400000;
+    --text-dim:   #aa4444;
+    --icon-color: #ff3b3b;
+    --settings-card-bg: rgba(34,0,0,0.72);
+    --settings-card-border: #550000;
+    --settings-label: #cc4444;
+    --settings-title: #ff9999;
+    --dropdown-bg: rgba(20,0,0,0.88);
+    --dropdown-border: #550000;
+    --dropdown-text: #ffaaaa;
+}
+
+.settings-panel {
+    color: var(--settings-title);
+}
+
+.settings-card {
+    background: var(--settings-card-bg);
+}
+
 body {
     background: var(--bg);
     color: #fff;
@@ -668,6 +702,44 @@ body.settings-open .corner-gif {
     transition: opacity 0.35s ease;
 }
 
+#tetoPopup {
+    position: fixed;
+    bottom: 40px;
+    left: 12px;
+    z-index: 25;
+
+    pointer-events: none;
+    user-select: none;
+
+    opacity: 0;
+    transform: translateY(12px);
+
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    display: none;
+}
+
+#tetoPopup.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#tetoPopup img {
+    width: 225px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+
+    pointer-events: none;
+    user-select: none;
+}
+
+#tetoPopup img {
+    will-change: transform;
+}
+
+#tetoPopup img:hover {
+    transform: scale(1.08) rotate(-1deg);
+}
+
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(12px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -759,6 +831,7 @@ body.settings-open .corner-gif {
                 <option value="light">Light</option>
                 <option value="twilight">Purple Twilight</option>
                 <option value="sakura">Sakura</option>
+                <option value="teto">Teto's Browser</option>
             </select>
             </div>
         </div>
@@ -766,7 +839,7 @@ body.settings-open .corner-gif {
 </div>
 
 <div class="bottombar">
-    <span class="bottom-brand">nebula — made by sealgod with love</span>
+    <span class="bottom-brand">nebula - made by sealgod with love</span>
     <div class="bottom-right">
         <div id="clock"></div>
         <button class="bottom-btn" id="settingsBtn" title="Settings" onclick="toggleSettings()">
@@ -798,6 +871,10 @@ body.settings-open .corner-gif {
         </div>
     </div>
 </div>
+
+<a id="tetoPopup">
+    <img src="./assets/logos/teto.png" alt="Teto">
+</a>
 
 <script>
 const PROXY = "https://onlinehomeworkhelper.onrender.com/lessons/math?url=";
@@ -841,6 +918,11 @@ function openApp(url) {
 }
 
 function openBrowser(url) {
+    const popup = document.getElementById('tetoPopup');
+    popup.classList.remove('show');
+    popup.style.transitionDelay = "0s";
+    popup.style.opacity = "0";
+
     document.getElementById("mainPage").style.display = "none";
     document.getElementById("browserView").style.display = "block";
 
@@ -1068,7 +1150,8 @@ const THEME_CLASSES = {
     default: '',
     light: 'theme-light',
     twilight: 'theme-twilight',
-    sakura: 'theme-sakura'
+    sakura: 'theme-sakura',
+    teto: 'theme-teto'
 };
 
 let currentTheme = 'default';
@@ -1076,23 +1159,70 @@ let settingsOpen = false;
 
 function applyBodyClass() {
     const base = THEME_CLASSES[currentTheme] || '';
-    document.body.className = base + (settingsOpen ? ' settings-open' : '');
+    document.body.className = base;
+
+    if (settingsOpen) {
+        document.body.classList.add('settings-open');
+    }
 }
 
 function setTheme(name) {
     currentTheme = name;
     localStorage.setItem('nebula-theme', name);
+
+    const popup = document.getElementById('tetoPopup');
+
+if (name === 'teto') {
+    localStorage.setItem('nebula-teto-popup', '1');
+
+    popup.style.display = 'block';
+    popup.classList.remove('show');
+
+    setTimeout(() => {
+        requestAnimationFrame(() => {
+            popup.classList.add('show');
+        });
+    }, 100);
+
+} else {
+    localStorage.setItem('nebula-teto-popup', '0');
+
+    popup.classList.remove('show');
+
+    setTimeout(() => {
+        popup.style.display = 'none';
+    }, 350);
+}
     applyBodyClass();
     updateShades(name);
-    for (let p of particles) p.shade = SHADES[Math.floor(Math.random()*SHADES.length)];
+
+    for (let p of particles) {
+        p.shade = SHADES[Math.floor(Math.random() * SHADES.length)];
+    }
+
     const dd = document.getElementById('themeDropdown');
     if (dd) dd.value = name;
 }
 
 (function loadTheme() {
     currentTheme = localStorage.getItem('nebula-theme') || 'default';
+
+    const popup = document.getElementById('tetoPopup');
+    const tetoEnabled = localStorage.getItem('nebula-teto-popup') === '1';
+
+    if (currentTheme === 'teto' && tetoEnabled) {
+        popup.style.display = 'block';
+        setTimeout(() => {
+            popup.classList.add('show');
+        }, 300);
+    } else {
+        popup.classList.remove('show');
+        popup.style.display = 'none';
+    }
+
     applyBodyClass();
     updateShades(currentTheme);
+
     const dd = document.getElementById('themeDropdown');
     if (dd) dd.value = currentTheme;
 })();
