@@ -10,13 +10,16 @@
   canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; }
   .wave-text { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; display: flex; align-items: center; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: clamp(1.8rem, 4vw, 3rem); color: #ffffff; white-space: nowrap; letter-spacing: 0.02em; user-select: none; }
   .sub-text { position: fixed; top: calc(50% + 2rem); left: 50%; transform: translateX(-50%); z-index: 1; font-family: 'Nunito', sans-serif; font-weight: 400; font-size: clamp(0.9rem, 1.8vw, 1.1rem); color: rgba(255,255,255,0.6); white-space: nowrap; user-select: none; }
+  body { transition: opacity 5s ease; opacity: 1; }
 </style>
 </head>
 <body>
 <canvas id="bg"></canvas>
-<div class="wave-text">loading...</div>
+<div class="wave-text">loading iframe...</div>
 <div class="sub-text">please be patient</div>
 <script>
+  const sped = 5;
+
   const canvas = document.getElementById("bg");
   const ctx = canvas.getContext("2d");
   canvas.width = window.innerWidth;
@@ -39,7 +42,8 @@
     const w = canvas.width, h = canvas.height;
     const edge = Math.random();
     let x, y, vx, vy;
-    const speed = 0.35 + Math.random() * 0.55;
+    const baseSpeed = 0.35 + Math.random() * 0.55;
+    const speed = baseSpeed * sped;
 
     if (edge < 0.45) {
       x = Math.random() * w * 0.65;
@@ -138,6 +142,52 @@
     requestAnimationFrame(animate);
   }
   requestAnimationFrame(animate);
+</script>
+<script>
+  const subText = document.querySelector(".sub-text");
+  const waveText = document.querySelector(".wave-text");
+
+  const messages = [
+    "please be patient",
+    "the proxy is still in development, that's why it's so ass",
+    "credits to frogiee1 for ideas",
+    "fuck off securly",
+    "\"michael knows how to be tuff, why can't you\" - luis (ur NOT tuff btw ✌️)",
+    "incognito + proton = opsec",
+  ];
+
+  let currentIndex = 0;
+
+  subText.textContent = messages[currentIndex];
+
+  const rotatingMessages = messages.slice(1);
+
+  function getRandomIndex(exclude, arrayLength) {
+    let newIndex;
+    do {
+      newIndex = Math.floor(Math.random() * arrayLength);
+    } while (newIndex === exclude);
+    return newIndex;
+  }
+
+  let lastIndex = -1;
+
+  const cycleInterval = setInterval(() => {
+    const newIndex = getRandomIndex(lastIndex, rotatingMessages.length);
+    lastIndex = newIndex;
+    subText.textContent = rotatingMessages[newIndex];
+  }, 5000);
+
+  waveText.style.transition = "opacity 5s ease";
+  subText.style.transition = "opacity 5s ease";
+
+  setTimeout(() => {
+    clearInterval(cycleInterval);
+    subText.textContent = "if you're seeing this, you should refresh the page.";
+    waveText.style.opacity = "0";
+    subText.style.opacity = "0";
+    document.body.style.opacity = "0";
+  }, 55000);
 </script>
 </body>
 </html>
