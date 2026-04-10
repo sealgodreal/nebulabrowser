@@ -88,6 +88,62 @@ body.theme-sakura {
     --dropdown-text: #f0a0c0;
 }
 
+body.theme-light {
+    --bg: #e0e0e0e0;
+
+    --topbar-bg: #f3f3f5;
+    --topbar-border: #d6d6d9;
+    --sep: #d6d6d9;
+
+    --search-bg: #f7f7f8;
+    --search-border: #dcdcdf;
+    --search-focus: #bfbfc4;
+    --search-placeholder: #8f8f95;
+
+    --btn-bg: #ececee;
+    --btn-border: #d4d4d8;
+
+    --app-bg: #f3f3f5;
+    --app-border: #dcdcdf;
+
+    --bottombar-bg: #f3f3f5;
+    --bottombar-border: #d6d6d9;
+
+    --text-dim: #6f6f75;
+    --icon-color: #4f4f55;
+
+    --settings-card-bg: rgba(243,243,245,0.85);
+    --settings-card-border: #dcdcdf;
+
+    --settings-label: #666;
+    --settings-title: #222;
+
+    --dropdown-bg: rgba(247,247,248,0.95);
+    --dropdown-border: #d4d4d8;
+    --dropdown-text: #333;
+}
+
+body.theme-light .wordmark {
+    color: #2e2e33;
+}
+
+body.theme-light .wordmark span {
+    color: rgba(0, 0, 0, 0.35);
+    font-weight: 400;
+}
+
+body.theme-light .app-name {
+    color: #555;
+}
+
+body.theme-light #clock {
+    color: #555;
+}
+
+body.theme-light .search-box input {
+    color: #222;
+}
+
 body {
     background: var(--bg);
     color: #fff;
@@ -698,11 +754,12 @@ body.settings-open .corner-gif {
         <div class="settings-card">
             <div class="settings-card-title">Themes</div>
             <div class="settings-card-body">
-                <select class="settings-dropdown" id="themeDropdown" onchange="setTheme(this.value)">
-                    <option value="default">Default</option>
-                    <option value="twilight">Purple Twilight</option>
-                    <option value="sakura">Sakura</option>
-                </select>
+            <select class="settings-dropdown" id="themeDropdown" onchange="setTheme(this.value)">
+                <option value="default">Dark</option>
+                <option value="light">Light</option>
+                <option value="twilight">Purple Twilight</option>
+                <option value="sakura">Sakura</option>
+            </select>
             </div>
         </div>
     </div>
@@ -898,7 +955,18 @@ function updateShades(theme) {
         SHADES = ["rgba(180,120,255,","rgba(150,90,240,","rgba(200,160,255,","rgba(120,60,220,","rgba(160,100,255,","rgba(210,180,255,"];
     } else if (theme === 'sakura') {
         SHADES = ["rgba(255,160,200,","rgba(240,120,170,","rgba(255,200,220,","rgba(220,100,150,","rgba(255,180,210,","rgba(240,140,180,"];
-    } else {
+    } 
+    else if (theme === 'light') {
+        SHADES = [
+            "rgba(0,0,0,",
+            "rgba(60,60,60,",
+            "rgba(120,120,120,",
+            "rgba(30,30,30,",
+            "rgba(80,80,80,",
+            "rgba(150,150,150,"
+        ];
+    }
+    else {
         SHADES = ["rgba(255,255,255,","rgba(235,235,235,","rgba(210,210,210,","rgba(185,185,185,","rgba(160,160,160,","rgba(220,220,220,"];
     }
 }
@@ -996,7 +1064,13 @@ function animate() {
 }
 requestAnimationFrame(animate);
 
-const THEME_CLASSES = { default: '', twilight: 'theme-twilight', sakura: 'theme-sakura' };
+const THEME_CLASSES = {
+    default: '',
+    light: 'theme-light',
+    twilight: 'theme-twilight',
+    sakura: 'theme-sakura'
+};
+
 let currentTheme = 'default';
 let settingsOpen = false;
 
