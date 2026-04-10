@@ -624,7 +624,7 @@ body.settings-open .corner-gif {
 </head>
 <body>
 
-<img class="corner-gif" src="https://raw.githubusercontent.com/sealgodreal/nebulabrowser/refs/heads/main/assets/CatEatingChips.gif" alt="cat eating chips">
+<img class="corner-gif" src="./assets/CatEatingChips.gif" alt="cat eating chips">
 
 <nav class="topbar">
     <img class="topbar-logo" src="./assets/logos/nebula.png" alt="Nebula" onclick="goHome()">
@@ -748,13 +748,17 @@ const PROXY = "https://onlinehomeworkhelper.onrender.com/lessons/math?url=";
 let historyStack = [];
 let historyIndex = -1;
 
+function looksLikeUrl(input) {
+    return /^(https?:\/\/|www\.)/i.test(input) || /^[^\s]+\.[^\s]+(\/.*)?$/.test(input);
+}
+
 function navigate(val) {
     val = val.trim();
     if (!val) return;
 
     let targetUrl;
 
-    if (/^[^\s]+\.[^\s]+$/.test(val) && !val.includes(" ")) {
+    if (looksLikeUrl(val)) {
         targetUrl = val.startsWith("http") ? val : "https://" + val;
     } else {
         targetUrl = "https://search.brave.com/search?q=" + encodeURIComponent(val);
@@ -801,9 +805,20 @@ document.getElementById("browserFrame").addEventListener("load", () => {
     hideLoading();
 });
 
-function loadUrl(url) {
-    if (!url) return;
-    openBrowser(PROXY + encodeURIComponent(url.startsWith("http") ? url : "https://" + url));
+function loadUrl(input) {
+    if (!input) return;
+
+    input = input.trim();
+
+    let targetUrl;
+
+    if (looksLikeUrl(input)) {
+        targetUrl = input.startsWith("http") ? input : "https://" + input;
+    } else {
+        targetUrl = "https://search.brave.com/search?q=" + encodeURIComponent(input);
+    }
+
+    openBrowser(PROXY + encodeURIComponent(targetUrl));
 }
 
 function showLoading() {
