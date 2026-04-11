@@ -1614,6 +1614,21 @@ function openBrowserWithLoader(url) {
 window.openGame = function () {
     openBrowserWithLoader("./assets/educationpage.html");
 };
+
+function keepProxyAlive(proxyUrl, targetUrl) {
+  async function ping() {
+    try {
+      const res = await fetch(proxyUrl + encodeURIComponent(targetUrl), { method: "GET", cache: "no-store" });
+      if (!res.ok) { console.warn("ping failed:", res.status); }
+    } catch (err) {
+      console.error("ping error:", err);
+    }
+  }
+  ping();
+  return setInterval(ping, 60 * 1000);
+}
+
+const id = keepProxyAlive(PROXY, "https://sealgodreal.github.io/nebulabrowser/assets/blank.html");
 </script>
 </body>
 </html>
