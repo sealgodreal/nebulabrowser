@@ -935,7 +935,7 @@ body.entered .main-page {
 
         <div style="display:flex; align-items:center; gap:8px;">
             <button onclick="toggleBgAudio()" id="musicPlayBtn" style="flex:1; padding:7px 10px; border-radius:8px; border:1px solid var(--btn-border); background:var(--btn-bg); color:var(--settings-label); font-family:'Geist',sans-serif; font-size:12px; cursor:pointer; transition:0.15s;">
-                ⏸ pause
+                pause
             </button>
         </div>
 
@@ -993,7 +993,7 @@ body.entered .main-page {
     <iframe id="loadingFrame" src="./assets/loading.html"></iframe>
 
     <div class="mini-bar">
-<button class="mini-home-btn" onclick="location.href='./index.html'" title="Home">
+<button class="mini-home-btn" onclick="goHomeFromBrowser()" title="Home">
     <img src="./assets/logos/nebula.png" alt="Nebula">
 </button>
         <input id="urlBar" class="mini-url" onkeydown="if(event.key==='Enter') loadUrl(this.value)" />
@@ -1485,7 +1485,10 @@ function setTheme(name) {
 if (name === 'teto') {
     localStorage.setItem('nebula-teto-popup', '1');
 
-    if (document.body.classList.contains('entered')) {
+    const clickScreen = document.getElementById('clickScreen');
+    const hasEntered = document.body.classList.contains('entered') ||
+                       !clickScreen || clickScreen.style.display === 'none';
+    if (hasEntered) {
         popup.style.display = 'block';
         popup.classList.remove('show');
         setTimeout(() => requestAnimationFrame(() => popup.classList.add('show')), 100);
@@ -1544,6 +1547,41 @@ function handleOverlayClick(e) {
 
 function goHome() {
     if (settingsOpen) closeSettings();
+}
+
+function goHomeFromBrowser() {
+    const bv    = document.getElementById('browserView');
+    const bar   = document.querySelector('.mini-bar');
+    const frame = document.getElementById('browserFrame');
+    bv.style.transition  = 'opacity 0.35s ease';
+    bv.style.opacity     = '0';
+    setTimeout(() => {
+        bv.style.display    = 'none';
+        bv.style.opacity    = '';
+        bv.style.transition = '';
+        bar.style.transition = '';
+        bar.style.opacity    = '';
+        frame.src = '';
+        const mp = document.getElementById('mainPage');
+        mp.style.display = '';
+        document.body.classList.add('entered');
+        const clickScreen = document.getElementById('clickScreen');
+        if (clickScreen) clickScreen.style.display = 'none';
+        if (currentTheme === 'teto') {
+            const popup = document.getElementById('tetoPopup');
+            popup.classList.remove('show');
+            popup.style.display = 'block';
+            popup.style.opacity = '0';
+            popup.style.transform = 'translateY(12px)';
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    popup.style.opacity = '';
+                    popup.style.transform = '';
+                    popup.classList.add('show');
+                });
+            });
+        }
+    }, 350);
 }
 
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && settingsOpen) closeSettings(); });
