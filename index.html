@@ -268,14 +268,34 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.44s cubic-bezier(0.16,1,0.3,1), filter 0.44s ease, opacity 0.44s ease;
+    transition: transform 0.44s cubic-bezier(0.16,1,0.3,1), filter 0.44s ease, opacity 0.44s ease, visibility 0s;
 }
 
-body.settings-open .main-page {
-    transform: translateX(-18px) scale(0.97);
-    filter: blur(3px);
-    opacity: 0.45;
+.main-page {
+    will-change: transform;
+}
+
+.main-page.settings-sliding {
+    transform: translateX(-18px) scale(0.97) !important;
+    filter: blur(3px) !important;
+    opacity: 0.45 !important;
+    transition: transform 0.44s cubic-bezier(0.16,1,0.3,1), filter 0.44s ease, opacity 0.44s ease !important;
+    pointer-events: none !important;
+}
+
+.main-page.settings-unsliding {
+    transform: translateX(0) scale(1) !important;
+    filter: blur(0) !important;
+    opacity: 1 !important;
+    transition: transform 0.44s cubic-bezier(0.16,1,0.3,1), filter 0.44s ease, opacity 0.44s ease !important;
+}
+
+body.entered.settings-open .main-page {
+    transform: translateX(-18px) scale(0.97) !important;
+    filter: blur(3px) !important;
+    opacity: 0.45 !important;
     pointer-events: none;
+    visibility: visible !important;
 }
 
 .content {
@@ -744,9 +764,7 @@ body.settings-open .settings-panel {
 
 #tetoPopup img {
     width: 225px;
-    border-radius: 10px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-
+    border-radius: 0;
     pointer-events: none;
     user-select: none;
 }
@@ -757,6 +775,72 @@ body.settings-open .settings-panel {
 
 #tetoPopup img:hover {
     transform: scale(1.08) rotate(-1deg);
+}
+
+.bottom-link {
+    font-size: 11px;
+    font-weight: 400;
+    color: inherit;
+    opacity: 0.6;
+    letter-spacing: 0.04em;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: 'Geist', sans-serif;
+    transition: opacity 0.2s;
+}
+.bottom-link:hover { opacity: 1; color: inherit; }
+
+#clickScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: backdrop-filter 0.5s ease, -webkit-backdrop-filter 0.5s ease, opacity 0.5s ease;
+}
+
+#clickScreen.fading {
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+#clickText {
+    font-size: 13px;
+    font-family: 'Geist', sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.35);
+    pointer-events: none;
+    user-select: none;
+}
+
+body:not(.entered) .topbar,
+body:not(.entered) .bottombar {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+body:not(.entered) .main-page {
+    opacity: 0;
+    pointer-events: none;
+}
+
+body.entered .topbar,
+body.entered .bottombar,
+body.entered .main-page {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease, visibility 0s;
+    pointer-events: all;
 }
 
 @keyframes fadeUp {
@@ -770,6 +854,10 @@ body.settings-open .settings-panel {
 </style>
 </head>
 <body>
+
+<div id="clickScreen" onclick="enterSite()">
+    <div id="clickText">click to enter...</div>
+</div>
 
 <nav class="topbar">
     <img class="topbar-logo" src="./assets/logos/nebula.png" alt="Nebula" onclick="goHome()">
@@ -840,16 +928,42 @@ body.settings-open .settings-panel {
 
 <div class="settings-overlay" id="settingsOverlay" onclick="handleOverlayClick(event)">
     <div class="settings-panel" id="settingsPanel">
-        <div class="settings-page-title">Settings</div>
+        <div class="settings-page-title">settings</div>
         <div class="settings-card">
-            <div class="settings-card-title">Themes</div>
+    <div class="settings-card-title">music</div>
+    <div class="settings-card-body" style="display:flex; flex-direction:column; gap:10px;">
+
+        <div style="display:flex; align-items:center; gap:8px;">
+            <button onclick="toggleBgAudio()" id="musicPlayBtn" style="flex:1; padding:7px 10px; border-radius:8px; border:1px solid var(--btn-border); background:var(--btn-bg); color:var(--settings-label); font-family:'Geist',sans-serif; font-size:12px; cursor:pointer; transition:0.15s;">
+                ⏸ pause
+            </button>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:11px; color:var(--settings-label); white-space:nowrap;">vol</span>
+            <input type="range" id="musicVolume" min="0" max="100" value="50" oninput="setBgVolume(this.value)"
+                style="flex:1; accent-color:var(--icon-color);">
+            <span id="musicVolLabel" style="font-size:11px; color:var(--settings-label); min-width:28px; text-align:right;">50%</span>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span id="musicCurrentTime" style="font-size:11px; color:var(--settings-label); min-width:30px;">0:00</span>
+            <input type="range" id="musicSeek" min="0" max="100" value="0" oninput="seekBgAudio(this.value)"
+                style="flex:1; accent-color:var(--icon-color);">
+            <span id="musicDuration" style="font-size:11px; color:var(--settings-label); min-width:30px; text-align:right;">0:00</span>
+        </div>
+
+    </div>
+</div>
+        <div class="settings-card">
+            <div class="settings-card-title">themes</div>
             <div class="settings-card-body">
             <select class="settings-dropdown" id="themeDropdown" onchange="setTheme(this.value)">
-                <option value="default">Dark</option>
-                <option value="light">Light</option>
-                <option value="twilight">Purple Twilight</option>
-                <option value="sakura">Sakura</option>
-                <option value="teto">Teto's Browser</option>
+                <option value="default">dark</option>
+                <option value="light">light</option>
+                <option value="twilight">purple twilight</option>
+                <option value="sakura">sakura</option>
+                <option value="teto">teto's browser</option>
             </select>
             </div>
         </div>
@@ -857,7 +971,11 @@ body.settings-open .settings-panel {
 </div>
 
 <div class="bottombar">
-    <span class="bottom-brand">nebula - made by sealgod with love</span>
+    <span class="bottom-brand">nebula<span style="opacity: 0.5; margin: 0 4px;">|</span>
+    <button class="bottom-link" onclick="showPrivacyPolicy()">privacy policy,</button>
+    <button class="bottom-link" onclick="showProxyInfo()">proxy info</button>
+</span>
+
     <div class="bottom-right">
         <div id="clock"></div>
         <button class="bottom-btn" id="settingsBtn" title="Settings" onclick="toggleSettings()">
@@ -893,7 +1011,96 @@ body.settings-open .settings-panel {
     <img src="./assets/logos/teto.png" alt="Teto">
 </a>
 
+<div id="proxyModal" style="display:none; position:fixed; inset:0; z-index:9998; background:rgba(0,0,0,0.55); backdrop-filter:blur(6px); align-items:center; justify-content:center;">
+    <div style="background:var(--app-bg); border:1px solid var(--app-border); border-radius:16px; padding:28px 28px 22px; min-width:260px; max-width:340px; width:90vw; position:relative; animation:fadeUp 0.3s cubic-bezier(0.16,1,0.3,1) both;">
+        <div style="font-size:15px; font-weight:600; letter-spacing:-0.02em; color:var(--settings-title); margin-bottom:18px;">proxy info</div>
+        <div id="proxyModalBody" style="font-size:13px; color:var(--settings-label); line-height:1.8;"></div>
+        <button onclick="document.getElementById('proxyModal').style.display='none'" style="margin-top:18px; width:100%; padding:9px; border-radius:9px; border:1px solid var(--btn-border); background:var(--btn-bg); color:var(--settings-label); font-family:'Geist',sans-serif; font-size:12px; cursor:pointer; transition:background 0.15s, color 0.15s;">close</button>
+    </div>
+</div>
+
+<div id="privacyModal" style="display:none; position:fixed; inset:0; z-index:9998; background:rgba(0,0,0,0.55); backdrop-filter:blur(6px); align-items:center; justify-content:center;">
+    <div style="background:var(--app-bg); border:1px solid var(--app-border); border-radius:16px; padding:28px 28px 22px; min-width:260px; max-width:420px; width:90vw; position:relative; animation:fadeUp 0.3s cubic-bezier(0.16,1,0.3,1) both;">
+        
+        <div style="font-size:15px; font-weight:600; letter-spacing:-0.02em; color:var(--settings-title); margin-bottom:14px;">
+            privacy policy
+        </div>
+
+        <div id="privacyModalBody" style="font-size:12.5px; color:var(--settings-label); line-height:1.7;">
+        </div>
+
+        <button onclick="document.getElementById('privacyModal').style.display='none'"
+            style="margin-top:18px; width:100%; padding:9px; border-radius:9px; border:1px solid var(--btn-border); background:var(--btn-bg); color:var(--settings-label); font-family:'Geist',sans-serif; font-size:12px; cursor:pointer;">
+            close
+        </button>
+    </div>
+</div>
+
 <script>
+
+let bgAudio = null;
+const INTRO_SONG_URL = "./assets/poem.MP3";
+
+function enterSite() {
+    const screen = document.getElementById('clickScreen');
+
+    bgAudio = new Audio(INTRO_SONG_URL);
+    bgAudio.volume = 0.5;
+    bgAudio.loop = true;
+    bgAudio.play().catch(() => {});
+
+    screen.classList.add('fading');
+    document.body.classList.add('entered');
+
+    const tetoEnabled = currentTheme === 'teto';
+    if (tetoEnabled) {
+        const popup = document.getElementById('tetoPopup');
+        popup.style.display = 'block';
+        setTimeout(() => popup.classList.add('show'), 100);
+    }
+
+    setTimeout(() => {
+        screen.style.display = 'none';
+    }, 550);
+}
+
+function toggleBgAudio() {
+    if (!bgAudio) return;
+    const btn = document.getElementById('musicPlayBtn');
+    if (bgAudio.paused) {
+        bgAudio.play();
+        btn.textContent = 'pause';
+    } else {
+        bgAudio.pause();
+        btn.textContent = 'play';
+    }
+}
+
+function setBgVolume(val) {
+    if (bgAudio) bgAudio.volume = val / 100;
+    document.getElementById('musicVolLabel').textContent = val + '%';
+}
+
+function seekBgAudio(val) {
+    if (!bgAudio || !bgAudio.duration) return;
+    bgAudio.currentTime = (val / 100) * bgAudio.duration;
+}
+
+function formatMusicTime(s) {
+    const m = Math.floor(s / 60);
+    return m + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+}
+
+setInterval(() => {
+    if (!bgAudio || !bgAudio.duration) return;
+    const seek = document.getElementById('musicSeek');
+    const cur = document.getElementById('musicCurrentTime');
+    const dur = document.getElementById('musicDuration');
+    if (seek) seek.value = (bgAudio.currentTime / bgAudio.duration) * 100;
+    if (cur) cur.textContent = formatMusicTime(bgAudio.currentTime);
+    if (dur) dur.textContent = formatMusicTime(bgAudio.duration);
+}, 500);
+
 const subtexts = [
     "welcome to nebula!",
     "enjoy using nebula!",
@@ -902,8 +1109,8 @@ const subtexts = [
     "sub to our youtube (@nebulaunblocking)",
     "follow our tiktok (@nebulaunbl0cking)",
     "any questions or issues? email us (nebulas3rvices@gmail.com)",
-    "need more links? head over to https://docs.google.com/document/d/1LF8t3SomjobWsh0K4n4PZwxyeKBd-fozi9mlCZ31smY",
-    "\"michael knows how to be tuff, why cant you\" - luis (ur not tuff tho lmao)",
+    'need more links? head over to this doc:<br>https://docs.google.com/document/d/1LF8t3SomjobWsh0K4n4PZwxyeKBd-fozi9mlCZ31smY',
+    "\"michael knows how to be tuff, why cant you\" - luis (ur not tuff btw lmao)",
     "\"(sealgods name) thats my maannn\" - michael",
     "\"(sealgods name) ur so cute\" - michael",
     "if it takes you to render.com its because i cant afford $7 a month",
@@ -934,6 +1141,49 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 const PROXY = "https://onlinehomeworkhelper.onrender.com/lessons/math?url=";
+
+function showPrivacyPolicy() {
+    const modal = document.getElementById('privacyModal');
+    const body = document.getElementById('privacyModalBody');
+
+    modal.style.display = 'flex';
+
+    body.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            <p>nebula does not collect or store any sort of personal data. web requests are routed through the proxy server to load external content and will most likely never leave a trace of your data.</p>
+            <p>our proxy works by receiving the request the user sends, then it uses the backend to externally load the targeted service. all the data that the service sees is an automated request sent from the proxy ip. we absolutely do not distribute or sell any sort of data.</p>
+            <p><p>the whole source to the browser/proxy are at these two links:</p>
+            https://github.com/sealgodreal/nebulabrowser<br>https://github.com/sealgodreal/nebulaproxy</p>
+        </div>
+    `;
+}
+
+async function showProxyInfo() {
+    const modal = document.getElementById('proxyModal');
+    const body = document.getElementById('proxyModalBody');
+    modal.style.display = 'flex';
+    body.innerHTML = '<span style="color:var(--text-dim)">fetching...</span>';
+    try {
+        const res = await fetch(PROXY + encodeURIComponent("http://ip-api.com/json/?fields=status,message,country,regionName,city"));
+        const data = await res.json();
+        if (data.status !== "success") {
+            body.innerHTML = '<span style="color:#c44">lookup failed. try again in ~1-2 mins.</span>';
+            return;
+        }
+        body.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-dim)">city</span><span style="color:var(--settings-title)">${data.city.toLowerCase()}</span></div>
+                <div style="border-top:1px solid var(--sep)"></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-dim)">region</span><span style="color:var(--settings-title)">${data.regionName.toLowerCase()}</span></div>
+                <div style="border-top:1px solid var(--sep)"></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-dim)">country</span><span style="color:var(--settings-title)">${data.country.toLowerCase()}</span></div>
+                <div style="border-top:1px solid var(--sep)"></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-dim)">type</span><span style="color:var(--settings-title)">custom node.js express</span></div>
+            </div>`;
+    } catch {
+        body.innerHTML = '<span style="color:#c44">failed to fetch proxy info. the proxy might be down or under construction.</span>';
+    }
+}
 
 let historyStack = [];
 let historyIndex = -1;
@@ -1215,8 +1465,12 @@ let settingsOpen = false;
 
 function applyBodyClass() {
     const base = THEME_CLASSES[currentTheme] || '';
+    const wasEntered = document.body.classList.contains('entered');
     document.body.className = base;
 
+    if (wasEntered) {
+        document.body.classList.add('entered');
+    }
     if (settingsOpen) {
         document.body.classList.add('settings-open');
     }
@@ -1231,23 +1485,15 @@ function setTheme(name) {
 if (name === 'teto') {
     localStorage.setItem('nebula-teto-popup', '1');
 
-    popup.style.display = 'block';
-    popup.classList.remove('show');
-
-    setTimeout(() => {
-        requestAnimationFrame(() => {
-            popup.classList.add('show');
-        });
-    }, 100);
-
+    if (document.body.classList.contains('entered')) {
+        popup.style.display = 'block';
+        popup.classList.remove('show');
+        setTimeout(() => requestAnimationFrame(() => popup.classList.add('show')), 100);
+    }
 } else {
     localStorage.setItem('nebula-teto-popup', '0');
-
     popup.classList.remove('show');
-
-    setTimeout(() => {
-        popup.style.display = 'none';
-    }, 350);
+    setTimeout(() => { popup.style.display = 'none'; }, 350);
 }
     applyBodyClass();
     updateShades(name);
@@ -1262,19 +1508,6 @@ if (name === 'teto') {
 
 (function loadTheme() {
     currentTheme = localStorage.getItem('nebula-theme') || 'default';
-
-    const popup = document.getElementById('tetoPopup');
-    const tetoEnabled = localStorage.getItem('nebula-teto-popup') === '1';
-
-    if (currentTheme === 'teto' && tetoEnabled) {
-        popup.style.display = 'block';
-        setTimeout(() => {
-            popup.classList.add('show');
-        }, 300);
-    } else {
-        popup.classList.remove('show');
-        popup.style.display = 'none';
-    }
 
     applyBodyClass();
     updateShades(currentTheme);
@@ -1291,12 +1524,18 @@ function openSettings() {
     settingsOpen = true;
     applyBodyClass();
     document.getElementById('settingsBtn').classList.add('active');
+    const mp = document.getElementById('mainPage');
+    mp.classList.remove('settings-unsliding');
+    mp.classList.add('settings-sliding');
 }
 
 function closeSettings() {
     settingsOpen = false;
     applyBodyClass();
     document.getElementById('settingsBtn').classList.remove('active');
+    const mp = document.getElementById('mainPage');
+    mp.classList.remove('settings-sliding');
+    mp.classList.add('settings-unsliding');
 }
 
 function handleOverlayClick(e) {
