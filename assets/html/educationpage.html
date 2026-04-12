@@ -251,7 +251,7 @@ function renderGrid() {
         thumb.className = "game-thumb";
 
         const img = document.createElement("img");
-        img.src = `education/icons/${game.index}.png`;
+        img.src = `../education/icons/${game.index}.png`;
         img.alt = game.name;
 
         img.onerror = () => {
@@ -281,7 +281,7 @@ function openGame(game) {
     loadingScreen.style.opacity = "1";
 
     loadingScreen.innerHTML = `
-        <iframe src="https://sealgodreal.github.io/nebulabrowser/assets/loading.html"
+        <iframe src="https://sealgodreal.github.io/nebulabrowser/assets/html/loading.html"
         style="width:100%;height:100%;border:none;"></iframe>
     `;
 
