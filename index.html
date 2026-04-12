@@ -823,7 +823,8 @@ body.settings-open .settings-panel {
 }
 
 body:not(.entered) .topbar,
-body:not(.entered) .bottombar {
+body:not(.entered) .bottombar,
+body:not(.entered) #proxyStatusBar {
     opacity: 0;
     pointer-events: none;
     visibility: hidden;
@@ -836,7 +837,8 @@ body:not(.entered) .main-page {
 
 body.entered .topbar,
 body.entered .bottombar,
-body.entered .main-page {
+body.entered .main-page,
+body.entered #proxyStatusBar {
     opacity: 1;
     visibility: visible;
     transition: opacity 0.5s ease, visibility 0s;
