@@ -1061,6 +1061,7 @@ body.entered #proxyStatusBar {
 <script>
 
 let bgAudio = null;
+let isMusicPage = false;
 const INTRO_SONG_URL = "./assets/music/poem.MP3";
 
 function enterSite() {
@@ -1111,6 +1112,14 @@ function seekBgAudio(val) {
 function formatMusicTime(s) {
     const m = Math.floor(s / 60);
     return m + ':' + String(Math.floor(s % 60)).padStart(2, '0');
+}
+
+function checkMusicPage(url) {
+    return url && url.includes("musics.html");
+}
+
+function isHomePage() {
+    return document.getElementById("browserView").style.display === "none";
 }
 
 setInterval(() => {
@@ -1272,6 +1281,17 @@ function openBrowser(url) {
     const bar = document.getElementById("urlBar");
 
     showLoading();
+
+    const wasMusicPage = isMusicPage;
+    isMusicPage = checkMusicPage(url);
+
+    if (!wasMusicPage && isMusicPage) {
+        if (bgAudio) bgAudio.pause();
+    }
+
+    if (wasMusicPage && !isMusicPage) {
+        if (bgAudio) bgAudio.play().catch(() => {});
+    }
 
     frame.src = url;
 
@@ -1603,6 +1623,10 @@ function goHomeFromBrowser() {
         document.body.classList.add('entered');
         const clickScreen = document.getElementById('clickScreen');
         if (clickScreen) clickScreen.style.display = 'none';
+        if (bgAudio && isMusicPage) {
+            bgAudio.play().catch(() => {});
+        }
+        isMusicPage = false;
         if (currentTheme === 'teto') {
             const popup = document.getElementById('tetoPopup');
             popup.classList.remove('show');
