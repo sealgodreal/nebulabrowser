@@ -32,24 +32,38 @@ canvas {
   position: fixed;
   inset: 0;
   z-index: 1;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 18px;
+  gap: 28px;
   padding: 30px;
+
+  overflow: hidden;
+}
+
+.app::-webkit-scrollbar {
+  display: none;
+}
+.app {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .card {
-  width: 500px;
-  height: 700px;
+  flex: 0 0 auto;
+
+  width: clamp(340px, 32vw, 520px);
+  height: clamp(520px, 75vh, 720px);
+
   background: rgba(28, 28, 30, 0.78);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 20px;
   backdrop-filter: blur(18px);
+
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  flex-shrink: 0;
 }
 
 .album-art {
@@ -396,6 +410,49 @@ canvas {
   margin-left: 4px;
   pointer-events: none;
 }
+
+.dots {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  gap: 6px;
+  z-index: 2;
+}
+
+.dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+}
+
+@media (max-width: 900px) {
+  .dots {
+    display: flex;
+  }
+}
+
+@media (max-width: 900px) {
+  .app {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+
+    padding: 0;
+    gap: 0;
+    justify-content: flex-start;
+  }
+
+  .card {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+
+    scroll-snap-align: center;
+  }
+}
 </style>
 </head>
 <body>
@@ -403,6 +460,11 @@ canvas {
 <canvas id="bg"></canvas>
 
 <div class="app">
+
+  <div class="dots">
+  <span></span>
+  <span></span>
+</div>
 
   <div class="card">
     <div class="album-art" id="albumArt">
@@ -528,9 +590,16 @@ canvas {
 <script>
   const LIBRARY = [
     { title: "armed and dangerous",   artist: "king von", file: "armed-and-dangerous.MP3" },
+    { title: "bounce out with that",   artist: "ybn nahmir", file: "bounce-out-with-out.MP3" },
     { title: "bring me back to life",   artist: "evanescene", file: "bring-me-back-to-life.MP3" },
     { title: "dark thoughts",   artist: "lil tecca", file: "dark-thoughts.MP3" },
+    { title: "ive been so sober",   artist: "overtonight", file: "ive-been-so-sober.MP3" },
+    { title: "mirrors demo",   artist: "overtonight", file: "mirrors-demo.MP3" },
+    { title: "oppa stoppa",   artist: "ybn nahmir, 21 savage", file: "oppa-stoppa.MP3" },
     { title: "empty out your pockets",   artist: "juice wrld", file: "run-them-pockets.MP3" },
+    { title: "stalk ur socials",   artist: "s0rrow", file: "stalk-ur-socials.MP3" },
+    { title: "theyll post it online",   artist: "overtonight", file: "theyll-post-it-online.MP3" },
+    { title: "twenty four",   artist: "twenty four", file: "twenty-four.MP3" },
     { title: "nope your too late i already died",   artist: "wifiskeleton", file: "nytliad.MP3" },
     { title: "pass out",   artist: "fixupboy", file: "pass-out.MP3" },
     { title: "poem",   artist: "overtonight", file: "poem.MP3" },
