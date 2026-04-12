@@ -862,7 +862,7 @@ body.entered #proxyStatusBar {
 </div>
 
 <nav class="topbar">
-    <img class="topbar-logo" src="./assets/logos/nebula.png" alt="Nebula" onclick="goHome()">
+    <img class="topbar-logo" src="./assets/images/nebula.png" alt="Nebula" onclick="goHome()">
     <div class="topbar-sep"></div>
     <div class="topbar-icon" onclick="openGame()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -912,33 +912,37 @@ body.entered #proxyStatusBar {
         </div>
 <div class="apps">
     <a class="app" onclick="openApp('https://www.youtube.com')">
-        <div class="app-icon"><img src="./assets/logos/youtube.webp" alt="YouTube"></div>
+        <div class="app-icon"><img src="./assets/images/youtube.webp" alt="YouTube"></div>
         <div class="app-name">YouTube</div>
     </a>
 
     <a class="app" onclick="openApp('https://www.tiktok.com')">
-        <div class="app-icon"><img src="./assets/logos/tiktok.webp" alt="TikTok"></div>
+        <div class="app-icon"><img src="./assets/images/tiktok.webp" alt="TikTok"></div>
         <div class="app-name">TikTok</div>
     </a>
 
     <a class="app" onclick="openApp('https://www.google.com')">
-        <div class="app-icon"><img src="./assets/logos/google.webp" alt="Google"></div>
+        <div class="app-icon"><img src="./assets/images/google.webp" alt="Google"></div>
         <div class="app-name">Google</div>
     </a>
 
     <a class="app" onclick="openApp('https://www.roblox.com')">
-        <div class="app-icon"><img src="./assets/logos/roblox.png" alt="Roblox"></div>
+        <div class="app-icon"><img src="./assets/images/roblox.png" alt="Roblox"></div>
         <div class="app-name">Roblox</div>
     </a>
 
     <a class="app" onclick="openApp('https://www.discord.com')">
-        <div class="app-icon"><img src="./assets/logos/discord.webp" alt="Discord"></div>
+        <div class="app-icon"><img src="./assets/images/discord.webp" alt="Discord"></div>
         <div class="app-name">Discord</div>
     </a>
 
     <a class="app" onclick="openApp('https://www.reddit.com')">
-        <div class="app-icon"><img src="./assets/logos/reddit.webp" alt="Reddit"></div>
+        <div class="app-icon"><img src="./assets/images/reddit.webp" alt="Reddit"></div>
         <div class="app-name">Reddit</div>
+    </a>
+    <a class="app" onclick="openAppWithNoProxy('https://sealgodreal.github.io/nebulabrowser/assets/html/musics.html')">
+        <div class="app-icon"><img src="./assets/images/music.png" alt="Music"></div>
+        <div class="app-name">Music (BETA)</div>
     </a>
 </div>
     </div>
@@ -1008,11 +1012,11 @@ body.entered #proxyStatusBar {
 
 <div id="browserView" style="display:none;">
     <iframe id="browserFrame"></iframe>
-    <iframe id="loadingFrame" src="./assets/loading.html"></iframe>
+    <iframe id="loadingFrame" src="./assets/html/loading.html"></iframe>
 
     <div class="mini-bar">
 <button class="mini-home-btn" onclick="goHomeFromBrowser()" title="Home">
-    <img src="./assets/logos/nebula.png" alt="Nebula">
+    <img src="./assets/images/nebula.png" alt="Nebula">
 </button>
         <input id="urlBar" class="mini-url" onkeydown="if(event.key==='Enter') loadUrl(this.value)" />
 
@@ -1026,7 +1030,7 @@ body.entered #proxyStatusBar {
 </div>
 
 <a id="tetoPopup">
-    <img src="./assets/logos/teto.png" alt="Teto">
+    <img src="./assets/images/teto.png" alt="Teto">
 </a>
 
 <div id="proxyModal" style="display:none; position:fixed; inset:0; z-index:9998; background:rgba(0,0,0,0.55); backdrop-filter:blur(6px); align-items:center; justify-content:center;">
@@ -1057,7 +1061,7 @@ body.entered #proxyStatusBar {
 <script>
 
 let bgAudio = null;
-const INTRO_SONG_URL = "./assets/poem.MP3";
+const INTRO_SONG_URL = "./assets/music/poem.MP3";
 
 function enterSite() {
     const screen = document.getElementById('clickScreen');
@@ -1162,13 +1166,13 @@ window.addEventListener("DOMContentLoaded", () => {
     if (random.includes("application for windows")) {
         el.style.cursor = "pointer";
         el.addEventListener("click", () => {
-            window.location.href = "./assets/nebula-application/Nebula Browser.zip";
+            window.location.href = "./assets/application/Nebula Browser.zip";
         });
     }
 });
 
 const PROXY = "https://onlinehomeworkhelper.onrender.com/lessons/math?url=";
-const STATUS_TARGET = "https://sealgodreal.github.io/nebulabrowser/assets/status.json";
+const STATUS_TARGET = "https://sealgodreal.github.io/nebulabrowser/assets/json/status.json";
 
 function showPrivacyPolicy() {
     const modal = document.getElementById('privacyModal');
@@ -1251,6 +1255,10 @@ function openApp(url) {
     openBrowser(PROXY + encodeURIComponent(url));
 }
 
+function openAppWithNoProxy(url) {
+    openBrowser(url);
+}
+
 function openBrowser(url) {
     const popup = document.getElementById('tetoPopup');
     popup.classList.remove('show');
@@ -1314,7 +1322,7 @@ function hideLoading() {
 }
 
 function openGame() {
-    openBrowserWithLoader("./assets/educationpage.html");
+    openBrowserWithLoader("./assets/html/educationpage.html");
 }
 
 function goBack() {
@@ -1631,7 +1639,7 @@ function openBrowserWithLoader(url) {
 }
 
 window.openGame = function () {
-    openBrowserWithLoader("./assets/educationpage.html");
+    openBrowserWithLoader("./assets/html/educationpage.html");
 };
 
 function keepProxyAlive(proxyUrl, targetUrl) {
@@ -1647,7 +1655,7 @@ function keepProxyAlive(proxyUrl, targetUrl) {
   return setInterval(ping, 60 * 1000);
 }
 
-const id = keepProxyAlive(PROXY, "https://sealgodreal.github.io/nebulabrowser/assets/blank.html");
+const id = keepProxyAlive(PROXY, "https://sealgodreal.github.io/nebulabrowser/assets/html/blank.html");
 let proxyStatusInterval;
 
 async function checkProxyStatus() {
