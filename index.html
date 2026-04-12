@@ -872,6 +872,22 @@ body.entered .main-page {
     </div>
 </nav>
 
+<div id="proxyStatusBar" style="
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 25;
+">
+    <span>proxy status:</span>
+    <span id="proxyStatusText">starting...</span>
+</div>
+
 <canvas id="bg"></canvas>
 
 <div class="main-page" id="mainPage">
@@ -1150,6 +1166,7 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 const PROXY = "https://onlinehomeworkhelper.onrender.com/lessons/math?url=";
+const STATUS_TARGET = "https://sealgodreal.github.io/nebulabrowser/assets/status.json";
 
 function showPrivacyPolicy() {
     const modal = document.getElementById('privacyModal');
@@ -1629,6 +1646,40 @@ function keepProxyAlive(proxyUrl, targetUrl) {
 }
 
 const id = keepProxyAlive(PROXY, "https://sealgodreal.github.io/nebulabrowser/assets/blank.html");
+let proxyStatusInterval;
+
+async function checkProxyStatus() {
+    const text = document.getElementById("proxyStatusText");
+
+    try {
+        const res = await fetch(PROXY + encodeURIComponent(STATUS_TARGET), {
+            cache: "no-store"
+        });
+
+        const data = await res.json();
+
+        if (data.status === "online") {
+            text.textContent = "online";
+            text.style.color = "#22c55e";
+            clearInterval(proxyStatusInterval);
+
+        } else {
+            text.textContent = "starting...";
+            text.style.color = "#f59e0b";
+        }
+
+    } catch (e) {
+        text.textContent = "starting...";
+        text.style.color = "#f59e0b";
+    }
+}
+
+function startProxyStatusChecker() {
+    checkProxyStatus();
+    proxyStatusInterval = setInterval(checkProxyStatus, 1000);
+}
+
+startProxyStatusChecker();
 </script>
 </body>
 </html>
