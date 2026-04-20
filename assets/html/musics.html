@@ -599,16 +599,18 @@ canvas {
     { title: "empty out your pockets",   artist: "juice wrld", file: "run-them-pockets.MP3" },
     { title: "stalk ur socials",   artist: "s0rrow", file: "stalk-ur-socials.MP3" },
     { title: "theyll post it online",   artist: "overtonight", file: "theyll-post-it-online.MP3" },
-    { title: "twenty four",   artist: "twenty four", file: "twenty-four.MP3" },
+    { title: "twenty four",   artist: "overtonight", file: "twenty-four.MP3" },
     { title: "nope your too late i already died",   artist: "wifiskeleton", file: "nytliad.MP3" },
     { title: "pass out",   artist: "fixupboy", file: "pass-out.MP3" },
     { title: "poem",   artist: "overtonight", file: "poem.MP3" },
   ];
   const MUSIC_DIR = "../music/";
+  
 
   const audio = new Audio();
   audio.volume = 0.8;
   let currentIndex = -1;
+  let filteredList = LIBRARY.map((_, i) => i).sort((a, b) => LIBRARY[a].title.localeCompare(LIBRARY[b].title));
   let currentList = [...LIBRARY];
   let isRepeat = false;
   let isShuffle = false;
@@ -650,10 +652,10 @@ canvas {
     updateHighlight();
   }
 
-  function togglePlay() {
-    if (currentIndex === -1 && currentList.length) { playTrack(0); return; }
-    audio.paused ? audio.play().catch(() => {}) : audio.pause();
-  }
+function togglePlay() {
+  if (currentIndex === -1 && filteredList.length) { playTrack(filteredList[0]); return; }
+  audio.paused ? audio.play().catch(() => {}) : audio.pause();
+}
 
   function setPlayIcon(playing) {
     document.getElementById("playIcon").innerHTML = playing
@@ -661,19 +663,18 @@ canvas {
       : '<path d="M8 5v14l11-7z"/>';
   }
 
-  function skipNext() {
-    if (!currentList.length) return;
-    const next = isShuffle
-      ? Math.floor(Math.random() * currentList.length)
-      : (currentIndex + 1) % currentList.length;
-    playTrack(next);
-  }
+function skipNext() {
+  if (!filteredList.length) return;
+  const pos = filteredList.indexOf(currentIndex);
+  playTrack(filteredList[(pos + 1) % filteredList.length]);
+}
 
-  function skipPrev() {
-    if (audio.currentTime > 3) { audio.currentTime = 0; return; }
-    if (!currentList.length) return;
-    playTrack((currentIndex - 1 + currentList.length) % currentList.length);
-  }
+function skipPrev() {
+  if (audio.currentTime > 3) { audio.currentTime = 0; return; }
+  if (!filteredList.length) return;
+  const pos = filteredList.indexOf(currentIndex);
+  playTrack(filteredList[pos <= 0 ? filteredList.length - 1 : pos - 1]);
+}
 
   function seekTo(e) {
     if (!audio.duration) return;
@@ -683,15 +684,21 @@ canvas {
 
   function setVolume(v) { audio.volume = parseFloat(v); }
 
-  function onSearchInput() {
-    const q = document.getElementById("searchInput").value.trim().toLowerCase();
-    queueOpen = false;
-    document.getElementById("queueBtn").classList.remove("active");
-    currentList = q
-      ? LIBRARY.filter(t => t.title.toLowerCase().includes(q) || (t.artist || "").toLowerCase().includes(q))
-      : [...LIBRARY];
-    renderList();
+function onSearchInput() {
+  const q = document.getElementById("searchInput").value.trim().toLowerCase();
+  if (!q) {
+    filteredList = LIBRARY.map((_, i) => i);
+  } else {
+    filteredList = LIBRARY
+      .map((t, i) => ({ t, i }))
+      .filter(({ t }) =>
+        t.title.toLowerCase().includes(q) ||
+        (t.artist || "").toLowerCase().includes(q)
+      )
+      .map(({ i }) => i);
   }
+  renderList();
+}
 
   function toggleQueue() {
     queueOpen = !queueOpen;
@@ -701,38 +708,37 @@ canvas {
     renderList();
   }
 
-  function renderList() {
-    const area = document.getElementById("resultsArea");
-    area.querySelectorAll(".result-item").forEach(el => el.remove());
+function renderList() {
+  const area = document.getElementById("resultsArea");
+  area.querySelectorAll(".result-item").forEach(el => el.remove());
 
-    if (!currentList.length) {
-      document.getElementById("emptyState").style.display = "flex";
-      document.getElementById("emptyText").textContent = "No songs found";
-      return;
-    }
-    document.getElementById("emptyState").style.display = "none";
-
-    currentList.forEach((t, i) => {
-      const playing = i === currentIndex;
-      const div = document.createElement("div");
-      div.className = "result-item" + (playing ? " playing" : "");
-      div.innerHTML =
-        `<div class="result-num">${i + 1}</div>` +
-        `<div class="playing-bars"><span></span><span></span><span></span></div>` +
-        `<div class="result-meta">` +
-          `<div class="result-title">${t.title}</div>` +
-          (t.artist ? `<div class="result-artist">${t.artist}</div>` : "") +
-        `</div>`;
-      div.onclick = () => { currentIndex = i; playTrack(i); };
-      area.appendChild(div);
-    });
+  if (!filteredList.length) {
+    document.getElementById("emptyState").style.display = "flex";
+    return;
   }
+  document.getElementById("emptyState").style.display = "none";
 
-  function updateHighlight() {
-    document.querySelectorAll(".result-item").forEach((el, i) => {
-      el.classList.toggle("playing", i === currentIndex);
-    });
-  }
+  filteredList.forEach((libIdx, pos) => {
+    const t = LIBRARY[libIdx];
+    const div = document.createElement("div");
+    div.className = "result-item" + (libIdx === currentIndex ? " playing" : "");
+    div.dataset.libIdx = libIdx; // store so updateHighlight works
+    div.innerHTML =
+      `<div class="result-num">${pos + 1}</div>` +
+      `<div class="result-meta">` +
+        `<div class="result-title">${t.title}</div>` +
+        (t.artist ? `<div class="result-artist">${t.artist}</div>` : "") +
+      `</div>`;
+    div.onclick = () => playTrack(libIdx);
+    area.appendChild(div);
+  });
+}
+
+function updateHighlight() {
+  document.querySelectorAll(".result-item").forEach(el => {
+    el.classList.toggle("playing", parseInt(el.dataset.libIdx) === currentIndex);
+  });
+}
 
   renderList();
 </script>
