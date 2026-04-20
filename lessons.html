@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    --bg:         #050505;
+    --topbar-bg:  #0e0e0e;
+    --topbar-border: #1c1c1c;
+    --sep:        #1e1e1e;
+    --search-bg:  #0c0c0c;
+    --search-border: #181818;
+    --search-focus: #2a2a2a;
+    --search-placeholder: #2e2e2e;
+    --btn-bg:     #161616;
+    --btn-border: #242424;
+    --app-bg:     #0e0e0e;
+    --app-border: #1a1a1a;
+    --bottombar-bg: #080808;
+    --bottombar-border: #141414;
+    --text-dim:   #2e2e2e;
+    --icon-color: #3a3a3a;
+    --settings-card-bg: rgba(14,14,14,0.72);
+    --settings-card-border: #1e1e1e;
+    --settings-label: #666;
+    --settings-title: #bbb;
+    --dropdown-bg: rgba(10,10,10,0.85);
+    --dropdown-border: #252525;
+    --dropdown-text: #aaa;
+}
+
+body.theme-twilight {
+    --bg:         #0a0612;
+    --topbar-bg:  #110920;
+    --topbar-border: #2a1850;
+    --sep:        #2a1850;
+    --search-bg:  #0d0720;
+    --search-border: #2a1850;
+    --search-focus: #4a2880;
+    --search-placeholder: #3a2060;
+    --btn-bg:     #160f28;
+    --btn-border: #3a2070;
+    --app-bg:     #110920;
+    --app-border: #2a1850;
+    --bottombar-bg: #0a0618;
+    --bottombar-border: #2a1850;
+    --text-dim:   #4a2880;
+    --icon-color: #7c3aed;
+    --settings-card-bg: rgba(17,9,32,0.72);
+    --settings-card-border: #2a1850;
+    --settings-label: #9f6ee8;
+    --settings-title: #d4b8ff;
+    --dropdown-bg: rgba(13,7,32,0.88);
+    --dropdown-border: #3a2070;
+    --dropdown-text: #c4a0f8;
+}
+
+body.theme-sakura {
+    --bg:         #0f080c;
+    --topbar-bg:  #1a0d14;
+    --topbar-border: #3d1a28;
+    --sep:        #3d1a28;
+    --search-bg:  #150a10;
+    --search-border: #3d1a28;
+    --search-focus: #6d2a45;
+    --search-placeholder: #4d1a30;
+    --btn-bg:     #1e0d18;
+    --btn-border: #5d2a40;
+    --app-bg:     #1a0d14;
+    --app-border: #3d1a28;
+    --bottombar-bg: #0f080c;
+    --bottombar-border: #3d1a28;
+    --text-dim:   #6d2a45;
+    --icon-color: #ec4899;
+    --settings-card-bg: rgba(26,13,20,0.72);
+    --settings-card-border: #3d1a28;
+    --settings-label: #e06090;
+    --settings-title: #f0a0c0;
+    --dropdown-bg: rgba(21,10,16,0.88);
+    --dropdown-border: #5d2a40;
+    --dropdown-text: #f0a0c0;
+}
+
+body.theme-light {
+    --bg: #e0e0e0e0;
+    --topbar-bg: #f3f3f5;
+    --topbar-border: #d6d6d9;
+    --sep: #d6d6d9;
+    --search-bg: #f7f7f8;
+    --search-border: #dcdcdf;
+    --search-focus: #bfbfc4;
+    --search-placeholder: #8f8f95;
+    --btn-bg: #ececee;
+    --btn-border: #d4d4d8;
+    --app-bg: #f3f3f5;
+    --app-border: #dcdcdf;
+    --bottombar-bg: #f3f3f5;
+    --bottombar-border: #d6d6d9;
+    --text-dim: #6f6f75;
+    --icon-color: #4f4f55;
+    --settings-card-bg: rgba(243,243,245,0.85);
+    --settings-card-border: #dcdcdf;
+    --settings-label: #666;
+    --settings-title: #222;
+    --dropdown-bg: rgba(247,247,248,0.95);
+    --dropdown-border: #d4d4d8;
+    --dropdown-text: #333;
+}
+
+body.theme-light .wordmark { color: #2e2e33; }
+body.theme-light .wordmark span { color: rgba(0,0,0,0.35); font-weight: 400; }
+body.theme-light .app-name { color: #555; }
+body.theme-light #clock { color: #555; }
+body.theme-light .search-box input { color: #222; }
+
+body.theme-teto {
+    --bg:         #120306;
+    --topbar-bg:  #1a0508;
+    --topbar-border: #ff3b5a33;
+    --sep:        #ff3b5a33;
+    --search-bg:  #140407;
+    --search-border: #ff3b5a55;
+    --search-focus: #ff3b5a;
+    --search-placeholder: #ff7a9333;
+    --btn-bg:     #1b0509;
+    --btn-border: #ff3b5a66;
+    --app-bg:     #1a0508;
+    --app-border: #ff3b5a33;
+    --bottombar-bg: #0f0204;
+    --bottombar-border: #ff3b5a33;
+    --text-dim:   #ff6b8b;
+    --icon-color: #ff3b5a;
+    --settings-card-bg: rgba(255,59,90,0.07);
+    --settings-card-border: #ff3b5a33;
+    --settings-label: #ff6b8b;
+    --settings-title: #ffb3c1;
+    --dropdown-bg: rgba(20,4,7,0.92);
+    --dropdown-border: #ff3b5a55;
+    --dropdown-text: #ffd0d8;
+}
+body.theme-teto .search-box input:focus,
+body.theme-teto .mini-controls button:hover,
+body.theme-teto .bottom-btn.active {
+    box-shadow: 0 0 10px #ff2b3d55;
+}
+
+.settings-panel { color: var(--settings-title); }
+.settings-card { background: var(--settings-card-bg); }
+
+body {
+    background: var(--bg);
+    color: #fff;
+    font-family: 'Geist', system-ui, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    transition: background 0.4s ease;
+}
+
+#bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.35;
+}
+
+.topbar {
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: var(--topbar-bg);
+    border: 1px solid var(--topbar-border);
+    border-radius: 999px;
+    padding: 8px 20px;
+    animation: fadeDown 0.5s cubic-bezier(0.16,1,0.3,1) both;
+    transition: background 0.4s, border-color 0.4s;
+}
+
+.topbar-icon {
+    color: var(--icon-color);
+    cursor: pointer;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    justify-content: center;
+}
+.topbar-icon svg { display: block; }
+.topbar-icon:hover { color: #ccc; }
+
+.topbar-logo {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    display: block;
+    opacity: 0.85;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.topbar-logo:hover { opacity: 1; }
+
+.topbar-sep {
+    width: 1px;
+    height: 16px;
+    background: var(--sep);
+    transition: background 0.4s;
+}
+
+.main-page {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.44s cubic-bezier(0.16,1,0.3,1), filter 0.44s ease, opacity 0.44s ease, visibility 0s;
+    will-change: transform;
+}
+
+.main-page.settings-sliding {
+    transform: translateX(-18px) scale(0.97) !important;
+    filter: blur(3px) !important;
+    opacity: 0.45 !important;
+    transition: transform 0.44s cubic-bezier(0.16,1,0.3,1), filter 0.44s ease, opacity 0.44s ease !important;
+    pointer-events: none !important;
+}
+
+.main-page.settings-unsliding {
+    transform: translateX(0) scale(1) !important;
+    filter: blur(0) !important;
+    opacity: 1 !important;
+    transition: transform 0.44s cubic-bezier(0.16,1,0.3,1), filter 0.44s ease, opacity 0.44s ease !important;
+}
+
+body.entered.settings-open .main-page {
+    transform: translateX(-18px) scale(0.97) !important;
+    filter: blur(3px) !important;
+    opacity: 0.45 !important;
+    pointer-events: none;
+    visibility: visible !important;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    text-align: center;
+}
+
+.wordmark {
+    font-size: 2.8rem;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    color: #fff;
+    margin-bottom: 0px;
+    animation: fadeUp 0.55s cubic-bezier(0.16,1,0.3,1) both;
+}
+.wordmark span { color: rgba(255,255,255,0.18); font-weight: 300; }
+
+.subtext {
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    opacity: 0.8;
+    animation: fadeUp 0.55s 0.12s cubic-bezier(0.16,1,0.3,1) both;
+    margin-top: 0px;
+}
+
+.search-wrap {
+    width: 90vw;
+    max-width: 480px;
+    margin-bottom: 18px;
+    animation: fadeUp 0.55s 0.08s cubic-bezier(0.16,1,0.3,1) both;
+    margin-top: 8px;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 16px;
+    color: #333;
+    pointer-events: none;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 14px 52px 14px 44px;
+    font-size: 14px;
+    font-family: 'Geist', sans-serif;
+    font-weight: 400;
+    border-radius: 14px;
+    border: 1px solid var(--search-border);
+    outline: none;
+    background: var(--search-bg);
+    color: #fff;
+    letter-spacing: 0.01em;
+    transition: border-color 0.2s, background 0.2s;
+}
+.search-box input:focus { border-color: var(--search-focus); }
+.search-box input::placeholder { color: var(--search-placeholder); }
+
+.search-btn {
+    position: absolute;
+    right: 8px;
+    background: var(--btn-bg);
+    border: 1px solid var(--btn-border);
+    color: #555;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.search-btn:hover { background: #1e1e1e; border-color: #333; color: #fff; }
+
+.apps {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 18px;
+    animation: fadeUp 0.55s 0.14s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #444;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.app-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    background: var(--app-bg);
+    border: 1px solid var(--app-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: border-color 0.18s, transform 0.18s, background 0.18s;
+}
+.app:hover .app-icon { border-color: #2e2e2e; background: #141414; transform: translateY(-3px); }
+
+.app-icon img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    opacity: 0.55;
+    transition: opacity 0.18s;
+    border-radius: 6px;
+}
+.app:hover .app-icon img { opacity: 0.85; }
+
+.app-name {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    color: #383838;
+    transition: color 0.18s;
+    white-space: nowrap;
+}
+.app:hover .app-name { color: #777; }
+
+.settings-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+}
+body.settings-open .settings-overlay { pointer-events: all; }
+
+.settings-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: min(320px, 88vw);
+    height: 100%;
+    transform: translateX(100%);
+    transition: transform 0.44s cubic-bezier(0.16,1,0.3,1), opacity 0.36s ease;
+    opacity: 0;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    background: var(--settings-card-bg);
+    border-left: 1px solid var(--settings-card-border);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    padding: 18px;
+}
+body.settings-open .settings-panel {
+    transform: translateX(0);
+    opacity: 1;
+    pointer-events: all;
+}
+
+.settings-page-title {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--settings-title);
+    position: sticky;
+    top: 0;
+    padding: 14px 10px;
+    margin: -18px -18px 14px -18px;
+    background: var(--settings-card-bg);
+    backdrop-filter: blur(22px);
+    border-bottom: 1px solid var(--settings-card-border);
+    z-index: 2;
+}
+
+.settings-card {
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--settings-card-border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 12px;
+}
+
+.settings-card-title {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--settings-label);
+    text-transform: uppercase;
+    padding: 10px 12px 8px;
+    border-bottom: 1px solid var(--settings-card-border);
+    transition: color 0.4s, border-color 0.4s;
+}
+
+.settings-card-body { padding: 10px; }
+
+.settings-dropdown {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-family: 'Geist', sans-serif;
+    font-weight: 400;
+    border-radius: 8px;
+    border: 1px solid var(--dropdown-border);
+    background: var(--dropdown-bg);
+    color: var(--dropdown-text);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' stroke='%23555' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+    transition: border-color 0.2s, color 0.4s;
+}
+.settings-dropdown:focus { border-color: var(--search-focus); }
+.settings-dropdown option { background: #111; color: #ccc; }
+
+.bottombar {
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+    height: 48px;
+    background: var(--bottombar-bg);
+    border-top: 1px solid var(--bottombar-border);
+    z-index: 30;
+    animation: fadeUp 0.55s 0.28s cubic-bezier(0.16,1,0.3,1) both;
+    transition: background 0.4s, border-color 0.4s;
+}
+
+.bottom-brand {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+    user-select: none;
+    transition: color 0.4s;
+}
+
+.bottom-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#clock {
+    color: #282828;
+    font-size: 12px;
+    font-family: 'Geist', sans-serif;
+}
+
+.bottom-btn {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid var(--bottombar-border);
+    color: var(--icon-color);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.bottom-btn:hover { border-color: #2e2e2e; color: #888; background: #101010; }
+.bottom-btn.active { border-color: var(--search-focus); color: #999; }
+.bottom-btn svg { opacity: 0.9; }
+.bottom-btn:hover svg { opacity: 1; }
+
+#browserView {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: #000;
+}
+
+#browserFrame {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.mini-bar {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 45px;
+    width: min(520px, 90vw);
+    background: var(--dropdown-bg);
+    border: 1px solid var(--dropdown-border);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    transition: background 0.4s, border-color 0.4s;
+    z-index: 9999;
+}
+
+.mini-url {
+    flex: 1;
+    height: 100%;
+    font-size: 13px;
+    font-family: 'Geist', system-ui, sans-serif;
+    font-weight: 400;
+    background: var(--search-bg);
+    border: 1px solid var(--search-border);
+    border-radius: 8px;
+    color: var(--dropdown-text);
+    outline: none;
+    padding: 0 10px;
+    transition: background 0.4s, border-color 0.4s, color 0.4s;
+}
+.mini-url::placeholder { color: var(--search-placeholder); }
+.mini-url:focus { border-color: var(--search-focus); }
+
+.mini-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    height: 100%;
+}
+
+.mini-controls button {
+    height: 28px;
+    width: 28px;
+    border-radius: 8px;
+    border: 1px solid var(--btn-border);
+    background: var(--btn-bg);
+    color: var(--icon-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.15s ease;
+}
+.mini-controls button:hover {
+    background: var(--search-focus);
+    color: #fff;
+    border-color: var(--search-focus);
+    transform: translateY(-1px);
+}
+
+.mini-home-btn {
+    height: 28px;
+    width: 28px;
+    border-radius: 8px;
+    border: 1px solid var(--btn-border);
+    background: var(--btn-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+.mini-home-btn img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    opacity: 0.7;
+}
+.mini-home-btn:hover {
+    background: var(--search-focus);
+    border-color: var(--search-focus);
+    transform: translateY(-1px);
+}
+.mini-home-btn:hover img { opacity: 1; }
+
+#loadingFrame {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    z-index: 51;
+    opacity: 1;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+}
+
+#tetoPopup {
+    position: fixed;
+    bottom: 40px;
+    left: 12px;
+    z-index: 25;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    display: none;
+}
+#tetoPopup.show { opacity: 1; transform: translateY(0); }
+#tetoPopup img {
+    width: 225px;
+    border-radius: 0;
+    pointer-events: none;
+    user-select: none;
+    will-change: transform;
+}
+#tetoPopup img:hover { transform: scale(1.08) rotate(-1deg); }
+
+.bottom-link {
+    font-size: 11px;
+    font-weight: 400;
+    color: inherit;
+    opacity: 0.6;
+    letter-spacing: 0.04em;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: 'Geist', sans-serif;
+    transition: opacity 0.2s;
+}
+.bottom-link:hover { opacity: 1; color: inherit; }
+
+#clickScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: backdrop-filter 0.5s ease, -webkit-backdrop-filter 0.5s ease, opacity 0.5s ease;
+    pointer-events: none;
+}
+
+#clickScreen.fading {
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    opacity: 0;
+    pointer-events: none;
+}
+
+#clickText {
+    font-size: 13px;
+    font-family: 'Geist', sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.35);
+    pointer-events: none;
+    user-select: none;
+}
+
+.loading-dots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+.loading-dots span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    animation: dotPulse 1.2s ease-in-out infinite;
+}
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotPulse {
+    0%, 80%, 100% { transform: scale(0.7); opacity: 0.3; }
+    40%            { transform: scale(1);   opacity: 1; }
+}
+
+body:not(.entered) .topbar,
+body:not(.entered) .bottombar,
+body:not(.entered) #proxyStatusBar {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+}
+body:not(.entered) .main-page {
+    opacity: 0;
+    pointer-events: none;
+}
+body.entered .topbar,
+body.entered .bottombar,
+body.entered .main-page,
+body.entered #proxyStatusBar {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease, visibility 0s;
+    pointer-events: all;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+</style>
+</head>
+<body>
+<div id="clickScreen">
+    <div id="clickText">loading...</div>
+    <div class="loading-dots">
+        <span></span><span></span><span></span>
+    </div>
+</div>
+
+<nav class="topbar">
+    <img class="topbar-logo" src="./assets/images/nebula.png" alt="Nebula" onclick="goHome()">
+    <div class="topbar-sep"></div>
+    <div class="topbar-icon" onclick="openGame()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="12" rx="5"/>
+            <path d="M7 11v4M5 13h4"/>
+            <circle cx="17" cy="12" r="1" fill="currentColor"/>
+            <circle cx="15" cy="14" r="1" fill="currentColor"/>
+        </svg>
+    </div>
+</nav>
+
+<div id="proxyStatusBar" style="
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 25;
+">
+    <span>proxy status:</span>
+    <span id="proxyStatusText">starting...</span>
+</div>
+
+<canvas id="bg"></canvas>
+
+<div class="main-page" id="mainPage">
+    <div class="content">
+        <div class="wordmark" style="margin-top:10px;">nebula<span>.</span></div>
+        <div class="subtext"></div>
+        <div class="search-wrap">
+            <div class="search-box">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <circle cx="7" cy="7" r="4.5" stroke="#444" stroke-width="1.4"/>
+                    <line x1="10.5" y1="10.5" x2="13.5" y2="13.5" stroke="#444" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+                <input id="searchInput" placeholder="search or enter a url" onkeydown="doSearch(event)" autocomplete="off" spellcheck="false">
+                <button class="search-btn" onclick="triggerSearch()" title="Go">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                        <path d="M2 6.5h9M7.5 3L11 6.5 7.5 10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="apps">
+            <a class="app" onclick="openApp('https://www.youtube.com')">
+                <div class="app-icon"><img src="./assets/images/youtube.webp" alt="YouTube"></div>
+                <div class="app-name">YouTube</div>
+            </a>
+            <a class="app" onclick="openApp('https://www.tiktok.com')">
+                <div class="app-icon"><img src="./assets/images/tiktok.webp" alt="TikTok"></div>
+                <div class="app-name">TikTok</div>
+            </a>
+            <a class="app" onclick="openApp('https://www.google.com')">
+                <div class="app-icon"><img src="./assets/images/google.webp" alt="Google"></div>
+                <div class="app-name">Google</div>
+            </a>
+            <a class="app" onclick="openApp('https://www.roblox.com')">
+                <div class="app-icon"><img src="./assets/images/roblox.png" alt="Roblox"></div>
+                <div class="app-name">Roblox</div>
+            </a>
+            <a class="app" onclick="openApp('https://www.discord.com')">
+                <div class="app-icon"><img src="./assets/images/discord.webp" alt="Discord"></div>
+                <div class="app-name">Discord</div>
+            </a>
+            <a class="app" onclick="openApp('https://www.reddit.com')">
+                <div class="app-icon"><img src="./assets/images/reddit.webp" alt="Reddit"></div>
+                <div class="app-name">Reddit</div>
+            </a>
+            <a class="app" onclick="openAppWithNoProxy('https://sealgodreal.github.io/nebulabrowser/assets/html/musics.html')">
+                <div class="app-icon"><img src="./assets/images/music.png" alt="Music"></div>
+                <div class="app-name">Music (BETA)</div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="settings-overlay" id="settingsOverlay" onclick="handleOverlayClick(event)">
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-page-title">settings</div>
+        <div class="settings-card">
+            <div class="settings-card-title">themes</div>
+            <div class="settings-card-body">
+                <select class="settings-dropdown" id="themeDropdown" onchange="setTheme(this.value)">
+                    <option value="default">dark</option>
+                    <option value="light">light</option>
+                    <option value="twilight">purple twilight</option>
+                    <option value="sakura">sakura</option>
+                    <option value="teto">teto's browser</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bottombar">
+    <span class="bottom-brand">nebula<span style="opacity:0.5; margin:0 4px;">|</span>
+        <button class="bottom-link" onclick="showPrivacyPolicy()">privacy policy,</button>
+        <button class="bottom-link" onclick="showProxyInfo()">proxy info</button>
+    </span>
+    <div class="bottom-right">
+        <div id="clock"></div>
+        <button class="bottom-btn" id="settingsBtn" title="Settings" onclick="toggleSettings()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <circle cx="3" cy="8" r="1.3"/>
+                <circle cx="8" cy="8" r="1.3"/>
+                <circle cx="13" cy="8" r="1.3"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<div id="browserView" style="display:none;">
+    <iframe id="browserFrame"></iframe>
+    <iframe id="loadingFrame" src="./assets/html/loading.html"></iframe>
+    <div class="mini-bar">
+        <button class="mini-home-btn" onclick="goHomeFromBrowser()" title="Home">
+            <img src="./assets/images/nebula.png" alt="Nebula">
+        </button>
+        <input id="urlBar" class="mini-url" onkeydown="if(event.key==='Enter') loadUrl(this.value)" />
+        <div class="mini-controls">
+            <button onclick="goBack()">⟵</button>
+            <button onclick="goForward()">⟶</button>
+            <button onclick="reloadPage()">⟳</button>
+            <button onclick="toggleSettings()" title="Settings">⋯</button>
+        </div>
+    </div>
+</div>
+
+<a id="tetoPopup">
+    <img src="./assets/images/teto.png" alt="Teto">
+</a>
+
+<div id="proxyModal" style="display:none; position:fixed; inset:0; z-index:9998; background:rgba(0,0,0,0.55); backdrop-filter:blur(6px); align-items:center; justify-content:center;">
+    <div style="background:var(--app-bg); border:1px solid var(--app-border); border-radius:16px; padding:28px 28px 22px; min-width:260px; max-width:340px; width:90vw; position:relative; animation:fadeUp 0.3s cubic-bezier(0.16,1,0.3,1) both;">
+        <div style="font-size:15px; font-weight:600; letter-spacing:-0.02em; color:var(--settings-title); margin-bottom:18px;">proxy info</div>
+        <div id="proxyModalBody" style="font-size:13px; color:var(--settings-label); line-height:1.8;"></div>
+        <button onclick="document.getElementById('proxyModal').style.display='none'" style="margin-top:18px; width:100%; padding:9px; border-radius:9px; border:1px solid var(--btn-border); background:var(--btn-bg); color:var(--settings-label); font-family:'Geist',sans-serif; font-size:12px; cursor:pointer; transition:background 0.15s, color 0.15s;">close</button>
+    </div>
+</div>
+
+<div id="privacyModal" style="display:none; position:fixed; inset:0; z-index:9998; background:rgba(0,0,0,0.55); backdrop-filter:blur(6px); align-items:center; justify-content:center;">
+    <div style="background:var(--app-bg); border:1px solid var(--app-border); border-radius:16px; padding:28px 28px 22px; min-width:260px; max-width:420px; width:90vw; position:relative; animation:fadeUp 0.3s cubic-bezier(0.16,1,0.3,1) both;">
+        <div style="font-size:15px; font-weight:600; letter-spacing:-0.02em; color:var(--settings-title); margin-bottom:14px;">privacy policy</div>
+        <div id="privacyModalBody" style="font-size:12.5px; color:var(--settings-label); line-height:1.7;"></div>
+        <button onclick="document.getElementById('privacyModal').style.display='none'" style="margin-top:18px; width:100%; padding:9px; border-radius:9px; border:1px solid var(--btn-border); background:var(--btn-bg); color:var(--settings-label); font-family:'Geist',sans-serif; font-size:12px; cursor:pointer;">close</button>
+    </div>
+</div>
+
+<script>
+
+const subtexts = [
+    "welcome to nebula!",
+    "enjoy using nebula!",
+    "try out the games!",
+    "enjoying nebula? click this to download the application for windows!",
+    "credits to frogiee1 for ideas (frogiesarcade.win)",
+    "sub to our youtube (@nebulaunblocking)",
+    "follow our tiktok (@nebulaunbl0cking)",
+    "any questions or issues? email us (nebulas3rvices@gmail.com)",
+    'need more links? head over to this doc:<br>docs.google.com/document/d/1LF8t3SomjobWsh0K4n4PZwxyeKBd-fozi9mlCZ31smY',
+    "\"michael knows how to be tuff, why cant you\" - luis (ur not tuff for being a bitch btw lmao)",
+    "\"(sealgods name) thats my maannn\" - michael",
+    "\"(sealgods name) ur so cute\" - michael",
+    "\"im gonna hack ur website\" - chris",
+    "if it takes you to render.com its because i cant afford $7 a month",
+    "does anyone actually read this?",
+    "pip install opsec",
+    "so like",
+    "yall got me wit a mc chicken wit no lettuce and light mayo?",
+    "meow",
+    "woof woof!",
+    "yo thats crazy",
+    "goin down to southpark",
+    "\"im more protected, i use socks5\" - punchmade dev",
+    "\"ill stalk ur socials till my eyes are numb\" - s0rrow",
+    "put yo money where yo mouth at",
+    "ye let me get uhhhhhhhhhhhhhh",
+    "\"yo why doesnt _____ work on ur website\" idk maybe because its in fucking development",
+    "lowkirkenuinely katsane teto is peak",
+    "do NOT look at the back of spencers",
+    "nebula servers are NOT 24/7 (cos im broke)",
+    "i (x^2+y^2-1)^3-x^2y^3=0 you nro",
+    '"what is the abs val of -24.0"<br>oh shit its 24<br>"no its 24.0"<br>its the same fucking thing',
+    '<img src="./assets/images/CatEatingChips.gif" style="width: 80px;">',
+];
+
+window.addEventListener("DOMContentLoaded", () => {
+    const el = document.querySelector(".subtext");
+    if (!el) return;
+    const random = subtexts[Math.floor(Math.random() * subtexts.length)];
+    el.innerHTML = random;
+    if (random.includes("application for windows")) {
+        el.style.cursor = "pointer";
+        el.addEventListener("click", () => {
+            window.location.href = "./assets/application/Nebula Browser.zip";
+        });
+    }
+});
+
+const PROXY = "https://onlinehomeworkhelper.onrender.com/lessons/math?url=";
+const STATUS_TARGET = "https://sealgodreal.github.io/nebulabrowser/assets/json/status.json";
+
+function showPrivacyPolicy() {
+    const modal = document.getElementById('privacyModal');
+    const body  = document.getElementById('privacyModalBody');
+    modal.style.display = 'flex';
+    body.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            <p>nebula does not collect or store any sort of personal data. web requests are routed through the proxy server to load external content and will most likely never leave a trace of your data.</p>
+            <p>our proxy works by receiving the request the user sends, then it uses the backend to externally load the targeted service. all the data that the service sees is an automated request sent from the proxy ip. we absolutely do not distribute or sell any sort of data.</p>
+            <p>the whole source to the browser/proxy are at these two links:<br>
+            https://github.com/sealgodreal/nebulabrowser<br>https://github.com/sealgodreal/nebulaproxy</p>
+        </div>`;
+}
+
+async function showProxyInfo() {
+    const modal = document.getElementById('proxyModal');
+    const body  = document.getElementById('proxyModalBody');
+    modal.style.display = 'flex';
+    body.innerHTML = '<span style="color:var(--text-dim)">fetching...</span>';
+    try {
+        const res  = await fetch(PROXY + encodeURIComponent("http://ip-api.com/json/?fields=status,message,country,regionName,city"));
+        const data = await res.json();
+        if (data.status !== "success") {
+            body.innerHTML = '<span style="color:#c44">lookup failed. try again in ~1-2 mins.</span>';
+            return;
+        }
+        body.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-dim)">city</span><span style="color:var(--settings-title)">${data.city.toLowerCase()}</span></div>
+                <div style="border-top:1px solid var(--sep)"></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-dim)">region</span><span style="color:var(--settings-title)">${data.regionName.toLowerCase()}</span></div>
+                <div style="border-top:1px solid var(--sep)"></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-dim)">country</span><span style="color:var(--settings-title)">${data.country.toLowerCase()}</span></div>
+                <div style="border-top:1px solid var(--sep)"></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-dim)">type</span><span style="color:var(--settings-title)">custom node.js express</span></div>
+            </div>`;
+    } catch {
+        body.innerHTML = '<span style="color:#c44">failed to fetch proxy info. the proxy might be down or under construction.</span>';
+    }
+}
+
+let historyStack = [];
+let historyIndex = -1;
+
+function looksLikeUrl(input) {
+    return /^(https?:\/\/|www\.)/i.test(input) || /^[^\s]+\.[^\s]+(\/.*)?$/.test(input);
+}
+
+function navigate(val) {
+    val = val.trim();
+    if (!val) return;
+    let targetUrl;
+    if (looksLikeUrl(val)) {
+        targetUrl = val.startsWith("http") ? val : "https://" + val;
+    } else {
+        targetUrl = "https://search.brave.com/search?q=" + encodeURIComponent(val);
+    }
+    openBrowser(PROXY + encodeURIComponent(targetUrl));
+}
+
+function stripProxy(url) {
+    try {
+        const decoded = decodeURIComponent(url);
+        if (decoded.includes("url=")) return decoded.split("url=")[1];
+        return decoded;
+    } catch { return url; }
+}
+
+function openApp(url)           { openBrowser(PROXY + encodeURIComponent(url)); }
+function openAppWithNoProxy(url){ openBrowser(url); }
+
+function openBrowser(url) {
+    const popup = document.getElementById('tetoPopup');
+    popup.classList.remove('show');
+    popup.style.transitionDelay = "0s";
+    popup.style.opacity = "0";
+
+    document.getElementById("mainPage").style.display = "none";
+    document.getElementById("browserView").style.display = "block";
+
+    const frame = document.getElementById("browserFrame");
+    const bar   = document.getElementById("urlBar");
+
+    showLoading();
+    frame.src = url;
+
+    historyStack = historyStack.slice(0, historyIndex + 1);
+    historyStack.push(url);
+    historyIndex++;
+
+    bar.value = stripProxy(url);
+}
+
+document.getElementById("browserFrame").addEventListener("load", hideLoading);
+
+function loadUrl(input) {
+    if (!input) return;
+    input = input.trim();
+    let targetUrl;
+    if (looksLikeUrl(input)) {
+        targetUrl = input.startsWith("http") ? input : "https://" + input;
+    } else {
+        targetUrl = "https://search.brave.com/search?q=" + encodeURIComponent(input);
+    }
+    openBrowser(PROXY + encodeURIComponent(targetUrl));
+}
+
+function showLoading() {
+    const loader = document.getElementById("loadingFrame");
+    loader.style.display = "block";
+    loader.style.opacity = "1";
+    loader.src = loader.src;
+}
+
+function hideLoading() {
+    const loader = document.getElementById("loadingFrame");
+    setTimeout(() => {
+        loader.style.opacity = "0";
+        setTimeout(() => { loader.style.display = "none"; }, 350);
+    }, 500);
+}
+
+function openGame() { openBrowserWithLoader("./assets/html/educationpage.html"); }
+
+function goBack() {
+    if (historyIndex > 0) {
+        historyIndex--;
+        const url = historyStack[historyIndex];
+        document.getElementById("browserFrame").src = url;
+        document.getElementById("urlBar").value = stripProxy(url);
+    }
+}
+
+function goForward() {
+    if (historyIndex < historyStack.length - 1) {
+        historyIndex++;
+        const url = historyStack[historyIndex];
+        document.getElementById("browserFrame").src = url;
+        document.getElementById("urlBar").value = stripProxy(url);
+    }
+}
+
+function reloadPage() {
+    const frame = document.getElementById("browserFrame");
+    frame.src = frame.src;
+}
+
+function doSearch(e)    { if (e.key === "Enter") navigate(e.target.value); }
+function triggerSearch(){ navigate(document.getElementById("searchInput").value); }
+
+function updateClock() {
+    const now  = new Date();
+    const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    const day  = days[now.getDay()];
+    let h = now.getHours(), ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    document.getElementById("clock").textContent = day + " | " + h + ":" + m + ":" + s + " " + ampm;
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+const sped   = 5;
+const canvas = document.getElementById("bg");
+const ctx    = canvas.getContext("2d");
+
+function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+window.addEventListener("resize", resize);
+resize();
+
+let SHADES = ["rgba(255,255,255,","rgba(235,235,235,","rgba(210,210,210,","rgba(185,185,185,","rgba(160,160,160,","rgba(220,220,220,"];
+
+function updateShades(theme) {
+    if (theme === 'twilight') {
+        SHADES = ["rgba(180,120,255,","rgba(150,90,240,","rgba(200,160,255,","rgba(120,60,220,","rgba(160,100,255,","rgba(210,180,255,"];
+    } else if (theme === 'sakura') {
+        SHADES = ["rgba(255,160,200,","rgba(240,120,170,","rgba(255,200,220,","rgba(220,100,150,","rgba(255,180,210,","rgba(240,140,180,"];
+    } else if (theme === 'light') {
+        SHADES = ["rgba(0,0,0,","rgba(60,60,60,","rgba(120,120,120,","rgba(30,30,30,","rgba(80,80,80,","rgba(150,150,150,"];
+    } else {
+        SHADES = ["rgba(255,255,255,","rgba(235,235,235,","rgba(210,210,210,","rgba(185,185,185,","rgba(160,160,160,","rgba(220,220,220,"];
+    }
+}
+
+function spawnParticle() {
+    const w = canvas.width, h = canvas.height;
+    const edge = Math.random();
+    let x, y, vx, vy;
+    const speed = (0.35 + Math.random() * 0.55) * sped;
+    if (edge < 0.45) {
+        x = Math.random() * w * 0.65;
+        y = h * (0.92 + Math.random() * 0.08);
+        const angle = -(Math.PI * 0.18 + Math.random() * Math.PI * 0.28);
+        vx = speed * Math.cos(angle) * (0.6 + Math.random() * 0.6);
+        vy = speed * Math.sin(angle) * (0.8 + Math.random() * 0.5);
+    } else if (edge < 0.85) {
+        x = w * (Math.random() * 0.05);
+        y = h * (0.35 + Math.random() * 0.65);
+        vx = speed * (0.7 + Math.random() * 0.5);
+        vy = -speed * (0.3 + Math.random() * 0.5);
+    } else {
+        x = w * (Math.random() * 0.1);
+        y = h * (0.85 + Math.random() * 0.15);
+        const angle = -(Math.PI * 0.22 + Math.random() * Math.PI * 0.22);
+        vx = speed * Math.cos(angle) * (0.6 + Math.random() * 0.7);
+        vy = speed * Math.sin(angle) * (0.7 + Math.random() * 0.5);
+    }
+    return {
+        x, y, vx, vy,
+        size: 0.8 + Math.random() * 2.2,
+        shade: SHADES[Math.floor(Math.random() * SHADES.length)],
+        alpha: 0.25 + Math.random() * 0.5,
+        frame: 0,
+        wobbleAmp: 0.2 + Math.random() * 0.9,
+        wobbleFreq: 0.015 + Math.random() * 0.025,
+        wobbleOffset: Math.random() * Math.PI * 2,
+        curve: (Math.random() - 0.35) * 0.006,
+    };
+}
+
+function stepParticle(p) {
+    p.vx += p.curve;
+    p.x  += p.vx + Math.sin(p.frame * p.wobbleFreq + p.wobbleOffset) * p.wobbleAmp;
+    p.y  += p.vy;
+    p.frame++;
+}
+
+function isOffscreen(p) {
+    return p.x > canvas.width+20 || p.y < -20 || p.x < -20 || p.y > canvas.height+20;
+}
+
+function drawParticle(p) {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+    ctx.fillStyle = p.shade + p.alpha.toFixed(3) + ")";
+    ctx.fill();
+}
+
+function seedParticles(count) {
+    const w = canvas.width, h = canvas.height;
+    const cols  = Math.ceil(Math.sqrt(count*(w/h)));
+    const rows  = Math.ceil(count/cols);
+    const cellW = w/cols, cellH = h/rows;
+    const result = [];
+    for (let row=0; row<rows && result.length<count; row++) {
+        for (let col=0; col<cols && result.length<count; col++) {
+            const targetX = col*cellW + Math.random()*cellW;
+            const targetY = row*cellH + Math.random()*cellH;
+            let best=null, bestDist=Infinity;
+            for (let attempt=0; attempt<30; attempt++) {
+                const p = spawnParticle();
+                const preFrames = Math.floor(10 + Math.random()*500);
+                for (let f=0; f<preFrames; f++) stepParticle(p);
+                if (isOffscreen(p)) continue;
+                const dist = Math.hypot(p.x-targetX, p.y-targetY);
+                if (dist<bestDist) { bestDist=dist; best=p; }
+                if (dist<Math.max(cellW,cellH)*0.5) break;
+            }
+            result.push(best || spawnParticle());
+        }
+    }
+    return result;
+}
+
+const particles = seedParticles(55);
+
+function animate() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for (let i=0; i<particles.length; i++) {
+        if (isOffscreen(particles[i])) particles[i] = spawnParticle();
+        stepParticle(particles[i]);
+        drawParticle(particles[i]);
+    }
+    requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+const THEME_CLASSES = {
+    default:  '',
+    light:    'theme-light',
+    twilight: 'theme-twilight',
+    sakura:   'theme-sakura',
+    teto:     'theme-teto'
+};
+
+let currentTheme  = 'default';
+let settingsOpen  = false;
+
+function applyBodyClass() {
+    const base      = THEME_CLASSES[currentTheme] || '';
+    const wasEntered = document.body.classList.contains('entered');
+    document.body.className = base;
+    if (wasEntered)    document.body.classList.add('entered');
+    if (settingsOpen)  document.body.classList.add('settings-open');
+}
+
+function setTheme(name) {
+    currentTheme = name;
+    localStorage.setItem('nebula-theme', name);
+
+    const popup = document.getElementById('tetoPopup');
+    if (name === 'teto') {
+        localStorage.setItem('nebula-teto-popup', '1');
+        const clickScreen = document.getElementById('clickScreen');
+        const hasEntered  = document.body.classList.contains('entered') ||
+                            !clickScreen || clickScreen.style.display === 'none';
+        if (hasEntered) {
+            popup.style.display = 'block';
+            popup.classList.remove('show');
+            setTimeout(() => requestAnimationFrame(() => popup.classList.add('show')), 100);
+        }
+    } else {
+        localStorage.setItem('nebula-teto-popup', '0');
+        popup.classList.remove('show');
+        setTimeout(() => { popup.style.display = 'none'; }, 350);
+    }
+
+    applyBodyClass();
+    updateShades(name);
+    for (let p of particles) {
+        p.shade = SHADES[Math.floor(Math.random() * SHADES.length)];
+    }
+
+    const dd = document.getElementById('themeDropdown');
+    if (dd) dd.value = name;
+}
+
+(function loadTheme() {
+    currentTheme = localStorage.getItem('nebula-theme') || 'default';
+    applyBodyClass();
+    updateShades(currentTheme);
+    const dd = document.getElementById('themeDropdown');
+    if (dd) dd.value = currentTheme;
+})();
+
+function toggleSettings() { settingsOpen ? closeSettings() : openSettings(); }
+
+function openSettings() {
+    settingsOpen = true;
+    applyBodyClass();
+    document.getElementById('settingsBtn').classList.add('active');
+    const mp = document.getElementById('mainPage');
+    mp.classList.remove('settings-unsliding');
+    mp.classList.add('settings-sliding');
+}
+
+function closeSettings() {
+    settingsOpen = false;
+    applyBodyClass();
+    document.getElementById('settingsBtn').classList.remove('active');
+    const mp = document.getElementById('mainPage');
+    mp.classList.remove('settings-sliding');
+    mp.classList.add('settings-unsliding');
+}
+
+function handleOverlayClick(e) {
+    if (e.target === document.getElementById('settingsOverlay')) closeSettings();
+}
+
+function goHome() { if (settingsOpen) closeSettings(); }
+
+function goHomeFromBrowser() {
+    const bv    = document.getElementById('browserView');
+    const bar   = document.querySelector('.mini-bar');
+    const frame = document.getElementById('browserFrame');
+    bv.style.transition = 'opacity 0.35s ease';
+    bv.style.opacity    = '0';
+    setTimeout(() => {
+        bv.style.display    = 'none';
+        bv.style.opacity    = '';
+        bv.style.transition = '';
+        if (bar) { bar.style.transition = ''; bar.style.opacity = ''; }
+        frame.src = '';
+        const mp = document.getElementById('mainPage');
+        mp.style.display = '';
+        document.body.classList.add('entered');
+        const clickScreen = document.getElementById('clickScreen');
+        if (clickScreen) clickScreen.style.display = 'none';
+        if (currentTheme === 'teto') {
+            const popup = document.getElementById('tetoPopup');
+            popup.classList.remove('show');
+            popup.style.display   = 'block';
+            popup.style.opacity   = '0';
+            popup.style.transform = 'translateY(12px)';
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                popup.style.opacity   = '';
+                popup.style.transform = '';
+                popup.classList.add('show');
+            }));
+        }
+    }, 350);
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && settingsOpen) closeSettings(); });
+
+function openBrowserWithLoader(url) {
+    document.getElementById("mainPage").style.display  = "none";
+    document.getElementById("browserView").style.display = "block";
+    const frame  = document.getElementById("browserFrame");
+    const loader = document.getElementById("loadingFrame");
+    const bar    = document.getElementById("urlBar");
+    loader.style.display = "block";
+    loader.style.opacity = "1";
+    loader.src = loader.src;
+    frame.src  = url;
+    bar.value  = url;
+}
+
+window.openGame = function() { openBrowserWithLoader("./assets/html/educationpage.html"); };
+
+function enterSite() {
+    const screen = document.getElementById('clickScreen');
+    screen.classList.add('fading');
+    document.body.classList.add('entered');
+
+    if (currentTheme === 'teto') {
+        const popup = document.getElementById('tetoPopup');
+        popup.style.display = 'block';
+        setTimeout(() => popup.classList.add('show'), 100);
+    }
+
+    setTimeout(() => { screen.style.display = 'none'; }, 550);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const minDelay   = new Promise(res => setTimeout(res, 900));
+    const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+    Promise.all([minDelay, fontsReady]).then(() => enterSite());
+});
+
+function keepProxyAlive(proxyUrl, targetUrl) {
+    async function ping() {
+        try {
+            await fetch(proxyUrl + encodeURIComponent(targetUrl), { method: "GET", cache: "no-store" });
+        } catch(err) { console.error("ping error:", err); }
+    }
+    ping();
+    return setInterval(ping, 60 * 1000);
+}
+
+keepProxyAlive(PROXY, "https://sealgodreal.github.io/nebulabrowser/assets/html/blank.html");
+
+let proxyStatusInterval;
+
+async function checkProxyStatus() {
+    const text = document.getElementById("proxyStatusText");
+    try {
+        const res  = await fetch(PROXY + encodeURIComponent(STATUS_TARGET), { cache: "no-store" });
+        const data = await res.json();
+        if (data.status === "online") {
+            text.textContent = "online";
+            text.style.color = "#22c55e";
+            clearInterval(proxyStatusInterval);
+        } else {
+            text.textContent = "starting...";
+            text.style.color = "#f59e0b";
+        }
+    } catch {
+        text.textContent = "starting...";
+        text.style.color = "#f59e0b";
+    }
+}
+
+checkProxyStatus();
+proxyStatusInterval = setInterval(checkProxyStatus, 1000);
+
+</script>
+</body>
+</html>
