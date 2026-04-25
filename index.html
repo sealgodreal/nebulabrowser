@@ -930,8 +930,6 @@ body.entered #proxyStatusBar {
 </div>
 
 <script>
-alert("welcome to 𝐧𝐞𝐛𝐮𝐥𝐚!\nwe hope you enjoy your stay.")
-
 const subtexts = [
     "try out the games!",
     "enjoying nebula? click this to download the application for windows!",
@@ -981,6 +979,22 @@ window.addEventListener("DOMContentLoaded", () => {
 
 const PROXY = "https://onlinehomeworkhelper.onrender.com/lessons/math?url=";
 const STATUS_TARGET = "https://sealgodreal.github.io/nebulabrowser/assets/json/status.json";
+const VER_TARGET = "https://sealgodreal.github.io/nebulabrowser/assets/json/version.json"
+
+async function getVersion() {
+    try {
+        const res = await fetch(PROXY + encodeURIComponent(VER_TARGET), { cache: "no-store" });
+        const data = await res.json();
+        return data["current-version"];
+    } catch (error) {
+        return "unknown";
+    }
+}
+
+(async () => {
+    const ver = await getVersion();
+    alert("welcome to 𝐧𝐞𝐛𝐮𝐥𝐚 v" + ver + "!\nwe hope you enjoy your stay.");
+})();
 
 function showPrivacyPolicy() {
     const modal = document.getElementById('privacyModal');
