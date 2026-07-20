@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#171717">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+* { margin: 0; box-sizing: border-box; }
+
+:root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #161616;
+    --border: #1f1f1f;
+    --border-subtle: #171717;
+    --text: #ffffff;
+    --text-muted: #666666;
+    --text-dim: #404040;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 13px;
+    min-height: 100vh;
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+.header {
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+}
+
+.header-title { font-size: 12.5px; font-weight: 500; }
+.header-sep { width: 1px; height: 14px; background: var(--border); }
+.header-count { font-size: 12px; color: var(--text-dim); }
+
+.search-wrap {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    padding: 5px 11px;
+    width: 200px;
+}
+
+.search-wrap svg {
+    color: var(--text-dim);
+    flex-shrink: 0;
+}
+
+.search-wrap input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 12px;
+    width: 100%;
+}
+
+.search-wrap input::placeholder {
+    color: var(--text-dim);
+}
+
+.content {
+    padding: 60px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.grid {
+    width: 100%;
+    max-width: 900px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 120px);
+    justify-content: center;
+    gap: 10px;
+}
+
+.tool-card {
+    position: relative;
+    aspect-ratio: 1 / 1;
+
+    border-radius: 22px;
+    overflow: hidden;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+
+    cursor: pointer;
+    transition: 0.25s ease;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    user-select: none;
+}
+
+.tool-card:hover {
+    transform: translateY(-6px);
+    border-color: #2a2a2a;
+}
+
+.tool-icon {
+    position: absolute;
+    inset: 0;
+}
+
+.tool-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    filter: brightness(0.9);
+    transform: scale(1.05);
+    transition: 0.3s ease;
+}
+
+.tool-card:hover .tool-icon img {
+    transform: scale(1.12);
+    filter: brightness(0.75);
+}
+
+.tool-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.65),
+        rgba(0,0,0,0.15),
+        rgba(0,0,0,0.05)
+    );
+    opacity: 0;
+    transition: 0.25s ease;
+}
+
+.tool-card:hover::before {
+    opacity: 1;
+}
+
+.tool-name {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    right: 14px;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    opacity: 0;
+    transform: translateY(8px);
+    transition: 0.25s ease;
+
+    color: var(--text);
+}
+
+.tool-card:hover .tool-name {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#toolOverlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 9999;
+    display: none;
+    flex-direction: column;
+}
+
+#toolFrame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: none;
+}
+
+#loadingScreen {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s;
+    z-index: 10000;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <span class="header-title">nebula apps</span>
+    <div class="header-sep"></div>
+    <span class="header-count" id="toolCount"></span>
+
+    <div class="search-wrap">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+
+    <input type="text" id="searchInput" placeholder="search apps...">
+</div>
+</div>
+
+<div class="content">
+    <div class="grid" id="grid"></div>
+</div>
+
+<div id="toolOverlay">
+    <div id="loadingScreen"></div>
+    <iframe id="toolFrame"></iframe>
+</div>
+
+<script>
+const apps = [
+    { name: "YouTube", icon: "../images/youtube.webp", url: "https://youtube.com" },
+    { name: "CornHub", icon: "../images/cornhub.png", url: "https://cornhub.website" },
+    { name: "ChatGPT", icon: "../images/chatgpt.png", url: "https://toolbaz.com/writer/chat-gpt-alternative" },
+    { name: "Blooket Bot", icon: "../images/blooketbot.png", url: "https://blooketbot.schoolcheats.net" },
+];
+
+let searchQuery = "";
+const grid = document.getElementById("grid");
+
+const overlay = document.getElementById("toolOverlay");
+const frame = document.getElementById("toolFrame");
+const loadingScreen = document.getElementById("loadingScreen");
+
+const PROXY = "https://onlinehomeworkhelper.onrender.com/p/";
+
+document.getElementById("searchInput").addEventListener("input", e => {
+    searchQuery = e.target.value.toLowerCase();
+    renderGrid();
+});
+
+function openTool(url) {
+    overlay.style.display = "flex";
+
+    frame.style.display = "none";
+    frame.src = "";
+
+    loadingScreen.innerHTML = `
+        <iframe src="./loading.html"
+        style="width:100%;height:100%;border:none;"></iframe>
+    `;
+    loadingScreen.style.opacity = "1";
+
+frame.onload = () => {
+    loadingScreen.style.opacity = "0";
+
+let removed = false;
+
+const removeLoading = () => {
+    if (removed) return;
+    removed = true;
+
+    loadingScreen.removeEventListener("transitionend", removeLoading);
+    loadingScreen.remove();
+};
+
+    loadingScreen.addEventListener("transitionend", removeLoading);
+    frame.style.display = "block";
+};
+
+    frame.src = PROXY + encodeURIComponent(url);
+}
+
+overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) {
+        overlay.style.display = "none";
+        frame.src = "";
+        frame.onload = null;
+    }
+});
+
+function renderGrid() {
+    const filtered = apps.filter(t =>
+        t.name.toLowerCase().includes(searchQuery)
+    );
+
+    document.getElementById("toolCount").textContent =
+        filtered.length + " app" + (filtered.length !== 1 ? "s" : "");
+
+    grid.innerHTML = "";
+
+    filtered.forEach(tool => {
+        const card = document.createElement("div");
+        card.className = "tool-card";
+
+        card.onclick = () => openTool(tool.url);
+
+        card.innerHTML = `
+            <div class="tool-icon">
+                <img src="${tool.icon}">
+            </div>
+            <div class="tool-name">${tool.name}</div>
+        `;
+
+        grid.appendChild(card);
+    });
+}
+
+renderGrid();
+</script>
+
+</body>
+</html>

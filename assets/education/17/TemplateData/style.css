@@ -1,0 +1,112 @@
+.webgl-content * {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.webgl-content {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.webgl-content canvas,
+.webgl-content iframe,
+.webgl-content #gameContainer,
+.webgl-content #canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.webgl-content .logo {
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  background: url(progressLogo.Light.png) no-repeat 50% / contain;
+  height: 130px;
+  width: 154px;
+}
+
+.webgl-content .progress {
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  height: 18px;
+  margin-top: 90px;
+  width: 141px;
+}
+
+.webgl-content .progress .empty {
+  background: url(progressEmpty.Light.png) no-repeat 100% / cover;
+  display: inline-block;
+  float: right;
+  height: 100%;
+  width: 100%;
+}
+
+.webgl-content .progress .full {
+  background: url(progressFull.Light.png) no-repeat 0 / cover;
+  display: inline-block;
+  float: left;
+  height: 100%;
+  width: 0;
+}
+
+.webgl-content .logo.Dark {
+  background-image: url(progressLogo.Dark.png);
+}
+
+.webgl-content .progress.Dark .empty {
+  background-image: url(progressEmpty.Dark.png);
+}
+
+.webgl-content .progress.Dark .full {
+  background-image: url(progressFull.Dark.png);
+}
+
+.webgl-content .footer {
+  font-family: Helvetica, Verdana, Arial, sans-serif;
+  font-size: 18px;
+  height: 38px;
+  line-height: 38px;
+  margin-top: 5px;
+
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 10px;
+}
+
+.webgl-content .footer .webgl-logo {
+  background: transparent url(webgl-logo.png) 50% no-repeat;
+  display: inline-block;
+  height: 100%;
+  float: left;
+  width: 204px;
+}
+
+.webgl-content .footer .title {
+  background: transparent 50% no-repeat;
+  display: inline-block;
+  height: 100%;
+  float: right;
+  margin-right: 10px;
+}
+
+.webgl-content .footer .fullscreen {
+  background: transparent url(fullscreen.png) 50% no-repeat;
+  display: inline-block;
+  height: 100%;
+  float: right;
+  width: 38px;
+}
