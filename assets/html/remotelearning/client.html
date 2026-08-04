@@ -183,6 +183,8 @@ button,input {
 .drawer-buttons {
     display:flex;
     gap:10px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
 }
 
 .drawer-button {
@@ -207,8 +209,10 @@ button,input {
     background:#252931;
 }
 
-.drawer-icon {
-    font-size:20px;
+.drawer-button.enabled {
+    border-color:#5f4a91;
+    background:rgba(167,139,250,.09);
+    color:var(--accent);
 }
 
 #popupBackdrop {
@@ -357,10 +361,93 @@ button,input {
         opacity:.85;
         transform:translate(-50%,-50%) scale(.5);
     }
+
     to {
         opacity:0;
         transform:translate(-50%,-50%) scale(1.4);
     }
+}
+
+#gamepadJoystick {
+    position:fixed;
+    left:calc(26px + env(safe-area-inset-left));
+    bottom:calc(26px + env(safe-area-inset-bottom));
+    width:132px;
+    height:132px;
+    border-radius:50%;
+    background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.09),rgba(18,20,24,.55) 65%);
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 10px 26px rgba(0,0,0,.5),inset 0 0 22px rgba(0,0,0,.4);
+    backdrop-filter:blur(6px);
+    z-index:150;
+    display:none;
+    touch-action:none;
+}
+
+#gamepadJoystick.active {
+    display:block;
+}
+
+#gamepadJoystick::before {
+    content:"";
+    position:absolute;
+    inset:8px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,.06);
+}
+
+#gamepadKnob {
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:56px;
+    height:56px;
+    margin:-28px 0 0 -28px;
+    border-radius:50%;
+    background:linear-gradient(160deg,#4a505a,#1d2024);
+    border:1px solid rgba(255,255,255,.2);
+    box-shadow:0 5px 12px rgba(0,0,0,.55),inset 0 1px 2px rgba(255,255,255,.18);
+    pointer-events:none;
+    transition:box-shadow .15s;
+    will-change:transform;
+}
+
+#gamepadJoystick.dragging #gamepadKnob {
+    box-shadow:0 3px 8px rgba(0,0,0,.6),0 0 0 5px rgba(167,139,250,.22);
+}
+
+#jumpButton {
+    position:fixed;
+    right:calc(28px + env(safe-area-inset-right));
+    bottom:calc(40px + env(safe-area-inset-bottom));
+    width:76px;
+    height:76px;
+    border-radius:50%;
+    background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.13),rgba(26,29,34,.68) 68%);
+    border:1px solid rgba(255,255,255,.16);
+    box-shadow:0 10px 22px rgba(0,0,0,.5),inset 0 1px 2px rgba(255,255,255,.14);
+    color:#e7e7e9;
+    font-size:11px;
+    font-weight:600;
+    font-family:monospace;
+    letter-spacing:.6px;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:150;
+    -webkit-user-select:none;
+    user-select:none;
+    touch-action:none;
+}
+
+#jumpButton.active {
+    display:flex;
+}
+
+#jumpButton.pressed {
+    transform:scale(.9);
+    box-shadow:0 4px 10px rgba(0,0,0,.55),0 0 0 5px rgba(167,139,250,.22);
+    color:var(--accent);
 }
 
 #toast {
@@ -403,6 +490,16 @@ button,input {
     .drawer-button {
         height:48px;
         min-width:110px;
+    }
+
+    #gamepadJoystick {
+        width:112px;
+        height:112px;
+    }
+
+    #jumpButton {
+        width:66px;
+        height:66px;
     }
 }
 
@@ -570,7 +667,9 @@ button,input {
 </div>
 
 <div id="app">
+
     <div id="screenContainer">
+
         <img
             id="screen"
             draggable="false"
@@ -581,6 +680,7 @@ button,input {
             <div class="waiting-icon">◫</div>
             Waiting for screen...
         </div>
+
     </div>
 
     <button id="menuButton">☰</button>
@@ -594,6 +694,7 @@ button,input {
     </div>
 
     <div id="drawer">
+
         <div class="drawer-handle"></div>
 
         <div class="drawer-title">
@@ -601,11 +702,11 @@ button,input {
         </div>
 
         <div class="drawer-buttons">
+
             <button
                 class="drawer-button"
                 id="monitorsButton"
             >
-                <span class="drawer-icon">▣</span>
                 <span>Monitors</span>
             </button>
 
@@ -613,16 +714,25 @@ button,input {
                 class="drawer-button"
                 id="keyboardButton"
             >
-                <span class="drawer-icon">⌨</span>
                 <span>Keyboard</span>
             </button>
+
+            <button
+                class="drawer-button"
+                id="gamepadButton"
+            >
+                <span>Gamepad</span>
+            </button>
+
         </div>
     </div>
 
     <div id="popupBackdrop"></div>
 
     <div id="monitorPopup">
+
         <div class="popup-header">
+
             <div class="popup-title">
                 Monitors
             </div>
@@ -633,12 +743,14 @@ button,input {
             >
                 ×
             </button>
+
         </div>
 
         <div
             class="monitor-list"
             id="monitorList"
         ></div>
+
     </div>
 
     <input
@@ -655,11 +767,23 @@ button,input {
 
     <div id="touchIndicator"></div>
 
+    <div id="gamepadJoystick">
+        <div id="gamepadKnob"></div>
+    </div>
+
+    <button id="jumpButton">
+        Jump
+    </button>
+
     <div id="toast"></div>
+
 </div>
 
 <div id="orientationWarning">
-    <div class="orientationIcon">↻</div>
+
+    <div class="orientationIcon">
+        ↻
+    </div>
 
     <div class="orientationTitle">
         Rotate your device
@@ -668,15 +792,19 @@ button,input {
     <div class="orientationText">
         Landscape mode gives you the best remote desktop experience.
     </div>
+
 </div>
 
 <script>
-const SERVER_URL = "https://nebula-remote-streaming-backend.onrender.com";
+const SERVER_URL =
+    "https://nebula-remote-streaming-backend.onrender.com";
 
 let verificationToken = null;
 
 const urlParams =
-    new URLSearchParams(window.location.search);
+    new URLSearchParams(
+        window.location.search
+    );
 
 verificationToken =
     urlParams.get("token");
@@ -692,41 +820,67 @@ if (
 }
 
 const loginOverlay =
-    document.getElementById("loginOverlay");
+    document.getElementById(
+        "loginOverlay"
+    );
 
 const loginChoice =
-    document.getElementById("loginChoice");
+    document.getElementById(
+        "loginChoice"
+    );
 
 const loginForm =
-    document.getElementById("loginForm");
+    document.getElementById(
+        "loginForm"
+    );
 
 const loginToken =
-    document.getElementById("loginToken");
+    document.getElementById(
+        "loginToken"
+    );
 
 const loginStatus =
-    document.getElementById("loginStatus");
+    document.getElementById(
+        "loginStatus"
+    );
 
 const createConnectionButton =
-    document.getElementById("createConnectionButton");
+    document.getElementById(
+        "createConnectionButton"
+    );
 
 const connectConnectionButton =
-    document.getElementById("connectConnectionButton");
+    document.getElementById(
+        "connectConnectionButton"
+    );
 
 const loginSubmit =
-    document.getElementById("loginSubmit");
+    document.getElementById(
+        "loginSubmit"
+    );
 
 const loginBack =
-    document.getElementById("loginBack");
+    document.getElementById(
+        "loginBack"
+    );
 
 function hideLogin() {
-    loginOverlay.style.display = "none";
+    loginOverlay.style.display =
+        "none";
 }
 
 function showTokenForm(mode) {
-    loginChoice.style.display = "none";
-    loginForm.style.display = "block";
-    loginBack.style.display = "block";
-    loginStatus.textContent = "";
+    loginChoice.style.display =
+        "none";
+
+    loginForm.style.display =
+        "block";
+
+    loginBack.style.display =
+        "block";
+
+    loginStatus.textContent =
+        "";
 
     loginSubmit.textContent =
         mode === "connect"
@@ -736,29 +890,51 @@ function showTokenForm(mode) {
     loginSubmit.onclick =
         connectToExisting;
 
-    setTimeout(function() {
-        loginToken.focus();
-    },50);
+    setTimeout(
+        function() {
+            loginToken.focus();
+        },
+        50
+    );
 }
 
 function showLoginChoice() {
-    loginChoice.style.display = "block";
-    loginForm.style.display = "none";
-    loginBack.style.display = "none";
-    loginStatus.textContent = "";
+    loginChoice.style.display =
+        "block";
+
+    loginForm.style.display =
+        "none";
+
+    loginBack.style.display =
+        "none";
+
+    loginStatus.textContent =
+        "";
 }
 
 function downloadCreateRemote() {
-    alert("Please extract the .zip file, then run \"Launcher.cmd\" and make sure you have Python installed.")
+    alert(
+        "Please extract the .zip file, then run \"Launcher.cmd\" and make sure you have Python installed."
+    );
+
     const link =
         document.createElement("a");
 
-    link.href = "./remote.zip";
-    link.download = "remote.zip";
+    link.href =
+        "./remote.zip";
 
-    document.body.appendChild(link);
+    link.download =
+        "remote.zip";
+
+    document.body.appendChild(
+        link
+    );
+
     link.click();
-    document.body.removeChild(link);
+
+    document.body.removeChild(
+        link
+    );
 }
 
 createConnectionButton.addEventListener(
@@ -769,7 +945,9 @@ createConnectionButton.addEventListener(
 connectConnectionButton.addEventListener(
     "click",
     function() {
-        showTokenForm("connect");
+        showTokenForm(
+            "connect"
+        );
     }
 );
 
@@ -781,30 +959,39 @@ loginBack.addEventListener(
 loginToken.addEventListener(
     "keydown",
     function(event) {
-        if (event.key === "Enter") {
+        if (
+            event.key === "Enter"
+        ) {
             loginSubmit.click();
         }
     }
 );
 
 async function connectToExisting() {
+
     const value =
         loginToken.value.trim();
 
     if (!value) {
+
         loginStatus.textContent =
             "Enter a token.";
+
         return;
     }
 
-    verificationToken = value;
+    verificationToken =
+        value;
 
     loginStatus.textContent =
         "Checking connection...";
 
     try {
+
         await connect();
+
     } catch (error) {
+
         console.error(
             "Connection error:",
             error
@@ -817,66 +1004,121 @@ async function connectToExisting() {
 }
 
 const screen =
-    document.getElementById("screen");
+    document.getElementById(
+        "screen"
+    );
 
 const waiting =
-    document.getElementById("waiting");
+    document.getElementById(
+        "waiting"
+    );
 
 const menuButton =
-    document.getElementById("menuButton");
+    document.getElementById(
+        "menuButton"
+    );
 
 const drawer =
-    document.getElementById("drawer");
+    document.getElementById(
+        "drawer"
+    );
 
 const connectionDot =
-    document.getElementById("connectionDot");
+    document.getElementById(
+        "connectionDot"
+    );
 
 const connectionText =
-    document.getElementById("connectionText");
+    document.getElementById(
+        "connectionText"
+    );
 
 const monitorsButton =
-    document.getElementById("monitorsButton");
+    document.getElementById(
+        "monitorsButton"
+    );
 
 const keyboardButton =
-    document.getElementById("keyboardButton");
+    document.getElementById(
+        "keyboardButton"
+    );
+
+const gamepadButton =
+    document.getElementById(
+        "gamepadButton"
+    );
+
+const gamepadJoystick =
+    document.getElementById(
+        "gamepadJoystick"
+    );
+
+const gamepadKnob =
+    document.getElementById(
+        "gamepadKnob"
+    );
+
+const jumpButton =
+    document.getElementById(
+        "jumpButton"
+    );
 
 const monitorPopup =
-    document.getElementById("monitorPopup");
+    document.getElementById(
+        "monitorPopup"
+    );
 
 const monitorList =
-    document.getElementById("monitorList");
+    document.getElementById(
+        "monitorList"
+    );
 
 const monitorClose =
-    document.getElementById("monitorClose");
+    document.getElementById(
+        "monitorClose"
+    );
 
 const popupBackdrop =
-    document.getElementById("popupBackdrop");
+    document.getElementById(
+        "popupBackdrop"
+    );
 
 const hiddenKeyboardInput =
-    document.getElementById("hiddenKeyboardInput");
+    document.getElementById(
+        "hiddenKeyboardInput"
+    );
 
 const touchIndicator =
-    document.getElementById("touchIndicator");
+    document.getElementById(
+        "touchIndicator"
+    );
 
 const toast =
-    document.getElementById("toast");
+    document.getElementById(
+        "toast"
+    );
 
 let socket = null;
 let monitors = [];
 let selectedMonitor = null;
 let screenWidth = 1920;
 let screenHeight = 1080;
+
 let pointerDown = false;
 let holdTimer = null;
 let holdStarted = false;
+
 let lastTapTime = 0;
 let lastTapPosition = null;
+
 let toastTimer = null;
 let reconnectTimer = null;
 let manuallyDisconnected = false;
+
 let keyboardMode = false;
 
 function isMobileDevice() {
+
     return (
         "ontouchstart" in window ||
         navigator.maxTouchPoints > 0 ||
@@ -887,15 +1129,19 @@ function isMobileDevice() {
 }
 
 async function requestLandscape() {
+
     try {
+
         if (
             screen.orientation &&
             screen.orientation.lock
         ) {
+
             await screen.orientation.lock(
                 "landscape"
             );
         }
+
     } catch (error) {}
 }
 
@@ -904,12 +1150,15 @@ document.addEventListener(
     function() {
         requestLandscape();
     },
-    { once:true }
+    {
+        once:true
+    }
 );
 
 menuButton.addEventListener(
     "click",
     function(event) {
+
         event.stopPropagation();
 
         drawer.classList.toggle(
@@ -919,9 +1168,12 @@ menuButton.addEventListener(
 );
 
 function connect() {
+
     return new Promise(
         function(resolve,reject) {
+
             if (!verificationToken) {
+
                 connectionText.textContent =
                     "missing token";
 
@@ -943,16 +1195,20 @@ function connect() {
                     WebSocket.CONNECTING
                 )
             ) {
+
                 resolve();
+
                 return;
             }
 
             if (reconnectTimer) {
+
                 clearTimeout(
                     reconnectTimer
                 );
 
-                reconnectTimer = null;
+                reconnectTimer =
+                    null;
             }
 
             connectionText.textContent =
@@ -983,7 +1239,9 @@ function connect() {
             const failTimer =
                 setTimeout(
                     function() {
+
                         if (!settled) {
+
                             settled = true;
 
                             try {
@@ -996,6 +1254,7 @@ function connect() {
                                 )
                             );
                         }
+
                     },
                     8000
                 );
@@ -1005,10 +1264,12 @@ function connect() {
                     websocketURL
                 );
 
-            socket.binaryType = "blob";
+            socket.binaryType =
+                "blob";
 
             socket.onopen =
                 function() {
+
                     clearTimeout(
                         failTimer
                     );
@@ -1032,6 +1293,7 @@ function connect() {
 
             socket.onclose =
                 function(event) {
+
                     connectionDot.classList.remove(
                         "connected"
                     );
@@ -1040,6 +1302,7 @@ function connect() {
                         "disconnected";
 
                     if (!settled) {
+
                         clearTimeout(
                             failTimer
                         );
@@ -1058,15 +1321,18 @@ function connect() {
                     if (
                         !manuallyDisconnected
                     ) {
+
                         connectionText.textContent =
                             "reconnecting";
 
                         reconnectTimer =
                             setTimeout(
                                 function() {
+
                                     connect().catch(
                                         function() {}
                                     );
+
                                 },
                                 1500
                             );
@@ -1075,6 +1341,7 @@ function connect() {
 
             socket.onerror =
                 function(error) {
+
                     console.error(
                         "WebSocket error:",
                         error
@@ -1088,6 +1355,7 @@ function connect() {
                         "connection error";
 
                     if (!settled) {
+
                         clearTimeout(
                             failTimer
                         );
@@ -1104,11 +1372,14 @@ function connect() {
 
             socket.onmessage =
                 function(event) {
+
                     if (
                         typeof event.data ===
                         "string"
                     ) {
+
                         try {
+
                             const message =
                                 JSON.parse(
                                     event.data
@@ -1118,6 +1389,7 @@ function connect() {
                                 message.type ===
                                 "monitors"
                             ) {
+
                                 monitors =
                                     Array.isArray(
                                         message.monitors
@@ -1130,9 +1402,11 @@ function connect() {
                                     null &&
                                     monitors.length > 0
                                 ) {
+
                                     const primary =
                                         monitors.find(
                                             function(monitor) {
+
                                                 return (
                                                     monitor.primary === true ||
                                                     monitor.main === true ||
@@ -1153,6 +1427,7 @@ function connect() {
                                     monitors.length > 0 &&
                                     !monitors.some(
                                         function(monitor) {
+
                                             return String(
                                                 monitor.id
                                             ) === String(
@@ -1161,15 +1436,18 @@ function connect() {
                                         }
                                     )
                                 ) {
+
                                     selectedMonitor =
                                         monitors[0].id;
                                 }
 
                                 renderMonitors();
+
                             } else if (
                                 message.type ===
                                 "size"
                             ) {
+
                                 screenWidth =
                                     Number(
                                         message.width
@@ -1182,16 +1460,20 @@ function connect() {
 
                                 waiting.style.display =
                                     "none";
+
                             } else if (
                                 message.type ===
                                 "error"
                             ) {
+
                                 showToast(
                                     message.message ||
                                     "Server error"
                                 );
                             }
+
                         } catch (error) {
+
                             console.error(
                                 "Message parse error:",
                                 error
@@ -1211,6 +1493,7 @@ function connect() {
 
                     screen.onload =
                         function() {
+
                             URL.revokeObjectURL(
                                 imageURL
                             );
@@ -1224,12 +1507,15 @@ function connect() {
 }
 
 function send(message) {
+
     if (
         socket &&
         socket.readyState ===
         WebSocket.OPEN
     ) {
+
         try {
+
             socket.send(
                 JSON.stringify(
                     message
@@ -1237,7 +1523,9 @@ function send(message) {
             );
 
             return true;
+
         } catch (error) {
+
             console.error(
                 "Send error:",
                 error
@@ -1249,16 +1537,23 @@ function send(message) {
 }
 
 function renderMonitors() {
-    monitorList.innerHTML = "";
+
+    monitorList.innerHTML =
+        "";
 
     if (monitors.length === 0) {
+
         const empty =
             document.createElement(
                 "div"
             );
 
-        empty.style.color = "#666";
-        empty.style.fontSize = "11px";
+        empty.style.color =
+            "#666";
+
+        empty.style.fontSize =
+            "11px";
+
         empty.textContent =
             "No monitors detected.";
 
@@ -1271,12 +1566,15 @@ function renderMonitors() {
 
     monitors.forEach(
         function(monitor) {
+
             const item =
                 document.createElement(
                     "button"
                 );
 
-            item.type = "button";
+            item.type =
+                "button";
+
             item.className =
                 "monitor-item";
 
@@ -1288,6 +1586,7 @@ function renderMonitors() {
                     selectedMonitor
                 )
             ) {
+
                 item.classList.add(
                     "active"
                 );
@@ -1349,6 +1648,7 @@ function renderMonitors() {
             item.addEventListener(
                 "click",
                 function(event) {
+
                     event.preventDefault();
                     event.stopPropagation();
 
@@ -1366,6 +1666,7 @@ function renderMonitors() {
 }
 
 function selectMonitor(id) {
+
     if (
         id === undefined ||
         id === null
@@ -1373,7 +1674,8 @@ function selectMonitor(id) {
         return;
     }
 
-    selectedMonitor = id;
+    selectedMonitor =
+        id;
 
     const sent =
         send({
@@ -1384,6 +1686,7 @@ function selectMonitor(id) {
     renderMonitors();
 
     if (!sent) {
+
         showToast(
             "Not connected"
         );
@@ -1400,6 +1703,7 @@ function selectMonitor(id) {
     const selected =
         monitors.find(
             function(monitor) {
+
                 return String(
                     monitor.id
                 ) === String(
@@ -1425,6 +1729,7 @@ function selectMonitor(id) {
 monitorsButton.addEventListener(
     "click",
     function(event) {
+
         event.preventDefault();
         event.stopPropagation();
 
@@ -1451,6 +1756,7 @@ monitorsButton.addEventListener(
 );
 
 function closeMonitorPopup() {
+
     monitorPopup.classList.remove(
         "open"
     );
@@ -1463,7 +1769,9 @@ function closeMonitorPopup() {
 monitorClose.addEventListener(
     "click",
     function(event) {
+
         event.preventDefault();
+
         closeMonitorPopup();
     }
 );
@@ -1471,6 +1779,7 @@ monitorClose.addEventListener(
 popupBackdrop.addEventListener(
     "click",
     function(event) {
+
         if (
             event.target ===
             popupBackdrop
@@ -1481,6 +1790,7 @@ popupBackdrop.addEventListener(
 );
 
 function getCoordinates(event) {
+
     const rect =
         screen.getBoundingClientRect();
 
@@ -1499,13 +1809,16 @@ function getCoordinates(event) {
         rectRatio >
         imageRatio
     ) {
+
         displayedHeight =
             rect.height;
 
         displayedWidth =
             displayedHeight *
             imageRatio;
+
     } else {
+
         displayedWidth =
             rect.width;
 
@@ -1569,6 +1882,7 @@ function getCoordinates(event) {
 }
 
 function showTouch(event) {
+
     touchIndicator.style.left =
         event.clientX + "px";
 
@@ -1586,9 +1900,26 @@ function showTouch(event) {
     );
 }
 
+let gamepadScreenPointerId =
+    null;
+
+let gamepadScreenDragging =
+    false;
+
+let gamepadScreenStartX =
+    0;
+
+let gamepadScreenStartY =
+    0;
+
+const GAMEPAD_DRAG_THRESHOLD =
+    10;
+
+
 screen.addEventListener(
     "pointerdown",
     function(event) {
+
         event.preventDefault();
 
         if (
@@ -1601,16 +1932,48 @@ screen.addEventListener(
             );
         }
 
-        pointerDown = true;
-        holdStarted = false;
+        if (gamepadMode) {
+
+            gamepadScreenPointerId =
+                event.pointerId;
+
+            gamepadScreenDragging =
+                false;
+
+            gamepadScreenStartX =
+                event.clientX;
+
+            gamepadScreenStartY =
+                event.clientY;
+
+            try {
+
+                screen.setPointerCapture(
+                    event.pointerId
+                );
+
+            } catch (error) {}
+
+            return;
+        }
+
+        pointerDown =
+            true;
+
+        holdStarted =
+            false;
 
         try {
+
             screen.setPointerCapture(
                 event.pointerId
             );
+
         } catch (error) {}
 
-        showTouch(event);
+        showTouch(
+            event
+        );
 
         const position =
             getCoordinates(
@@ -1641,6 +2004,7 @@ screen.addEventListener(
             isDoubleTap &&
             isSamePosition
         ) {
+
             clearTimeout(
                 holdTimer
             );
@@ -1652,13 +2016,17 @@ screen.addEventListener(
                 y:position.y
             });
 
-            lastTapTime = 0;
-            lastTapPosition = null;
+            lastTapTime =
+                0;
+
+            lastTapPosition =
+                null;
 
             return;
         }
 
-        lastTapTime = now;
+        lastTapTime =
+            now;
 
         lastTapPosition = {
             x:event.clientX,
@@ -1668,11 +2036,13 @@ screen.addEventListener(
         holdTimer =
             setTimeout(
                 function() {
+
                     if (!pointerDown) {
                         return;
                     }
 
-                    holdStarted = true;
+                    holdStarted =
+                        true;
 
                     send({
                         type:"mouse_down",
@@ -1680,6 +2050,7 @@ screen.addEventListener(
                         x:position.x,
                         y:position.y
                     });
+
                 },
                 450
             );
@@ -1689,6 +2060,76 @@ screen.addEventListener(
 screen.addEventListener(
     "pointermove",
     function(event) {
+        if (gamepadMode) {
+
+            if (
+                event.pointerId !==
+                gamepadScreenPointerId
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const deltaX =
+                event.clientX -
+                gamepadScreenStartX;
+
+            const deltaY =
+                event.clientY -
+                gamepadScreenStartY;
+
+            const distance =
+                Math.sqrt(
+                    deltaX * deltaX +
+                    deltaY * deltaY
+                );
+
+            if (
+                !gamepadScreenDragging &&
+                distance >=
+                GAMEPAD_DRAG_THRESHOLD
+            ) {
+
+                gamepadScreenDragging =
+                    true;
+
+                const startPosition =
+                    getCoordinates({
+                        clientX:
+                            gamepadScreenStartX,
+
+                        clientY:
+                            gamepadScreenStartY
+                    });
+
+                send({
+                    type:"mouse_down",
+                    button:"right",
+                    x:startPosition.x,
+                    y:startPosition.y
+                });
+            }
+
+            if (
+                gamepadScreenDragging
+            ) {
+
+                const position =
+                    getCoordinates(
+                        event
+                    );
+
+                send({
+                    type:"mouse_move",
+                    x:position.x,
+                    y:position.y
+                });
+            }
+
+            return;
+        }
+
         if (
             !pointerDown ||
             !holdStarted
@@ -1714,9 +2155,61 @@ screen.addEventListener(
 screen.addEventListener(
     "pointerup",
     function(event) {
+
         event.preventDefault();
 
-        pointerDown = false;
+        if (gamepadMode) {
+
+            if (
+                event.pointerId !==
+                gamepadScreenPointerId
+            ) {
+                return;
+            }
+
+            const wasDragging =
+                gamepadScreenDragging;
+
+            gamepadScreenDragging =
+                false;
+
+            gamepadScreenPointerId =
+                null;
+
+            if (wasDragging) {
+
+                const position =
+                    getCoordinates(
+                        event
+                    );
+
+                send({
+                    type:"mouse_up",
+                    button:"right",
+                    x:position.x,
+                    y:position.y
+                });
+
+                return;
+            }
+
+            const position =
+                getCoordinates(
+                    event
+                );
+
+            send({
+                type:"mouse_click",
+                button:"left",
+                x:position.x,
+                y:position.y
+            });
+
+            return;
+        }
+
+        pointerDown =
+            false;
 
         clearTimeout(
             holdTimer
@@ -1728,6 +2221,7 @@ screen.addEventListener(
             );
 
         if (holdStarted) {
+
             send({
                 type:"mouse_up",
                 button:"left",
@@ -1735,7 +2229,8 @@ screen.addEventListener(
                 y:position.y
             });
 
-            holdStarted = false;
+            holdStarted =
+                false;
 
             return;
         }
@@ -1751,23 +2246,56 @@ screen.addEventListener(
 
 screen.addEventListener(
     "pointercancel",
-    function() {
-        pointerDown = false;
+    function(event) {
+
+        if (gamepadMode) {
+
+            if (
+                event.pointerId !==
+                gamepadScreenPointerId
+            ) {
+                return;
+            }
+
+            if (
+                gamepadScreenDragging
+            ) {
+
+                send({
+                    type:"mouse_up",
+                    button:"right"
+                });
+            }
+
+            gamepadScreenDragging =
+                false;
+
+            gamepadScreenPointerId =
+                null;
+
+            return;
+        }
+
+        pointerDown =
+            false;
 
         clearTimeout(
             holdTimer
         );
 
         if (holdStarted) {
+
             send({
                 type:"mouse_up",
                 button:"left"
             });
 
-            holdStarted = false;
+            holdStarted =
+                false;
         }
     }
 );
+
 
 screen.addEventListener(
     "contextmenu",
@@ -1777,7 +2305,9 @@ screen.addEventListener(
 );
 
 function activateKeyboard() {
-    keyboardMode = true;
+
+    keyboardMode =
+        true;
 
     drawer.classList.remove(
         "open"
@@ -1786,6 +2316,7 @@ function activateKeyboard() {
     if (
         isMobileDevice()
     ) {
+
         hiddenKeyboardInput.value =
             "";
 
@@ -1793,13 +2324,16 @@ function activateKeyboard() {
 
         setTimeout(
             function() {
+
                 if (
                     keyboardMode &&
                     document.activeElement !==
                     hiddenKeyboardInput
                 ) {
+
                     hiddenKeyboardInput.focus();
                 }
+
             },
             50
         );
@@ -1819,6 +2353,7 @@ function activateKeyboard() {
 keyboardButton.addEventListener(
     "click",
     function(event) {
+
         event.preventDefault();
         event.stopPropagation();
 
@@ -1829,6 +2364,7 @@ keyboardButton.addEventListener(
 document.addEventListener(
     "keydown",
     function(event) {
+
         if (
             !keyboardMode ||
             isMobileDevice()
@@ -1856,6 +2392,7 @@ document.addEventListener(
 document.addEventListener(
     "keyup",
     function(event) {
+
         if (
             !keyboardMode ||
             isMobileDevice()
@@ -1883,6 +2420,7 @@ document.addEventListener(
 hiddenKeyboardInput.addEventListener(
     "keydown",
     function(event) {
+
         if (!keyboardMode) {
             return;
         }
@@ -1901,6 +2439,7 @@ hiddenKeyboardInput.addEventListener(
 hiddenKeyboardInput.addEventListener(
     "keyup",
     function(event) {
+
         if (!keyboardMode) {
             return;
         }
@@ -1919,6 +2458,7 @@ hiddenKeyboardInput.addEventListener(
 hiddenKeyboardInput.addEventListener(
     "beforeinput",
     function(event) {
+
         if (!keyboardMode) {
             return;
         }
@@ -1928,6 +2468,7 @@ hiddenKeyboardInput.addEventListener(
             "insertText" &&
             event.data
         ) {
+
             event.preventDefault();
         }
     }
@@ -1936,6 +2477,7 @@ hiddenKeyboardInput.addEventListener(
 hiddenKeyboardInput.addEventListener(
     "input",
     function() {
+
         hiddenKeyboardInput.value =
             "";
     }
@@ -1944,12 +2486,15 @@ hiddenKeyboardInput.addEventListener(
 document.addEventListener(
     "keydown",
     function(event) {
+
         if (
             keyboardMode &&
             !isMobileDevice() &&
             event.key === "Escape"
         ) {
-            keyboardMode = false;
+
+            keyboardMode =
+                false;
 
             showToast(
                 "Keyboard inactive"
@@ -1958,7 +2503,490 @@ document.addEventListener(
     }
 );
 
+const GAMEPAD_KEY_MAP = {
+
+    W:{
+        key:"w",
+        code:"KeyW"
+    },
+
+    A:{
+        key:"a",
+        code:"KeyA"
+    },
+
+    S:{
+        key:"s",
+        code:"KeyS"
+    },
+
+    D:{
+        key:"d",
+        code:"KeyD"
+    },
+
+    SPACE:{
+        key:" ",
+        code:"Space"
+    }
+};
+
+let gamepadMode =
+    false;
+
+const activeGamepadKeys =
+    new Set();
+
+function gamepadPressKey(name) {
+
+    if (
+        activeGamepadKeys.has(
+            name
+        )
+    ) {
+        return;
+    }
+
+    activeGamepadKeys.add(
+        name
+    );
+
+    const mapping =
+        GAMEPAD_KEY_MAP[
+            name
+        ];
+
+    send({
+        type:"key_down",
+        key:mapping.key,
+        code:mapping.code
+    });
+}
+
+function gamepadReleaseKey(name) {
+
+    if (
+        !activeGamepadKeys.has(
+            name
+        )
+    ) {
+        return;
+    }
+
+    activeGamepadKeys.delete(
+        name
+    );
+
+    const mapping =
+        GAMEPAD_KEY_MAP[
+            name
+        ];
+
+    send({
+        type:"key_up",
+        key:mapping.key,
+        code:mapping.code
+    });
+}
+
+function gamepadReleaseMovementKeys() {
+
+    [
+        "W",
+        "A",
+        "S",
+        "D"
+    ].forEach(
+        gamepadReleaseKey
+    );
+}
+
+function resetJoystickKnob() {
+
+    gamepadKnob.style.transform =
+        "translate(0px,0px)";
+
+    gamepadJoystick.classList.remove(
+        "dragging"
+    );
+}
+
+function toggleGamepad() {
+
+    gamepadMode =
+        !gamepadMode;
+
+    drawer.classList.remove(
+        "open"
+    );
+
+    gamepadButton.classList.toggle(
+        "enabled",
+        gamepadMode
+    );
+
+    gamepadJoystick.classList.toggle(
+        "active",
+        gamepadMode
+    );
+
+    jumpButton.classList.toggle(
+        "active",
+        gamepadMode
+    );
+
+    if (!gamepadMode) {
+
+        gamepadReleaseMovementKeys();
+
+        gamepadReleaseKey(
+            "SPACE"
+        );
+
+        resetJoystickKnob();
+
+        joystickPointerId =
+            null;
+
+        if (
+            gamepadScreenDragging
+        ) {
+
+            send({
+                type:"mouse_up",
+                button:"right"
+            });
+        }
+
+        gamepadScreenDragging =
+            false;
+
+        gamepadScreenPointerId =
+            null;
+    }
+
+    showToast(
+        gamepadMode
+            ? "Gamepad active"
+            : "Gamepad inactive"
+    );
+}
+
+gamepadButton.addEventListener(
+    "click",
+    function(event) {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        toggleGamepad();
+    }
+);
+
+let joystickPointerId =
+    null;
+
+const JOYSTICK_MAX_DISTANCE =
+    40;
+
+const JOYSTICK_DEADZONE =
+    14;
+
+function joystickDirections(
+    dx,
+    dy
+) {
+
+    const distance =
+        Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
+
+    if (
+        distance <
+        JOYSTICK_DEADZONE
+    ) {
+        return [];
+    }
+
+    let angle =
+        Math.atan2(
+            -dy,
+            dx
+        ) *
+        180 /
+        Math.PI;
+
+    if (
+        angle <
+        0
+    ) {
+        angle += 360;
+    }
+
+    const sector =
+        Math.round(
+            angle / 45
+        ) % 8;
+
+    switch (sector) {
+
+        case 0:
+            return ["D"];
+
+        case 1:
+            return ["W","D"];
+
+        case 2:
+            return ["W"];
+
+        case 3:
+            return ["W","A"];
+
+        case 4:
+            return ["A"];
+
+        case 5:
+            return ["S","A"];
+
+        case 6:
+            return ["S"];
+
+        case 7:
+            return ["S","D"];
+    }
+
+    return [];
+}
+
+function updateJoystickKeys(
+    dx,
+    dy
+) {
+
+    const desired =
+        joystickDirections(
+            dx,
+            dy
+        );
+
+    [
+        "W",
+        "A",
+        "S",
+        "D"
+    ].forEach(
+        function(direction) {
+
+            if (
+                desired.indexOf(
+                    direction
+                ) !== -1
+            ) {
+
+                gamepadPressKey(
+                    direction
+                );
+
+            } else {
+
+                gamepadReleaseKey(
+                    direction
+                );
+            }
+        }
+    );
+}
+
+function handleJoystickPointer(
+    clientX,
+    clientY
+) {
+
+    const rect =
+        gamepadJoystick.getBoundingClientRect();
+
+    const centerX =
+        rect.left +
+        rect.width / 2;
+
+    const centerY =
+        rect.top +
+        rect.height / 2;
+
+    let dx =
+        clientX -
+        centerX;
+
+    let dy =
+        clientY -
+        centerY;
+
+    const distance =
+        Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
+
+    if (
+        distance >
+        JOYSTICK_MAX_DISTANCE
+    ) {
+
+        const ratio =
+            JOYSTICK_MAX_DISTANCE /
+            distance;
+
+        dx *= ratio;
+        dy *= ratio;
+    }
+
+    gamepadKnob.style.transform =
+        "translate(" +
+        dx +
+        "px," +
+        dy +
+        "px)";
+
+    updateJoystickKeys(
+        dx,
+        dy
+    );
+}
+
+gamepadJoystick.addEventListener(
+    "pointerdown",
+    function(event) {
+
+        if (!gamepadMode) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        joystickPointerId =
+            event.pointerId;
+
+        gamepadJoystick.classList.add(
+            "dragging"
+        );
+
+        try {
+
+            gamepadJoystick.setPointerCapture(
+                event.pointerId
+            );
+
+        } catch (error) {}
+
+        handleJoystickPointer(
+            event.clientX,
+            event.clientY
+        );
+    }
+);
+
+gamepadJoystick.addEventListener(
+    "pointermove",
+    function(event) {
+
+        if (
+            event.pointerId !==
+            joystickPointerId
+        ) {
+            return;
+        }
+
+        event.preventDefault();
+
+        handleJoystickPointer(
+            event.clientX,
+            event.clientY
+        );
+    }
+);
+
+function endJoystick(event) {
+
+    if (
+        event.pointerId !==
+        joystickPointerId
+    ) {
+        return;
+    }
+
+    joystickPointerId =
+        null;
+
+    resetJoystickKnob();
+
+    gamepadReleaseMovementKeys();
+}
+
+gamepadJoystick.addEventListener(
+    "pointerup",
+    endJoystick
+);
+
+gamepadJoystick.addEventListener(
+    "pointercancel",
+    endJoystick
+);
+
+jumpButton.addEventListener(
+    "pointerdown",
+    function(event) {
+
+        if (!gamepadMode) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        jumpButton.classList.add(
+            "pressed"
+        );
+
+        try {
+
+            jumpButton.setPointerCapture(
+                event.pointerId
+            );
+
+        } catch (error) {}
+
+        gamepadPressKey(
+            "SPACE"
+        );
+    }
+);
+
+function releaseJump(event) {
+
+    jumpButton.classList.remove(
+        "pressed"
+    );
+
+    gamepadReleaseKey(
+        "SPACE"
+    );
+}
+
+jumpButton.addEventListener(
+    "pointerup",
+    releaseJump
+);
+
+jumpButton.addEventListener(
+    "pointercancel",
+    releaseJump
+);
+
 function showToast(message) {
+
     toast.textContent =
         message;
 
@@ -1973,19 +3001,23 @@ function showToast(message) {
     toastTimer =
         setTimeout(
             function() {
+
                 toast.classList.remove(
                     "show"
                 );
+
             },
             1600
         );
 }
 
 if (verificationToken) {
+
     hideLogin();
 
     connect().catch(
         function(error) {
+
             console.error(
                 error
             );
@@ -1998,9 +3030,12 @@ if (verificationToken) {
                 error.message;
         }
     );
+
 } else {
+
     showLoginChoice();
 }
 </script>
+
 </body>
 </html>
