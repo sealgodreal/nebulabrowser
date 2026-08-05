@@ -340,22 +340,6 @@ button,input {
     user-select:none;
 }
 
-#touchIndicator {
-    position:fixed;
-    width:38px;
-    height:38px;
-    border:2px solid rgba(167,139,250,.8);
-    border-radius:50%;
-    pointer-events:none;
-    opacity:0;
-    transform:translate(-50%,-50%) scale(.5);
-    z-index:600;
-}
-
-#touchIndicator.show {
-    animation:touchPulse .35s ease-out;
-}
-
 @keyframes touchPulse {
     from {
         opacity:.85;
@@ -765,8 +749,6 @@ button,input {
         aria-label="Remote keyboard"
     >
 
-    <div id="touchIndicator"></div>
-
     <div id="gamepadJoystick">
         <div id="gamepadKnob"></div>
     </div>
@@ -1088,11 +1070,6 @@ const hiddenKeyboardInput =
         "hiddenKeyboardInput"
     );
 
-const touchIndicator =
-    document.getElementById(
-        "touchIndicator"
-    );
-
 const toast =
     document.getElementById(
         "toast"
@@ -1170,7 +1147,7 @@ menuButton.addEventListener(
 function connect() {
 
     return new Promise(
-        function(resolve,reject) {
+        function(resolve, reject) {
 
             if (!verificationToken) {
 
@@ -1211,6 +1188,21 @@ function connect() {
                     null;
             }
 
+            if (
+                !screenWidth ||
+                !screenHeight
+            ) {
+
+                screenWidth =
+                    1920;
+
+                screenHeight =
+                    1080;
+            }
+
+            waiting.style.display =
+                "flex";
+
             connectionText.textContent =
                 "connecting";
 
@@ -1245,7 +1237,9 @@ function connect() {
                             settled = true;
 
                             try {
+
                                 socket.close();
+
                             } catch (error) {}
 
                             reject(
@@ -1372,7 +1366,6 @@ function connect() {
 
             socket.onmessage =
                 function(event) {
-
                     if (
                         typeof event.data ===
                         "string"
@@ -1443,25 +1436,80 @@ function connect() {
 
                                 renderMonitors();
 
-                            } else if (
+                            }
+
+                            else if (
                                 message.type ===
                                 "size"
                             ) {
 
-                                screenWidth =
+                                const srcW =
                                     Number(
-                                        message.width
-                                    ) || 1920;
+                                        message.source_width
+                                    );
 
-                                screenHeight =
+                                const srcH =
                                     Number(
-                                        message.height
-                                    ) || 1080;
+                                        message.source_height
+                                    );
+
+                                if (
+                                    srcW > 0 &&
+                                    srcH > 0
+                                ) {
+
+                                    screenWidth =
+                                        srcW;
+
+                                    screenHeight =
+                                        srcH;
+
+                                } else {
+
+                                    const msgW =
+                                        Number(
+                                            message.width
+                                        );
+
+                                    const msgH =
+                                        Number(
+                                            message.height
+                                        );
+
+                                    if (
+                                        msgW > 0 &&
+                                        msgH > 0
+                                    ) {
+
+                                        screenWidth =
+                                            msgW;
+
+                                        screenHeight =
+                                            msgH;
+                                    }
+                                }
+
+                                if (
+                                    typeof resizeScreen ===
+                                    "function"
+                                ) {
+
+                                    resizeScreen();
+
+                                } else if (
+                                    typeof updateScreenLayout ===
+                                    "function"
+                                ) {
+
+                                    updateScreenLayout();
+
+                                }
 
                                 waiting.style.display =
                                     "none";
+                            }
 
-                            } else if (
+                            else if (
                                 message.type ===
                                 "error"
                             ) {
@@ -1497,6 +1545,32 @@ function connect() {
                             URL.revokeObjectURL(
                                 imageURL
                             );
+
+                            if (
+                                screen.naturalWidth > 0 &&
+                                screen.naturalHeight > 0
+                            ) {
+
+                                screenWidth =
+                                    screen.naturalWidth;
+
+                                screenHeight =
+                                    screen.naturalHeight;
+                            }
+
+                            if (
+                                typeof resizeScreen ===
+                                "function"
+                            ) {
+
+                                resizeScreen();
+
+                            } else if (
+                                typeof updateScreenLayout ===
+                                "function"
+                            ) {
+                                updateScreenLayout();
+                            }
                         };
 
                     screen.src =
@@ -1794,68 +1868,33 @@ function getCoordinates(event) {
     const rect =
         screen.getBoundingClientRect();
 
-    const imageRatio =
-        screenWidth /
-        screenHeight;
-
-    const rectRatio =
-        rect.width /
-        rect.height;
-
-    let displayedWidth;
-    let displayedHeight;
-
     if (
-        rectRatio >
-        imageRatio
+        rect.width <= 0 ||
+        rect.height <= 0 ||
+        screenWidth <= 0 ||
+        screenHeight <= 0
     ) {
-
-        displayedHeight =
-            rect.height;
-
-        displayedWidth =
-            displayedHeight *
-            imageRatio;
-
-    } else {
-
-        displayedWidth =
-            rect.width;
-
-        displayedHeight =
-            displayedWidth /
-            imageRatio;
+        return {
+            x: 0,
+            y: 0
+        };
     }
-
-    const offsetX =
-        rect.left +
-        (
-            rect.width -
-            displayedWidth
-        ) / 2;
-
-    const offsetY =
-        rect.top +
-        (
-            rect.height -
-            displayedHeight
-        ) / 2;
 
     let x =
         (
             event.clientX -
-            offsetX
+            rect.left
         ) *
         screenWidth /
-        displayedWidth;
+        rect.width;
 
     let y =
         (
             event.clientY -
-            offsetY
+            rect.top
         ) *
         screenHeight /
-        displayedHeight;
+        rect.height;
 
     x =
         Math.max(
@@ -1876,28 +1915,9 @@ function getCoordinates(event) {
         );
 
     return {
-        x:Math.round(x),
-        y:Math.round(y)
+        x: Math.round(x),
+        y: Math.round(y)
     };
-}
-
-function showTouch(event) {
-
-    touchIndicator.style.left =
-        event.clientX + "px";
-
-    touchIndicator.style.top =
-        event.clientY + "px";
-
-    touchIndicator.classList.remove(
-        "show"
-    );
-
-    void touchIndicator.offsetWidth;
-
-    touchIndicator.classList.add(
-        "show"
-    );
 }
 
 let gamepadScreenPointerId =
@@ -1912,8 +1932,20 @@ let gamepadScreenStartX =
 let gamepadScreenStartY =
     0;
 
+let gamepadScreenLastX =
+    0;
+
+let gamepadScreenLastY =
+    0;
+
+let gamepadRelativeLastX = 0;
+let gamepadRelativeLastY = 0;
+
 const GAMEPAD_DRAG_THRESHOLD =
     10;
+
+const GAMEPAD_CAMERA_SENSITIVITY =
+    1.0;
 
 
 screen.addEventListener(
@@ -2094,6 +2126,12 @@ screen.addEventListener(
                 gamepadScreenDragging =
                     true;
 
+                    gamepadRelativeLastX =
+    event.clientX;
+
+gamepadRelativeLastY =
+    event.clientY;
+
                 const startPosition =
                     getCoordinates({
                         clientX:
@@ -2115,16 +2153,25 @@ screen.addEventListener(
                 gamepadScreenDragging
             ) {
 
-                const position =
-                    getCoordinates(
-                        event
-                    );
+const dx =
+    event.clientX -
+    gamepadRelativeLastX;
 
-                send({
-                    type:"mouse_move",
-                    x:position.x,
-                    y:position.y
-                });
+const dy =
+    event.clientY -
+    gamepadRelativeLastY;
+
+gamepadRelativeLastX =
+    event.clientX;
+
+gamepadRelativeLastY =
+    event.clientY;
+
+send({
+    type:"mouse_relative",
+    dx:dx * GAMEPAD_CAMERA_SENSITIVITY,
+    dy:dy * GAMEPAD_CAMERA_SENSITIVITY
+});
             }
 
             return;
