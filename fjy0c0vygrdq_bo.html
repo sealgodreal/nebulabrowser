@@ -226,6 +226,10 @@
                 <div class="battery-fill" id="batteryFill"></div>
             </div>
             <span id="batteryText"></span>
+
+            <div id="counterText">
+                Users Online: <span id="userCount">Connecting...</span>
+            </div>
         </div>
     </div>
     <div class="bottom-right">
@@ -279,3 +283,23 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+<script>
+    const userCountElement = document.getElementById("userCount");
+    const socket = io("https://onlineusercounter-bysealgod.onrender.com", { timeout: 15000, reconnection: true, reconnectionAttempts: Infinity });
+    const setUserCountStatus = (status) => { userCountElement.textContent = status; };
+    let hasReceivedUserCount = false;
+    const loadingTimeout = setTimeout(() => { if (!hasReceivedUserCount) { setUserCountStatus("Unavailable"); } }, 15000);
+    socket.on("connect", () => {
+        clearTimeout(loadingTimeout);
+        setUserCountStatus("Online");
+    });
+    socket.on("userCount", (count) => {
+        hasReceivedUserCount = true;
+        clearTimeout(loadingTimeout);
+        userCountElement.textContent = count;
+    });
+    socket.on("connect_error", () => { setUserCountStatus("Unavailable"); });
+    socket.on("disconnect", () => { setUserCountStatus("Offline"); });
+</script>
