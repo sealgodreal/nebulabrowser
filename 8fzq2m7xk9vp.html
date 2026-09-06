@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="assets/main/favicon.ico">
+  <meta charset="UTF-8">
+  <script src="assets/convert.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap"></noscript>
+  <link rel="stylesheet" href="assets/main/k7m2xq9vpl3za.css?v=4px-iframe">
+  <base target="_blank">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      @keyframes ms-fade-in  { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+      @keyframes ms-card-in  { from { opacity:0; transform:translateY(28px) scale(.97); } to { opacity:1; transform:translateY(0) scale(1); } }
+      @keyframes ms-label-in { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .ms-logo, .ms-label, .mode-cards { opacity: 1 !important; animation: none !important; }
+    }
+
+    #ms-bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;    
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    #ms-acrylic {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: rgba(0, 0, 0, 0.30);
+    }
+    
+    @media (min-width: 769px) and (prefers-reduced-motion: no-preference) {
+      #ms-acrylic {
+        backdrop-filter: blur(7px) saturate(1.2);
+        -webkit-backdrop-filter: blur(7px) saturate(1.2);
+      }
+    }
+
+    #mode-selector {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 10vh;
+      background: transparent;
+      z-index: 999999;
+      font-family: 'Geist', system-ui, sans-serif;
+      opacity: 1;
+      transition: opacity .4s ease;
+    }
+    #mode-selector.hiding { opacity: 0; pointer-events: none; }
+
+    .ms-logo {
+      height: 150px;
+      opacity: 0;
+      animation: ms-fade-in .7s cubic-bezier(.16,1,.3,1) .1s forwards;
+    }
+    @media (max-width: 480px) { .ms-logo { height: 100px; } }
+
+    .ms-label {
+      font-size: 11px;
+      color: var(--text-muted, #5c5c65);
+      letter-spacing: .1em;
+      font-weight: 500;
+      margin-top: 15px;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: ms-label-in .6s cubic-bezier(.16,1,.3,1) .3s forwards;
+    }
+
+    .mode-cards {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 0 16px;
+      opacity: 0;
+      animation: ms-card-in .65s cubic-bezier(.16,1,.3,1) .42s forwards;
+    }
+
+    .mode-card {
+      width: 275px;
+      background: var(--surface, rgba(255,255,255,.045));
+      border: 1px solid var(--border, rgba(255,255,255,.09));
+      border-radius: 16px;
+      padding: 28px 25px 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      cursor: pointer;
+      transition: border-color .22s, background .22s, transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .mode-card:hover {
+      border-color: var(--border-hover, rgba(255,255,255,.2));
+      background: var(--surface-hover, rgba(255,255,255,.08));
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 18px 48px rgba(0,0,0,.35);
+    }
+    
+    @media (hover: none) {
+      .mode-card:hover { transform: none; box-shadow: none; }
+      .mode-card:active {
+        background: var(--surface-hover, rgba(255,255,255,.08));
+        border-color: var(--border-hover, rgba(255,255,255,.2));
+      }
+    }
+    .mode-card:active { transform: translateY(-1px) scale(1.00); }
+
+    @media (max-width: 620px) {
+      .mode-card { width: min(275px, calc(100vw - 48px)); }
+    }
+
+    .mode-card-preview {
+      width: 100%;
+      height: 140px;
+      border-radius: 10px;
+      background: var(--input-bg, rgba(0,0,0,.24));
+      border: 1px solid var(--border, rgba(255,255,255,.09));
+      overflow: hidden;
+      transition: border-color .22s;
+    }
+    .mode-card-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      display: block;
+    }
+    .mode-card:hover .mode-card-preview { border-color: var(--border-hover, rgba(255,255,255,.16)); }
+
+    .mode-card-title { font-size: 16px; font-weight: 600; color: var(--text, #f4f4f5); letter-spacing: .01em; }
+    .mode-card-desc  { font-size: 13px; color: var(--text-muted, #5c5c65); line-height: 1.55; }
+
+    #return-btn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 9000;
+      display: none;
+      align-items: center;
+      gap: 5px;
+      background: var(--surface, rgba(255,255,255,.045));
+      border: 1px solid var(--border, rgba(255,255,255,.09));
+      border-radius: 8px;
+      padding: 5px 10px 5px 7px;
+      font-size: 12px;
+      color: var(--text-muted, #5c5c65);
+      cursor: pointer;
+      font-family: 'Geist', system-ui, sans-serif;
+      font-weight: 500;
+      transition: border-color .15s, color .15s, background .15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #return-btn:hover {
+      border-color: var(--border-hover, rgba(255,255,255,.16));
+      color: var(--text-secondary, #9a9aa3);
+      background: var(--surface-hover, rgba(255,255,255,.075));
+    }
+  </style>
+</head>
+<body>
+
+<video id="ms-bg-video"
+  src="assets/images/background.mp4"
+  autoplay muted playsinline
+  disablepictureinpicture
+  preload="auto">
+</video>
+<div id="ms-acrylic"></div>
+
+<div id="mode-selector">
+  <img src="assets/images/nebula-logo.png" alt="Nebula" class="ms-logo"
+       onerror="this.style.display='none'" width="300" height="150">
+  <span class="ms-label">Choose your layout</span>
+
+  <div class="mode-cards">
+    <div class="mode-card" onclick="selectMode('full')">
+      <div class="mode-card-preview">
+        <img src="assets/images/full_preview.png" alt="Full Layout preview" loading="lazy" width="275" height="140">
+      </div>
+      <div>
+        <div class="mode-card-title">Full Layout</div>
+        <div class="mode-card-desc">Full Browser UI with everything.</div>
+      </div>
+    </div>
+
+    <div class="mode-card" onclick="selectMode('browser')">
+      <div class="mode-card-preview">
+        <img src="assets/images/browser_preview.png" alt="Browser Only preview" loading="lazy" width="275" height="140">
+      </div>
+      <div>
+        <div class="mode-card-title">Browser Only</div>
+        <div class="mode-card-desc">Simple Browser UI with Quick Apps.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button id="return-btn" onclick="returnToSelector()">
+  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  Return
+</button>
+
+<div id="app"></div>
+
+<div class="toast-notification" id="toastNotification">
+  <span class="toast-notification-icon" id="toastNotificationIcon">&#10003;</span>
+  <span id="toastNotificationText"></span>
+</div>
+
+<script>
+  document.title = "Student Account Initializer";
+
+  (function () {
+    const vid = document.getElementById('ms-bg-video');
+    if (!vid) return;
+
+    function tryPlay() {
+      if (!document.hidden && vid.paused) vid.play().catch(() => {});
+    }
+
+    vid.addEventListener('ended', () => {
+      vid.currentTime = 0;
+      vid.play().catch(() => {});
+    });
+
+    vid.addEventListener('pause', tryPlay);
+    window.addEventListener('focus', tryPlay);
+    document.addEventListener('visibilitychange', () => {
+      document.hidden ? vid.pause() : tryPlay();
+    });
+
+    vid.play().catch(() => {});
+  })();
+
+  let _scriptsLoaded = { full: false, browser: false };
+
+  function loadScript(src, onload) {
+    const s = document.createElement('script');
+    s.src = src;
+    if (onload) s.onload = onload;
+    document.body.appendChild(s);
+  }
+
+  function selectMode(mode) {
+    const sel = document.getElementById('mode-selector');
+    sel.classList.add('hiding');
+    setTimeout(() => {
+      sel.style.display = 'none';
+      showReturnBtn();
+      mode === 'full' ? launchFull() : launchBrowser();
+    }, 300);
+  }
+
+  function showReturnBtn() { document.getElementById('return-btn').style.display = 'flex'; }
+  function hideReturnBtn() { document.getElementById('return-btn').style.display = 'none'; }
+
+  function patchBrowserToggle() {
+    if (typeof openBrowser === 'undefined') { setTimeout(patchBrowserToggle, 100); return; }
+    const _origOpen = openBrowser;
+    window.openBrowser = function (url) { hideReturnBtn(); return _origOpen.call(this, url); };
+    const _origGoHome = window.goHomeFromBrowser;
+    window.goHomeFromBrowser = function () { showReturnBtn(); if (_origGoHome) return _origGoHome.call(this); };
+    const _origGoHomeSb = window.goHome;
+    window.goHome = function () { showReturnBtn(); if (_origGoHomeSb) return _origGoHomeSb.call(this); };
+  }
+
+  function returnToSelector() { window.location.reload(); }
+
+  async function loadHTML(url) {
+    const res = await fetch(url);
+    return res.text();
+  }
+
+  async function launchFull() {
+    const app = document.getElementById('app');
+    if (_scriptsLoaded.full) {
+      app.innerHTML = await loadHTML('fjy0c0vygrdq.html?v=4px-iframe');
+      if (typeof window.nebulaPostInitFull === 'function') window.nebulaPostInitFull();
+      else if (typeof nebulaPostInit === 'function') nebulaPostInit();
+      return;
+    }
+    _scriptsLoaded.full = true;
+    loadScript('assets/main/j8lxpwapoz9o.js', () => {
+      loadScript('assets/main/n8qvtxr4mkzpa.js', () => {
+        if (!window._onekoLoaded) { window._onekoLoaded = true; loadScript('assets/main/qv7xmt2rwkpa.js'); }
+        window.nebulaPostInitFull = window.nebulaPostInit;
+        if (typeof window.nebulaPostInitFull === 'function') window.nebulaPostInitFull();
+      });
+    });
+    tagScripts('full');
+    patchBrowserToggle();
+  }
+
+  async function launchBrowser() {
+    const app = document.getElementById('app');
+    if (_scriptsLoaded.browser) {
+      app.innerHTML = await loadHTML('fjy0c0vygrdq_bo.html?v=4px-iframe');
+      if (typeof window.nebulaPostInitBrowser === 'function') window.nebulaPostInitBrowser();
+      else if (typeof nebulaPostInit === 'function') nebulaPostInit();
+      return;
+    }
+    _scriptsLoaded.browser = true;
+    loadScript('assets/main/j8lxpwapoz9o_bo.js', () => {
+      loadScript('assets/main/n8qvtxr4mkzpa_bo.js', () => {
+        if (!window._onekoLoaded) { window._onekoLoaded = true; loadScript('assets/main/qv7xmt2rwkpa.js'); }
+        window.nebulaPostInitBrowser = window.nebulaPostInit;
+        if (typeof window.nebulaPostInitBrowser === 'function') window.nebulaPostInitBrowser();
+      });
+    });
+    tagScripts('browser');
+    patchBrowserToggle();
+  }
+
+  function tagScripts(mode) {
+    const observer = new MutationObserver(muts => {
+      muts.forEach(m => m.addedNodes.forEach(n => {
+        if (n.tagName === 'SCRIPT' && !n.dataset.mode) n.dataset.mode = mode;
+      }));
+    });
+    observer.observe(document.body, { childList: true });
+    setTimeout(() => observer.disconnect(), 5000);
+  }
+</script>
+</body>
+</html>

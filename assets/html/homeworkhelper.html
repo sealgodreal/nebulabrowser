@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- <script src="../convert.js"></script> -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root {
+  --text-primary: #d8d8d8;
+  --text-secondary: #8a8a8a;
+  --text-tertiary: #616161;
+  --text-quaternary: #454545;
+  --surface: #0a0a0a;
+  --surface-muted: #131313;
+  --border: #232323;
+  --danger: #ef4444;
+  --positive: #22c55e;
+  --accent: #5a5a5a;
+  --accent-bright: #c4c4c4;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  --t-fast: 120ms;
+  --t-normal: 200ms;
+  --t-slow: 300ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font-sans);
+  background: var(--surface);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  font-size: 13px;
+}
+#raConstellation {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+.ra-layout {
+  position: relative;
+  z-index: 1;
+}
+.ra-header, .ra-input-area {
+  position: relative;
+  z-index: 1;
+}
+.ra-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 13px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 600;
+  position: relative;
+  flex-shrink: 0;
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(6px);
+}
+.ra-header .ra-newchat {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 10px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--t-fast) var(--ease-out);
+}
+.ra-header .ra-newchat:hover {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  border-color: var(--text-tertiary);
+}
+.ra-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 19px 13px;
+  display: flex;
+  flex-direction: column;
+}
+.ra-main::-webkit-scrollbar { width: 5px; }
+.ra-main::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+.ra-welcome {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 13px;
+  animation: ra-fade-in var(--t-slow) var(--ease-out);
+}
+.ra-logo-mark {
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.ra-logo-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ra-welcome h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.ra-welcome p {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.ra-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 6px;
+  max-width: 480px;
+}
+.ra-chip {
+  padding: 8px 13px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out);
+  font-family: inherit;
+}
+.ra-chip:hover {
+  background: #1a1a1a;
+  color: var(--text-primary);
+  border-color: var(--text-tertiary);
+}
+.ra-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 640px;
+  width: 100%;
+  margin: 0 auto;
+}
+.ra-msg {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  animation: ra-fade-in var(--t-normal) var(--ease-out);
+}
+.ra-msg.user { flex-direction: row-reverse; }
+.ra-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.ra-msg.ai .ra-avatar {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+}
+.ra-msg.ai .ra-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ra-msg.user .ra-avatar {
+  background: #1c1c1c;
+  color: var(--text-primary);
+}
+.ra-content { max-width: 80%; display: flex; flex-direction: column; gap: 5px; }
+.ra-msg.user .ra-content { align-items: flex-end; }
+.ra-bubble {
+  padding: 8px 13px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+.ra-bubble h1, .ra-bubble h2, .ra-bubble h3 {
+  white-space: normal;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+.ra-bubble h1 { font-size: 17px; margin: 10px 0 6px; }
+.ra-bubble h2 { font-size: 15px; margin: 9px 0 5px; }
+.ra-bubble h3 { font-size: 13px; margin: 8px 0 4px; }
+.ra-bubble hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 10px 0;
+}
+.ra-bubble ul, .ra-bubble ol {
+  white-space: normal;
+  margin: 4px 0 4px 18px;
+  padding: 0;
+}
+.ra-bubble li { margin: 2px 0; }
+.ra-bubble table {
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 11px;
+  white-space: normal;
+  display: block;
+  overflow-x: auto;
+}
+.ra-bubble th, .ra-bubble td {
+  border: 1px solid var(--border);
+  padding: 5px 9px;
+  text-align: left;
+}
+.ra-bubble th {
+  background: var(--surface-muted);
+  font-weight: 600;
+}
+.ra-msg.user .ra-bubble {
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+}
+.ra-msg.ai .ra-bubble {
+  background: transparent;
+  padding-left: 0;
+  padding-top: 0;
+}
+.ra-meta {
+  font-size: 10px;
+  color: var(--text-quaternary);
+  padding-left: 0;
+}
+.ra-msg.user .ra-meta { text-align: right; padding-right: 0; }
+.ra-loading-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+}
+.ra-loading-label {
+  font-size: 12px;
+  font-weight: 500;
+  background: linear-gradient(90deg, var(--text-quaternary) 0%, var(--text-primary) 50%, var(--text-quaternary) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: ra-shimmer 1.6s linear infinite;
+  display: inline-block;
+}
+@keyframes ra-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.ra-actions {
+  display: flex;
+  gap: 3px;
+  opacity: 0;
+  transition: opacity var(--t-fast) var(--ease-out);
+  padding-left: 0;
+}
+.ra-msg.ai:hover .ra-actions { opacity: 1; }
+.ra-action-btn {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 3px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--t-fast) var(--ease-out);
+}
+.ra-action-btn:hover {
+  color: var(--text-primary);
+  background: var(--surface-muted);
+}
+.ra-loading {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+.ra-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  animation: ra-bounce 1.4s infinite ease-in-out both;
+}
+.ra-dot:nth-child(1) { animation-delay: -0.32s; }
+.ra-dot:nth-child(2) { animation-delay: -0.16s; }
+@keyframes ra-bounce {
+  0%, 80%, 100% { transform: scale(0.4); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+@keyframes ra-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ra-input-area {
+  padding: 13px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(6px);
+}
+.ra-input-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: 640px;
+  margin: 0 auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 8px 8px 11px;
+  background: var(--surface-muted);
+  transition: all var(--t-fast) var(--ease-out);
+}
+.ra-input-wrap:focus-within {
+  border-color: var(--text-tertiary);
+}
+.ra-input-wrap textarea {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  resize: none;
+  max-height: 160px;
+  min-height: 18px;
+  padding: 2px 0;
+}
+.ra-input-wrap textarea::placeholder { color: var(--text-quaternary); }
+.ra-send, .ra-stop {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out);
+  padding: 0;
+  flex-shrink: 0;
+}
+.ra-send {
+  background: #2c2c2c;
+  color: #eee;
+}
+.ra-send:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+.ra-send:not(:disabled):hover { background: #383838; }
+.ra-stop {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+.ra-stop:hover {
+  background: var(--border);
+}
+.ra-tools-row {
+  display: flex;
+  gap: 6px;
+  max-width: 640px;
+  margin: 6px auto 0;
+}
+.ra-tool-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 10px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all var(--t-fast) var(--ease-out);
+}
+.ra-tool-btn svg { flex-shrink: 0; }
+.ra-tool-btn:hover {
+  border-color: var(--text-tertiary);
+  color: var(--text-primary);
+}
+.ra-tool-btn.active {
+  background: #2c2c2c;
+  color: #eee;
+  border-color: transparent;
+}
+.ra-think {
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--surface-muted);
+}
+.ra-think summary {
+  cursor: pointer;
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  user-select: none;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  transition: color var(--t-fast) var(--ease-out),
+              background var(--t-fast) var(--ease-out);
+}
+.ra-think summary::-webkit-details-marker {
+  display: none;
+}
+.ra-think summary::before {
+  content: '•••';
+  display: inline-block;
+  width: 18px;
+  flex: 0 0 18px;
+  font-size: 8px;
+  letter-spacing: 1px;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--text-tertiary);
+  text-align: left;
+}
+.ra-think summary:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.02);
+}
+.ra-think summary:hover::before {
+  color: var(--text-secondary);
+}
+.ra-think[open] summary::before {
+  animation: ra-thinking-dots 1.2s ease-in-out infinite;
+}
+@keyframes ra-thinking-dots {
+  0%, 100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+}
+.ra-think-body {
+  padding: 8px 10px 10px;
+  font-size: 10px;
+  color: var(--text-tertiary);
+  line-height: 1.55;
+  white-space: pre-wrap;
+  border-top: 1px solid var(--border);
+}
+.ra-think-body h1,
+.ra-think-body h2,
+.ra-think-body h3 {
+  color: var(--text-secondary);
+}
+.ra-think-body code {
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+.ra-think-body ul,
+.ra-think-body ol {
+  margin: 4px 0 4px 16px;
+  padding: 0;
+}
+.ra-think-body li {
+  margin: 2px 0;
+}
+.ra-footer {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-quaternary);
+  margin-top: 6px;
+}
+.ra-error {
+  color: var(--danger);
+  font-size: 11px;
+  padding: 6px 0;
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+}
+.ra-code {
+  font-family: var(--font-mono);
+  background: var(--surface-muted);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 10px;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+.ra-codeblock {
+  font-family: var(--font-mono);
+  background: var(--surface-muted);
+  padding: 10px 13px;
+  border-radius: 6px;
+  font-size: 10px;
+  line-height: 1.5;
+  overflow-x: auto;
+  margin: 6px 0;
+  border: 1px solid var(--border);
+}
+.ra-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+.ra-sidebar {
+  width: 208px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  background: rgba(8, 8, 8, 0.8);
+  backdrop-filter: blur(6px);
+  transition: transform var(--t-normal) var(--ease-out);
+}
+.ra-sidebar-header {
+  padding: 11px 13px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ra-sidebar-new {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ra-sidebar-new:hover { color: var(--text-primary); background: var(--surface-muted); }
+.ra-chats {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ra-chats::-webkit-scrollbar { width: 3px; }
+.ra-chats::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.ra-chat-item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  transition: all var(--t-fast) var(--ease-out);
+  position: relative;
+}
+.ra-chat-item:hover { background: var(--surface-muted); color: var(--text-primary); }
+.ra-chat-item.active { background: #191919; color: var(--text-primary); border: 1px solid var(--border); }
+.ra-chat-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+.ra-chat-item .ra-chat-del {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ra-chat-item:hover .ra-chat-del { opacity: 1; }
+.ra-chat-del:hover { color: var(--danger); background: var(--surface); }
+.ra-sidebar-empty {
+  text-align: center;
+  padding: 19px 13px;
+  font-size: 10px;
+  color: var(--text-quaternary);
+}
+.ra-chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.ra-menu-btn {
+  display: none;
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+.ra-menu-btn:hover { background: var(--surface-muted); color: var(--text-primary); }
+.ra-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 10;
+}
+.ra-overlay.open { display: block; }
+.ra-codeblock .token.comment,
+.ra-codeblock .token.prolog,
+.ra-codeblock .token.doctype,
+.ra-codeblock .token.cdata { color: #6a9955; }
+.ra-codeblock .token.punctuation { color: #d4d4d4; }
+.ra-codeblock .token.property,
+.ra-codeblock .token.tag,
+.ra-codeblock .token.boolean,
+.ra-codeblock .token.number,
+.ra-codeblock .token.constant,
+.ra-codeblock .token.symbol,
+.ra-codeblock .token.deleted { color: #b5cea8; }
+.ra-codeblock .token.selector,
+.ra-codeblock .token.attr-name,
+.ra-codeblock .token.string,
+.ra-codeblock .token.char,
+.ra-codeblock .token.builtin,
+.ra-codeblock .token.inserted { color: #ce9178; }
+.ra-codeblock .token.operator,
+.ra-codeblock .token.entity,
+.ra-codeblock .token.url,
+.ra-codeblock .language-css .token.string,
+.ra-codeblock .style .token.string { color: #d4d4d4; }
+.ra-codeblock .token.atrule,
+.ra-codeblock .token.attr-value,
+.ra-codeblock .token.keyword { color: #9cdcfe; }
+.ra-codeblock .token.function,
+.ra-codeblock .token.class-name { color: #dcdcaa; }
+.ra-codeblock .token.regex,
+.ra-codeblock .token.important,
+.ra-codeblock .token.variable { color: #9cdcfe; }
+@media (max-width: 768px) {
+  .ra-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 20;
+    transform: translateX(-100%);
+  }
+  .ra-sidebar.open { transform: translateX(0); }
+  .ra-menu-btn { display: flex; }
+  .ra-content { max-width: 85%; }
+  .ra-examples { flex-direction: column; align-items: stretch; }
+  .ra-chip { text-align: center; }
+  .ra-header .ra-newchat { display: none; }
+}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-python.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-javascript.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-typescript.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-css.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-html.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-json.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-bash.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-java.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-c.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-cpp.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-go.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-rust.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-sql.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-markdown.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-yaml.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-docker.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/components/prism-regex.min.js"></script>
+</head>
+<body>
+<canvas id="raConstellation"></canvas>
+<div class="ra-overlay" id="raOverlay" onclick="raCloseSidebar()"></div>
+<div class="ra-layout">
+<div class="ra-sidebar" id="raSidebar">
+<div class="ra-sidebar-header">
+<span>NebulaGPT</span>
+<button class="ra-sidebar-new" onclick="raNewChat()" title="New chat">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+</button>
+</div>
+<div class="ra-chats" id="raChats">
+<div class="ra-sidebar-empty">No chats yet.</div>
+</div>
+</div>
+<div class="ra-chat-area">
+<div class="ra-header">
+<button class="ra-menu-btn" id="raMenuBtn" onclick="raOpenSidebar()">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+</button>
+<span>NebulaGPT</span>
+<button class="ra-newchat" onclick="raClear()">New chat</button>
+</div>
+<div class="ra-main" id="raMain">
+<div class="ra-welcome" id="raWelcome">
+<div class="ra-logo-mark">
+<img src="../images/nebula.png" alt="NebulaGPT logo">
+</div>
+<h1>NebulaGPT</h1>
+<p>How can I help you today?</p>
+<div class="ra-examples">
+<button class="ra-chip" onclick="raSetPrompt('Explain quantum computing in simple terms')">Explain quantum computing</button>
+<button class="ra-chip" onclick="raSetPrompt('Write a Python function to sort a list using quicksort')">Write a Python script</button>
+<button class="ra-chip" onclick="raSetPrompt('Help me debug a 500 Internal Server Error on my Flask app')">Help me debug this error</button>
+<button class="ra-chip" onclick="raSetPrompt('Summarize the key principles of clean code architecture')">Summarize clean code principles</button>
+</div>
+</div>
+<div class="ra-messages" id="raMessages" style="display:none;"></div>
+</div>
+<div class="ra-input-area">
+<div class="ra-input-wrap">
+<textarea id="raInput" placeholder="Ask NebulaGPT anything..." rows="1" oninput="raResize(this)" onkeydown="raKeydown(event)"></textarea>
+<button class="ra-send" id="raSend" onclick="raSend()" disabled>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+<line x1="12" y1="19" x2="12" y2="5"></line>
+<polyline points="5 12 12 5 19 12"></polyline>
+</svg>
+</button>
+<button class="ra-stop" id="raStop" onclick="raStop()" style="display:none;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+<rect x="6" y="6" width="12" height="12" rx="1.5"></rect>
+</svg>
+</button>
+</div>
+<div class="ra-tools-row">
+<button class="ra-tool-btn" id="raSearchBtn" onclick="raToggleSearch()" title="Toggle web search" type="button">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="2" y1="12" x2="22" y2="12"></line>
+<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+</svg>
+<span>Search</span>
+</button>
+<button class="ra-tool-btn" id="raThinkBtn" onclick="raToggleThink()" title="Toggle extended thinking" type="button">
+<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+<path d="M9 18h6"/>
+<path d="M10 21h4"/>
+<path d="M8.5 14.5a6 6 0 1 1 7 0c-.9.7-1.5 1.5-1.5 2.5h-4c0-1-.6-1.8-1.5-2.5Z"/>
+</svg>
+<span>Think</span>
+</button>
+</div>
+<div class="ra-footer">This conversation is AI. NebulaGPT may produce misinformation.</div>
+</div>
+</div>
+</div>
+<script>
+const raInput = document.getElementById('raInput');
+const raSendBtn = document.getElementById('raSend');
+const raStopBtn = document.getElementById('raStop');
+const raMessages = document.getElementById('raMessages');
+const raWelcome = document.getElementById('raWelcome');
+const raMain = document.getElementById('raMain');
+const raChats = document.getElementById('raChats');
+const raSidebar = document.getElementById('raSidebar');
+const raOverlay = document.getElementById('raOverlay');
+const raSearchBtn = document.getElementById('raSearchBtn');
+const raThinkBtn = document.getElementById('raThinkBtn');
+let raIsLoading = false;
+let raAbortCtrl = null;
+let raLastUserText = '';
+let raSearchEnabled = false;
+let raThinkEnabled = false;
+let raStreamCancelled = false;
+let raLoadingLabelInterval = null;
+const raLoadingPhrases = ['Requesting...', 'Waiting...', 'Thinking...', 'Contemplating...', 'Analyzing...', 'Processing...', 'Generating...'];
+const LS_CHATS = 'ngpt_chats';
+const LS_CURRENT = 'ngpt_current_chat';
+const LS_MEMORY = 'ngpt_memory';
+let raChatId = null;
+let raChatsList = [];
+function raGenId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+function raToggleSearch() {
+  raSearchEnabled = !raSearchEnabled;
+  raSearchBtn.classList.toggle('active', raSearchEnabled);
+}
+function raToggleThink() {
+  raThinkEnabled = !raThinkEnabled;
+  raThinkBtn.classList.toggle('active', raThinkEnabled);
+}
+async function raPerformSearch(query) {
+  try {
+    const res = await fetch(
+      'https://api.duckduckgo.com/?q=' + encodeURIComponent(query) + '&format=json&no_html=1&skip_disambig=1&no_redirect=1'
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const chunks = [];
+    if (data.Heading) chunks.push(data.Heading);
+    if (data.AbstractText) chunks.push(data.AbstractText);
+    else if (data.Abstract) chunks.push(data.Abstract);
+    if (data.Answer) chunks.push(data.Answer);
+    if (data.Definition) chunks.push(data.Definition);
+    if (Array.isArray(data.RelatedTopics)) {
+      data.RelatedTopics.slice(0, 6).forEach(function(topic) {
+        if (topic.Text) {
+          chunks.push(topic.Text);
+        } else if (Array.isArray(topic.Topics)) {
+          topic.Topics.slice(0, 3).forEach(function(sub) {
+            if (sub.Text) chunks.push(sub.Text);
+          });
+        }
+      });
+    }
+    const unique = chunks.filter(function(c, i) { return c && chunks.indexOf(c) === i; });
+    return unique.length ? unique.join('\n') : null;
+  } catch (e) {
+    return null;
+  }
+}
+function raLoadChats() {
+  try {
+    const raw = localStorage.getItem(LS_CHATS);
+    if (raw) raChatsList = JSON.parse(raw);
+  } catch (e) { raChatsList = []; }
+}
+function raSaveChats() {
+  localStorage.setItem(LS_CHATS, JSON.stringify(raChatsList));
+}
+function raLoadCurrentChat() {
+  try {
+    raChatId = localStorage.getItem(LS_CURRENT);
+  } catch (e) { raChatId = null; }
+}
+function raSaveCurrentChat() {
+  localStorage.setItem(LS_CURRENT, raChatId || '');
+}
+function raGetMemoryKey() {
+  return LS_MEMORY + '_' + raChatId;
+}
+function raGetMemory() {
+  try {
+    const raw = localStorage.getItem(raGetMemoryKey());
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) { return []; }
+}
+function raSetMemory(mem) {
+  localStorage.setItem(raGetMemoryKey(), JSON.stringify(mem));
+}
+function raAddMemory(text) {
+  const mem = raGetMemory();
+  mem.push({ id: raGenId(), text: text, time: Date.now() });
+  raSetMemory(mem);
+}
+function raUpdateMemory(text) {
+  const mem = raGetMemory();
+  const existing = mem.find(function(m) { return m.text === text; });
+  if (!existing) raAddMemory(text);
+}
+function raBuildMemoryContext() {
+  const mem = raGetMemory();
+  if (mem.length === 0) return '';
+  const lines = mem.map(function(m) { return '- ' + m.text; });
+  return 'The following is information the user has previously shared and wants you to remember. Keep these facts in mind when responding:\n\n' + lines.join('\n') + '\n\n';
+}
+function raExtractMemory(text) {
+  const lower = text.toLowerCase();
+  const patterns = [
+    /remember\s+(?:that\s+)?(.+)/i,
+    /don\'t forget\s+(?:that\s+)?(.+)/i,
+    /keep in mind\s+(?:that\s+)?(.+)/i,
+    /i (?:am|have|live|work|like|prefer|hate|love|need|want|use)\s+(.+)/i,
+    /my (?:name|age|birthday|address|email|phone|job|work|company|pet|car|favorite|favourite)\s+(?:is|are)\s+(.+)/i,
+    /i told you\s+(?:that\s+)?(.+)/i,
+    /just so you know[,\s]+(.+)/i,
+    /fyi[,\s]+(.+)/i,
+    /for your information[,\s]+(.+)/i,
+    /note that\s+(.+)/i,
+  ];
+  for (let i = 0; i < patterns.length; i++) {
+    const m = text.match(patterns[i]);
+    if (m && m[1]) return m[1].trim();
+  }
+  if (lower.indexOf('remember') !== -1 || lower.indexOf("don't forget") !== -1 || lower.indexOf('keep in mind') !== -1) {
+    return text.trim();
+  }
+  return null;
+}
+function raRenderChats() {
+  if (raChatsList.length === 0) {
+    raChats.innerHTML = '<div class="ra-sidebar-empty">No chats yet.</div>';
+    return;
+  }
+  raChats.innerHTML = '';
+  for (let i = raChatsList.length - 1; i >= 0; i--) {
+    const chat = raChatsList[i];
+    const item = document.createElement('div');
+    item.className = 'ra-chat-item' + (chat.id === raChatId ? ' active' : '');
+    const title = chat.title || 'New chat';
+    item.innerHTML =
+      '<span>' + raEscapeHtml(title) + '</span>' +
+      '<button class="ra-chat-del" onclick="raDeleteChat(event, \'' + chat.id + '\')" title="Delete">' +
+      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>' +
+      '</button>';
+    item.onclick = function(e) {
+      if (e.target.closest('.ra-chat-del')) return;
+      raSwitchChat(chat.id);
+    };
+    raChats.appendChild(item);
+  }
+}
+function raNewChat() {
+  raChatId = raGenId();
+  const newChat = { id: raChatId, title: 'New chat', messages: [] };
+  raChatsList.push(newChat);
+  raSaveChats();
+  raSaveCurrentChat();
+  raRenderChats();
+  raClearUI();
+  raCloseSidebar();
+}
+function raSwitchChat(id) {
+  const chat = raChatsList.find(function(c) { return c.id === id; });
+  if (!chat) return;
+  raChatId = id;
+  raSaveCurrentChat();
+  raRenderChats();
+  raClearUI();
+  if (chat.messages && chat.messages.length > 0) {
+    raWelcome.style.display = 'none';
+    raMessages.style.display = 'flex';
+    for (let j = 0; j < chat.messages.length; j++) {
+      const m = chat.messages[j];
+      raAddMessage(m.role, m.text, false, m.reasoning);
+    }
+  }
+  raCloseSidebar();
+}
+function raDeleteChat(e, id) {
+  e.stopPropagation();
+  raChatsList = raChatsList.filter(function(c) { return c.id !== id; });
+  raSaveChats();
+  localStorage.removeItem(LS_MEMORY + '_' + id);
+  if (raChatId === id) {
+    raChatId = null;
+    raSaveCurrentChat();
+    raClearUI();
+  }
+  raRenderChats();
+}
+function raEnsureChat() {
+  if (!raChatId) raNewChat();
+}
+function raUpdateChatTitle(text) {
+  const chat = raChatsList.find(function(c) { return c.id === raChatId; });
+  if (chat && chat.title === 'New chat') {
+    chat.title = text.slice(0, 40) || 'New chat';
+    raSaveChats();
+    raRenderChats();
+  }
+}
+function raAppendToChat(role, text, reasoning) {
+  const chat = raChatsList.find(function(c) { return c.id === raChatId; });
+  if (chat) {
+    chat.messages.push({ role: role, text: text, reasoning: reasoning || null });
+    raSaveChats();
+  }
+}
+function raClearUI() {
+  raMessages.innerHTML = '';
+  raMessages.style.display = 'none';
+  raWelcome.style.display = 'flex';
+  raInput.value = '';
+  raResize(raInput);
+  raRemoveError();
+  raLastUserText = '';
+}
+function raOpenSidebar() {
+  raSidebar.classList.add('open');
+  raOverlay.classList.add('open');
+}
+function raCloseSidebar() {
+  raSidebar.classList.remove('open');
+  raOverlay.classList.remove('open');
+}
+function raResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+  raSendBtn.disabled = !el.value.trim() || raIsLoading;
+}
+function raSetPrompt(text) {
+  raInput.value = text;
+  raResize(raInput);
+  raInput.focus();
+}
+function raKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    raSend();
+  }
+}
+function raEscapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+function raFormatText(text) {
+  const codeBlocks = [];
+  let working = text.replace(/```(\w*)\n?([\s\S]*?)```/g, function(match, lang, code) {
+    const decoded = code.trim();
+    const language = lang.trim().toLowerCase();
+    let highlighted;
+    if (language && Prism.languages[language]) {
+      highlighted = Prism.highlight(decoded, Prism.languages[language], language);
+    } else {
+      highlighted = raEscapeHtml(decoded);
+    }
+    const langClass = language ? 'language-' + language : '';
+    const html = '<pre class="ra-codeblock ' + langClass + '"><code class="' + langClass + '">' + highlighted + '</code></pre>';
+    codeBlocks.push(html);
+    return '\u0000CODEBLOCK' + (codeBlocks.length - 1) + '\u0000';
+  });
+  working = raEscapeHtml(working);
+  const lines = working.split('\n');
+  const outLines = [];
+  let inTable = false;
+  let tableRows = [];
+  let listType = null;
+  let listBuffer = [];
+  function flushList() {
+    if (listBuffer.length) {
+      const tag = listType === 'ol' ? 'ol' : 'ul';
+      outLines.push('<' + tag + '>' + listBuffer.join('') + '</' + tag + '>');
+      listBuffer = [];
+      listType = null;
+    }
+  }
+  function flushTable() {
+    if (tableRows.length) {
+      let html = '<table>';
+      tableRows.forEach(function(row, i) {
+        const tag = i === 0 ? 'th' : 'td';
+        html += '<tr>' + row.map(function(cell) { return '<' + tag + '>' + cell.trim() + '</' + tag + '>'; }).join('') + '</tr>';
+      });
+      html += '</table>';
+      outLines.push(html);
+      tableRows = [];
+    }
+    inTable = false;
+  }
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    const trimmed = line.trim();
+    if (/^\|.*\|$/.test(trimmed)) {
+      if (/^[\s:|-]+$/.test(trimmed) && trimmed.indexOf('-') !== -1) {
+        continue;
+      }
+      const cells = trimmed.slice(1, -1).split('|');
+      inTable = true;
+      tableRows.push(cells);
+      continue;
+    } else if (inTable) {
+      flushTable();
+    }
+    if (/^(---+|\*\*\*+|___+)$/.test(trimmed)) {
+      flushList();
+      outLines.push('<hr>');
+      continue;
+    }
+    const h3 = trimmed.match(/^###\s+(.*)$/);
+    const h2 = trimmed.match(/^##\s+(.*)$/);
+    const h1 = trimmed.match(/^#\s+(.*)$/);
+    if (h3 || h2 || h1) {
+      flushList();
+      const level = h3 ? 3 : (h2 ? 2 : 1);
+      const hcontent = (h3 || h2 || h1)[1];
+      outLines.push('<h' + level + '>' + hcontent + '</h' + level + '>');
+      continue;
+    }
+    const olMatch = trimmed.match(/^\d+[\.\)]\s+(.*)$/);
+    const ulMatch = trimmed.match(/^[-*•]\s+(.*)$/);
+    if (olMatch) {
+      if (listType !== 'ol') { flushList(); listType = 'ol'; }
+      listBuffer.push('<li>' + olMatch[1] + '</li>');
+      continue;
+    } else if (ulMatch) {
+      if (listType !== 'ul') { flushList(); listType = 'ul'; }
+      listBuffer.push('<li>' + ulMatch[1] + '</li>');
+      continue;
+    } else {
+      flushList();
+    }
+    outLines.push(line);
+  }
+  flushList();
+  flushTable();
+  let html = outLines.join('\n');
+  html = html.replace(/`([^`\n]+)`/g, '<code class="ra-code">$1</code>');
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+  html = html.replace(/\u0000CODEBLOCK(\d+)\u0000/g, function(m, idx) {
+    return codeBlocks[parseInt(idx, 10)];
+  });
+  const parts = html.split(/(<pre class="ra-codeblock[\s\S]*?<\/pre>|<table>[\s\S]*?<\/table>|<[uo]l>[\s\S]*?<\/[uo]l>|<h[1-3]>[\s\S]*?<\/h[1-3]>|<hr>)/g);
+  for (let i = 0; i < parts.length; i += 2) {
+    parts[i] = parts[i].replace(/\n/g, '<br>');
+  }
+  return parts.join('');
+}
+function raAddMessage(role, text, save, reasoning) {
+  if (raWelcome.style.display !== 'none') {
+    raWelcome.style.display = 'none';
+    raMessages.style.display = 'flex';
+  }
+  const msg = document.createElement('div');
+  msg.className = 'ra-msg ' + role;
+  msg.dataset.role = role;
+  const avatar = document.createElement('div');
+  avatar.className = 'ra-avatar';
+  if (role === 'ai') {
+    avatar.innerHTML = '<img src="../images/nebula.png" alt="NebulaGPT">';
+  } else {
+    avatar.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+  }
+  const content = document.createElement('div');
+  content.className = 'ra-content';
+  if (role === 'ai' && reasoning) {
+    const think = document.createElement('details');
+    think.className = 'ra-think';
+    const summary = document.createElement('summary');
+    summary.textContent = 'Thoughts';
+    const body = document.createElement('div');
+    body.className = 'ra-think-body';
+    body.innerHTML = raFormatText(reasoning);
+    think.appendChild(summary);
+    think.appendChild(body);
+    content.appendChild(think);
+  }
+  const bubble = document.createElement('div');
+  bubble.className = 'ra-bubble';
+  bubble.innerHTML = raFormatText(text);
+  content.appendChild(bubble);
+  if (role === 'ai') {
+    const meta = document.createElement('div');
+    meta.className = 'ra-meta';
+    meta.textContent = 'NebulaGPT';
+    content.appendChild(meta);
+    const actions = document.createElement('div');
+    actions.className = 'ra-actions';
+    actions.innerHTML =
+      '<button class="ra-action-btn" onclick="raCopy(this)" title="Copy">' +
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>' +
+      '</button>' +
+      '<button class="ra-action-btn" onclick="raRegenerate()" title="Regenerate">' +
+      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>' +
+      '</button>';
+    content.appendChild(actions);
+  }
+  msg.appendChild(avatar);
+  msg.appendChild(content);
+  raMessages.appendChild(msg);
+  raMain.scrollTop = raMain.scrollHeight;
+  if (save !== false && text) raAppendToChat(role, text, reasoning);
+  return msg;
+}
+function raAddLoading() {
+  const msg = document.createElement('div');
+  msg.className = 'ra-msg ai';
+  msg.id = 'raLoadingMsg';
+  const avatar = document.createElement('div');
+  avatar.className = 'ra-avatar';
+  avatar.innerHTML = '<img src="../images/nebula.png" alt="NebulaGPT">';
+  const content = document.createElement('div');
+  content.className = 'ra-content';
+  const row = document.createElement('div');
+  row.className = 'ra-loading-row';
+  const dots = document.createElement('div');
+  dots.className = 'ra-loading';
+  dots.innerHTML = '<div class="ra-dot"></div><div class="ra-dot"></div><div class="ra-dot"></div>';
+  const label = document.createElement('div');
+  label.className = 'ra-loading-label';
+  label.id = 'raLoadingLabel';
+  label.textContent = raLoadingPhrases[0];
+  row.appendChild(dots);
+  row.appendChild(label);
+  content.appendChild(row);
+  const meta = document.createElement('div');
+  meta.className = 'ra-meta';
+  meta.textContent = 'NebulaGPT';
+  content.appendChild(meta);
+  msg.appendChild(avatar);
+  msg.appendChild(content);
+  raMessages.appendChild(msg);
+  raMain.scrollTop = raMain.scrollHeight;
+  let phraseIndex = 0;
+  raLoadingLabelInterval = setInterval(function() {
+    phraseIndex = (phraseIndex + 1) % raLoadingPhrases.length;
+    const el = document.getElementById('raLoadingLabel');
+    if (el) el.textContent = raLoadingPhrases[phraseIndex];
+  }, 1800);
+}
+function raRemoveLoading() {
+  if (raLoadingLabelInterval) {
+    clearInterval(raLoadingLabelInterval);
+    raLoadingLabelInterval = null;
+  }
+  const el = document.getElementById('raLoadingMsg');
+  if (el) el.remove();
+}
+function raRemoveError() {
+  const el = document.getElementById('raErrorMsg');
+  if (el) el.remove();
+}
+function raShowError(text) {
+  raRemoveError();
+  const err = document.createElement('div');
+  err.className = 'ra-error';
+  err.id = 'raErrorMsg';
+  err.textContent = text;
+  raMessages.appendChild(err);
+  raMain.scrollTop = raMain.scrollHeight;
+}
+function raBuildConversationContext() {
+  const chat = raChatsList.find(function(c) { return c.id === raChatId; });
+  if (!chat || !chat.messages || chat.messages.length === 0) return '';
+  let ctx = '';
+  for (let i = 0; i < chat.messages.length; i++) {
+    const m = chat.messages[i];
+    if (m.role === 'user') {
+      ctx += 'User: ' + m.text + '\n';
+    } else {
+      ctx += 'Assistant: ' + m.text + '\n';
+    }
+  }
+  return ctx;
+}
+async function raSend() {
+  const text = raInput.value.trim();
+  if (!text || raIsLoading) return;
+  raEnsureChat();
+  raRemoveError();
+  raLastUserText = text;
+  raAddMessage('user', text);
+  raUpdateChatTitle(text);
+  const memExtract = raExtractMemory(text);
+  if (memExtract) raUpdateMemory(memExtract);
+  raInput.value = '';
+  raResize(raInput);
+  raIsLoading = true;
+  raStreamCancelled = false;
+  raSendBtn.style.display = 'none';
+  raStopBtn.style.display = 'flex';
+  const memContext = raBuildMemoryContext();
+  const convContext = raBuildConversationContext();
+  let userTurn = text;
+  let searchResults = null;
+  if (raSearchEnabled) {
+    raAddLoading();
+    searchResults = await raPerformSearch(text);
+    raRemoveLoading();
+  }
+  if (searchResults) {
+    userTurn = text + '\n\n"SEARCH_RESULTS_CONTENT:\n' + searchResults + '"';
+  }
+  let fullPrompt = '';
+  if (memContext) fullPrompt += memContext;
+  if (convContext) fullPrompt += 'Here is the conversation so far:\n\n' + convContext + '\n';
+  fullPrompt += 'User: ' + userTurn;
+  raAbortCtrl = new AbortController();
+  const timeoutId = setTimeout(function() { raAbortCtrl.abort(); }, 60000);
+  raRemoveLoading();
+  raAddLoading();
+  try {
+    let url = 'https://nebulagpt-bysealgod.onrender.com/nebulagpt/send?prompt=' + encodeURIComponent(fullPrompt);
+    if (raThinkEnabled) url += '&think=1';
+    const res = await fetch(url, { signal: raAbortCtrl.signal });
+    clearTimeout(timeoutId);
+    if (!res.ok) {
+      throw new Error('Server returned ' + res.status);
+    }
+    const rawText = await res.text();
+    let responseText = rawText;
+    let responseReasoning = null;
+    try {
+      const json = JSON.parse(rawText);
+      if (json.reasoning !== undefined) responseReasoning = json.reasoning;
+      if (json.response !== undefined) responseText = json.response;
+      else if (json.message !== undefined) responseText = json.message;
+      else if (json.text !== undefined) responseText = json.text;
+      else if (json.content !== undefined) responseText = json.content;
+      else if (json.output !== undefined) responseText = json.output;
+      else if (json.result !== undefined) responseText = json.result;
+      else if (json.data !== undefined && typeof json.data === 'string') responseText = json.data;
+      else if (json.reply !== undefined) responseText = json.reply;
+      else if (json.answer !== undefined) responseText = json.answer;
+      else responseText = JSON.stringify(json, null, 2);
+    } catch (e) {
+      responseText = rawText;
+    }
+    raRemoveLoading();
+    const aiMsg = raAddMessage('ai', '', false, null);
+    const aiBubble = aiMsg.querySelector('.ra-bubble');
+    const words = responseText.split(/(\s+)/);
+    let wordIndex = 0;
+    const wordsPerTick = 5;
+    const tickMs = 2;
+    let displayedText = '';
+    function raDelay(ms) {
+      return new Promise(function(resolve) { setTimeout(resolve, ms); });
+    }
+    while (wordIndex < words.length && !raStreamCancelled) {
+      wordIndex = Math.min(wordIndex + wordsPerTick, words.length);
+      displayedText = words.slice(0, wordIndex).join('');
+      aiBubble.innerHTML = raFormatText(displayedText);
+      raMain.scrollTop = raMain.scrollHeight;
+      if (wordIndex < words.length) {
+        await raDelay(tickMs);
+      }
+    }
+    if (!raStreamCancelled) {
+      aiBubble.innerHTML = raFormatText(responseText);
+      displayedText = responseText;
+    }
+    raMain.scrollTop = raMain.scrollHeight;
+    const textToSave = displayedText || responseText;
+    raAppendToChat('ai', textToSave, responseReasoning);
+    if (responseReasoning) {
+      const content = aiMsg.querySelector('.ra-content');
+      const existingThink = content.querySelector('.ra-think');
+      if (!existingThink) {
+        const think = document.createElement('details');
+        think.className = 'ra-think';
+        const summary = document.createElement('summary');
+        summary.textContent = 'Thoughts';
+        const body = document.createElement('div');
+        body.className = 'ra-think-body';
+        body.innerHTML = raFormatText(responseReasoning);
+        think.appendChild(summary);
+        think.appendChild(body);
+        content.insertBefore(think, aiBubble);
+      }
+    }
+  } catch (err) {
+    clearTimeout(timeoutId);
+    raRemoveLoading();
+    if (err.name === 'AbortError') {
+    } else if (err.message.indexOf('Failed to fetch') !== -1 || err.message.indexOf('NetworkError') !== -1) {
+      raShowError('Failed to connect to NebulaGPT backend.');
+    } else {
+      raShowError('Error: ' + err.message);
+    }
+  } finally {
+    raIsLoading = false;
+    raSendBtn.disabled = !raInput.value.trim();
+    raSendBtn.style.display = 'flex';
+    raStopBtn.style.display = 'none';
+    raAbortCtrl = null;
+    raStreamCancelled = false;
+  }
+}
+function raStop() {
+  raStreamCancelled = true;
+  if (raAbortCtrl) {
+    try { raAbortCtrl.abort(); } catch (e) {}
+  }
+}
+function raResetUI() {
+  raIsLoading = false;
+  raSendBtn.disabled = !raInput.value.trim();
+  raSendBtn.style.display = 'flex';
+  raStopBtn.style.display = 'none';
+  raAbortCtrl = null;
+  raStreamCancelled = false;
+}
+function raRegenerate() {
+  if (raLastUserText) {
+    raInput.value = raLastUserText;
+    raResize(raInput);
+    raSend();
+  }
+}
+function raCopy(btn) {
+  const bubble = btn.closest('.ra-content').querySelector('.ra-bubble');
+  const temp = document.createElement('div');
+  temp.innerHTML = bubble.innerHTML;
+  temp.querySelectorAll('br').forEach(function(br) { br.replaceWith('\n'); });
+  temp.querySelectorAll('.ra-codeblock').forEach(function(pre) {
+    pre.replaceWith('```\n' + pre.textContent + '\n```');
+  });
+  temp.querySelectorAll('.ra-code').forEach(function(code) {
+    code.replaceWith('`' + code.textContent + '`');
+  });
+  const text = temp.textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+    btn.style.color = 'var(--positive)';
+    setTimeout(function() {
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+      btn.style.color = '';
+    }, 2000);
+  });
+}
+function raClear() {
+  raNewChat();
+}
+raLoadChats();
+raLoadCurrentChat();
+if (raChatsList.length === 0) {
+  raNewChat();
+} else if (raChatId) {
+  const chat = raChatsList.find(function(c) { return c.id === raChatId; });
+  if (chat) {
+    raRenderChats();
+    raSwitchChat(raChatId);
+  } else {
+    raNewChat();
+  }
+} else {
+  raNewChat();
+}
+raInput.focus();
+(function() {
+  const canvas = document.getElementById('raConstellation');
+  const ctx = canvas.getContext('2d');
+  let w, h, dpr;
+  let particles = [];
+  const PARTICLE_COUNT = 100;
+  const MAX_DIST = 150;
+  const SPEED = 0.45;
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    w = window.innerWidth;
+    h = window.innerHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function initParticles() {
+    particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * SPEED,
+        vy: (Math.random() - 0.5) * SPEED,
+        r: Math.random() * 1.4 + 0.8
+      });
+    }
+  }
+  function step() {
+    ctx.clearRect(0, 0, w, h);
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+      p.x = Math.max(0, Math.min(w, p.x));
+      p.y = Math.max(0, Math.min(h, p.y));
+    }
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const a = particles[i];
+        const b = particles[j];
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < MAX_DIST) {
+          const t = 1 - dist / MAX_DIST;
+          ctx.strokeStyle = 'rgba(120, 120, 120, ' + (t * 0.5).toFixed(3) + ')';
+          ctx.lineWidth = t * 1.4;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(170, 170, 170, 0.75)';
+      ctx.fill();
+    }
+    requestAnimationFrame(step);
+  }
+  resize();
+  initParticles();
+  requestAnimationFrame(step);
+  window.addEventListener('resize', function() {
+    resize();
+    initParticles();
+  });
+})();
+</script>
+</body>
+</html>

@@ -30,6 +30,7 @@
     --accent-glow: rgba(139, 92, 246, 0.25);
     --accent-soft: rgba(139, 92, 246, 0.08);
     --danger: #ef4444;
+    --danger-soft: rgba(239, 68, 68, 0.08);
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
@@ -106,10 +107,145 @@ html, body {
     background: var(--surface);
     border-radius: 20px;
     border: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.provider-switcher {
+    position: relative;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.provider-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+    user-select: none;
+}
+
+.provider-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text);
+    background: var(--surface-elevated);
+}
+
+.provider-btn[aria-expanded="true"] {
+    border-color: var(--accent);
+    color: var(--text);
+    background: var(--surface-elevated);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.provider-btn svg.chevron {
+    width: 12px;
+    height: 12px;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.provider-btn[aria-expanded="true"] svg.chevron {
+    transform: rotate(180deg);
+}
+
+.provider-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 160px;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-hover);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    z-index: 200;
+    animation: dropIn 0.15s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.provider-dropdown.open {
+    display: flex;
+}
+
+@keyframes dropIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.provider-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    text-align: left;
+    width: 100%;
+    user-select: none;
+}
+
+.provider-option:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+}
+
+.provider-option.selected {
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+
+.provider-option .checkmark {
+    margin-left: auto;
+    width: 14px;
+    height: 14px;
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0;
+}
+
+.provider-option.selected .checkmark {
+    opacity: 1;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2px 0;
 }
 
 .search-wrap {
-    margin-left: auto;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -119,6 +255,7 @@ html, body {
     padding: 8px 14px;
     width: 220px;
     transition: var(--transition-smooth);
+    flex-shrink: 0;
 }
 
 .search-wrap:focus-within {
@@ -162,12 +299,12 @@ html, body {
     width: 100%;
     max-width: 1000px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(161px, 1fr));
     justify-content: center;
     gap: 16px;
 }
 
-.tool-card {
+.service-card {
     position: relative;
     aspect-ratio: 1 / 1;
     border-radius: var(--radius-lg);
@@ -183,7 +320,7 @@ html, body {
     animation: fadeUp 0.35s ease both;
 }
 
-.tool-card::before {
+.service-card::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -194,7 +331,7 @@ html, body {
     z-index: 2;
 }
 
-.tool-card:hover::before {
+.service-card:hover::before {
     border-color: rgba(139, 92, 246, 0.15);
 }
 
@@ -210,23 +347,23 @@ html, body {
     }
 }
 
-.tool-card:hover {
+.service-card:hover {
     transform: translateY(-6px) scale(1.03);
     border-color: var(--border-hover);
     box-shadow: var(--shadow-lg), 0 0 30px rgba(139, 92, 246, 0.06);
 }
 
-.tool-card:active {
+.service-card:active {
     transform: translateY(-3px) scale(1.015);
     transition: var(--transition-fast);
 }
 
-.tool-icon {
+.service-icon {
     position: absolute;
     inset: 0;
 }
 
-.tool-icon img {
+.service-icon img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -235,12 +372,12 @@ html, body {
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.tool-card:hover .tool-icon img {
+.service-card:hover .service-icon img {
     transform: scale(1.12);
     filter: brightness(0.75);
 }
 
-.tool-card .overlay-gradient {
+.service-card .overlay-gradient {
     position: absolute;
     inset: 0;
     background: linear-gradient(
@@ -254,16 +391,16 @@ html, body {
     z-index: 1;
 }
 
-.tool-card:hover .overlay-gradient {
+.service-card:hover .overlay-gradient {
     opacity: 1;
 }
 
-.tool-name {
+.service-name {
     position: absolute;
     bottom: 14px;
     left: 14px;
     right: 14px;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 600;
     opacity: 0;
     transform: translateY(8px);
@@ -274,7 +411,7 @@ html, body {
     text-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
 
-.tool-card:hover .tool-name {
+.service-card:hover .service-name {
     opacity: 1;
     transform: translateY(0);
 }
@@ -303,7 +440,7 @@ html, body {
     text-align: center;
 }
 
-#toolOverlay {
+#serviceOverlay {
     position: fixed;
     inset: 0;
     background: var(--bg);
@@ -312,7 +449,7 @@ html, body {
     flex-direction: column;
 }
 
-#toolFrame {
+#serviceFrame {
     width: 100%;
     height: 100%;
     border: none;
@@ -382,37 +519,46 @@ html, body {
     transition: none;
 }
 
+.disclaimer {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px 24px 32px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
 @media (max-width: 768px) {
     .content {
         padding: 24px 16px;
     }
 
     .grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(138px, 1fr));
         gap: 12px;
     }
 
     .header {
         padding: 12px 16px;
+        gap: 8px;
     }
 
     .search-wrap {
-        width: 160px;
+        width: 140px;
     }
 
     .search-wrap:focus-within {
-        width: 200px;
+        width: 180px;
     }
 
     .header-title {
         font-size: 14px;
     }
-}
 
-@media (max-width: 480px) {
-    .grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
+    .provider-btn span {
+        display: none;
     }
 }
 
@@ -429,18 +575,71 @@ html, body {
 
 <div class="header">
     <div class="header-brand">
-        <span class="header-title">Nebula Apps</span>
+        <span class="header-title">Nebula Cloud</span>
     </div>
 
-    <span class="header-count" id="toolCount">0 apps</span>
+    <span class="header-count" id="serviceCount">0 services</span>
+
+    <div class="provider-switcher" id="providerSwitcher">
+        <button class="provider-btn" id="providerBtn" aria-haspopup="listbox" aria-expanded="false">
+            <span id="providerBtnLabel">nowgg.fun</span>
+            <svg class="chevron" viewBox="0 0 24 24">
+                <polyline points="6 9 12 15 18 9"/>
+            </svg>
+        </button>
+
+        <div class="provider-dropdown" id="providerDropdown" role="listbox">
+            <button
+                class="provider-option selected"
+                id="optNowggFun"
+                data-provider="nowggfun"
+                role="option"
+                aria-selected="true"
+            >
+                nowgg.fun
+                <svg class="checkmark" viewBox="0 0 24 24">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </button>
+
+            <div class="dropdown-divider"></div>
+
+            <button
+                class="provider-option"
+                id="optNowGg"
+                data-provider="nowgg"
+                role="option"
+                aria-selected="false"
+            >
+                now.gg
+                <svg class="checkmark" viewBox="0 0 24 24">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </button>
+        </div>
+    </div>
 
     <div class="search-wrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
             <circle cx="11" cy="11" r="8"/>
             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
 
-        <input type="text" id="searchInput" placeholder="Search apps..." autocomplete="off">
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Search services..."
+            autocomplete="off"
+        >
     </div>
 </div>
 
@@ -448,8 +647,11 @@ html, body {
     <div class="grid" id="grid"></div>
 </div>
 
-<div id="toolOverlay">
+<div class="disclaimer" id="disclaimer">
+    Nebula Cloud uses the service "nowgg.fun" by Frogiee1 (frogiee.one). This service is not owned or controlled by us.
+</div>
 
+<div id="serviceOverlay">
     <button class="close-overlay-btn" id="closeOverlayBtn" aria-label="Close">
         <svg viewBox="0 0 24 24">
             <line x1="18" y1="6" x2="6" y2="18"/>
@@ -458,31 +660,170 @@ html, body {
     </button>
 
     <div id="loadingScreen">
-        <iframe src="./loading.html"></iframe>
+        <iframe src="loading.html"></iframe>
     </div>
 
     <iframe
-        id="toolFrame"
-        allow="camera; microphone; display-capture; autoplay; clipboard-read; clipboard-write; web-share; xr-spatial-tracking; gamepad; geolocation; accelerometer; ambient-light-sensor; battery; bluetooth; browsing-topics; compute-pressure; document-domain; encrypted-media; execution-while-not-rendered; execution-while-out-of-viewport; fullscreen; gyroscope; hid; identity-credentials-get; idle-detection; keyboard-map; local-fonts; magnetometer; midi; otp-credentials; payment; picture-in-picture; publickey-credentials-create; publickey-credentials-get; screen-wake-lock; serial; speaker-selection; storage-access; usb; window-management"
+        id="serviceFrame"
+        allow="camera; microphone; display-capture; autoplay; clipboard-read; clipboard-write; web-share; xr-spatial-tracking; gamepad; geolocation"
         allowfullscreen
         credentialless
     ></iframe>
-
 </div>
 
 <script>
+const nowggEnd = "?ng_uaId=&ng_uaSessionId=&ng_visitId=&ng_ngReferrer=NA&ng_ngEntryPoint=https%253A%252F%252Fnow.gg%252F&ng_utmSource=&ng_utmMedium=&ng_utmCampaign=&ng_ntmSource=MyGames&ng_userSource=direct&ng_userCampaign=&ng_userAcqVar=";
+const SERVICES = {
+    nowggfun: [
+        {
+            name: "Android",
+            icon: "../images/android.webp",
+            url: "https://nowgg.fun/apps/uncube/7074/now.html"
+        },
+        {
+            name: "App Store (Aptoide)",
+            icon: "../images/aptoide.png",
+            url: "https://nowgg.fun/apps/aptoide/5874/aptoide.html"
+        },
+        {
+            name: "Roblox",
+            icon: "../images/roblox.jpg",
+            url: "https://nowgg.fun/apps/aptoide/5874/aptoide.html?deep_link=aptoidesearch://com.roblox.client"
+        },
+        {
+            name: "Geometry Dash",
+            icon: "../images/gd.png",
+            url: "https://nowgg.fun/apps/robtop-games/1400/geometry-dash.html"
+        },
+        {
+            name: "Minecraft Trial",
+            icon: "../images/mctrial.png",
+            url: "https://nowgg.fun/apps/aptoide/5874/aptoide.html?deep_link=aptoidesearch://com.mojang.minecrafttrialpe"
+        }
+    ],
+
+    nowgg: [
+        {
+            name: "Android",
+            icon: "../images/android.webp",
+            url: "https://now.gg/apps/uncube/7074/now.html" + nowggEnd
+        },
+        {
+            name: "App Store (Aptoide)",
+            icon: "../images/aptoide.png",
+            url: "https://now.gg/apps/aptoide/5874/aptoide.html" + nowggEnd 
+        },
+        {
+            name: "Roblox",
+            icon: "../images/roblox.jpg",
+            url: "https://now.gg/apps/aptoide/5874/aptoide.html?deep_link=aptoidesearch://com.roblox.client" + nowggEnd
+        },
+        {
+            name: "Geometry Dash",
+            icon: "../images/gd.png",
+            url: "https://now.gg/apps/robtop-games/1400/geometry-dash.html" + nowggEnd
+        },
+        {
+            name: "Minecraft Trial",
+            icon: "../images/mctrial.png",
+            url: "https://now.gg/apps/aptoide/5874/aptoide.html?deep_link=aptoidesearch://com.mojang.minecrafttrialpe" + nowggEnd
+        }
+    ]
+};
+
+const DISCLAIMERS = {
+    nowggfun: 'Nebula Cloud uses the service "nowgg.fun" by Frogiee1 (frogiee.one). This service is not owned or controlled by us.',
+    nowgg: 'Nebula Cloud uses the service "now.gg". This service is not owned or controlled by us.'
+};
+
+let currentProvider = "nowggfun";
 let searchQuery = "";
-let _p = "";
 
 const grid = document.getElementById("grid");
-const overlay = document.getElementById("toolOverlay");
+const overlay = document.getElementById("serviceOverlay");
 const loadingScreen = document.getElementById("loadingScreen");
 const closeOverlayBtn = document.getElementById("closeOverlayBtn");
+const serviceCount = document.getElementById("serviceCount");
+const disclaimer = document.getElementById("disclaimer");
 
-let frame = document.getElementById("toolFrame");
+const providerBtn = document.getElementById("providerBtn");
+const providerDropdown = document.getElementById("providerDropdown");
+const providerBtnLabel = document.getElementById("providerBtnLabel");
+
+let frame = document.getElementById("serviceFrame");
 let loadToken = 0;
 
-async function P_FETCH() {
+function openProviderDropdown() {
+    providerDropdown.classList.add("open");
+    providerBtn.setAttribute("aria-expanded", "true");
+}
+
+function closeProviderDropdown() {
+    providerDropdown.classList.remove("open");
+    providerBtn.setAttribute("aria-expanded", "false");
+}
+
+providerBtn.addEventListener("click", e => {
+    e.stopPropagation();
+
+    const isOpen = providerDropdown.classList.contains("open");
+
+    if (isOpen) {
+        closeProviderDropdown();
+    } else {
+        openProviderDropdown();
+    }
+});
+
+document.addEventListener("click", e => {
+    if (!document.getElementById("providerSwitcher").contains(e.target)) {
+        closeProviderDropdown();
+    }
+});
+
+document.querySelectorAll(".provider-option").forEach(opt => {
+    opt.addEventListener("click", () => {
+        const provider = opt.dataset.provider;
+
+        if (provider === currentProvider) {
+            closeProviderDropdown();
+            return;
+        }
+
+        currentProvider = provider;
+
+        providerBtnLabel.textContent =
+            provider === "nowggfun" ? "nowgg.fun" : "now.gg";
+
+        document.querySelectorAll(".provider-option").forEach(o => {
+            const selected = o.dataset.provider === provider;
+
+            o.classList.toggle("selected", selected);
+            o.setAttribute("aria-selected", selected);
+        });
+
+        disclaimer.textContent = DISCLAIMERS[currentProvider];
+
+        closeProviderDropdown();
+        renderGrid();
+    });
+});
+
+document.getElementById("searchInput").addEventListener("input", e => {
+    searchQuery = e.target.value.toLowerCase().trim();
+    renderGrid();
+});
+
+let _p = "";
+let _pReady = false;
+let _pResolvers = [];
+
+function _waitForProxy() {
+    if (_pReady) return Promise.resolve(_p);
+    return new Promise(resolve => _pResolvers.push(resolve));
+}
+
+(async function () {
     const keys = await caches.keys();
     for (const key of keys) await caches.delete(key);
     sessionStorage.clear();
@@ -602,30 +943,36 @@ async function P_FETCH() {
         if (overlayEl) overlayEl.remove();
     } else {
         if (statusEl) statusEl.textContent = "all proxy links are blocked.";
+        _p = "https://pennsylvania-discussed-perform-dot.trycloudflare.com/learn/study/";
     }
 
-    const probeFrameEl = document.getElementById("probeFrame");
-    if (probeFrameEl) { probeFrameEl.src = "about:blank"; probeFrameEl.remove(); }
-}
+    _pReady = true;
+    _pResolvers.forEach(resolve => resolve(_p));
+    _pResolvers = [];
+
+    const probeEl = document.getElementById("probeFrame");
+    if (probeEl) { probeEl.src = "about:blank"; probeEl.remove(); }
+})();
 
 async function resetLoadingScreen() {
-    const oldLoadingFrame = loadingScreen.querySelector("iframe");
+    const old = loadingScreen.querySelector("iframe");
 
-    if (oldLoadingFrame) {
-        oldLoadingFrame.remove();
+    if (old) {
+        old.remove();
     }
 
-    const newLoadingFrame = document.createElement("iframe");
-    newLoadingFrame.src = "./loading.html";
-    loadingScreen.appendChild(newLoadingFrame);
+    const f = document.createElement("iframe");
+    f.src = "./loading.html";
+
+    loadingScreen.appendChild(f);
 
     await new Promise(resolve => {
-        newLoadingFrame.onload = resolve;
+        f.onload = resolve;
         setTimeout(resolve, 100);
     });
 }
 
-function createToolFrame() {
+function createServiceFrame() {
     if (frame) {
         frame.onload = null;
         frame.src = "about:blank";
@@ -634,7 +981,7 @@ function createToolFrame() {
 
     const newFrame = document.createElement("iframe");
 
-    newFrame.id = "toolFrame";
+    newFrame.id = "serviceFrame";
     newFrame.allow = "camera; microphone; display-capture; autoplay; " +
         "clipboard-read; clipboard-write; web-share; " +
         "xr-spatial-tracking; gamepad; geolocation; accelerometer; " +
@@ -647,12 +994,8 @@ function createToolFrame() {
         "publickey-credentials-create; publickey-credentials-get; " +
         "screen-wake-lock; serial; speaker-selection; storage-access; " +
         "usb; window-management";
-    newFrame.allowFullscreen = true;
     newFrame.setAttribute("credentialless", "");
-    newFrame.style.width = "100%";
-    newFrame.style.height = "100%";
-    newFrame.style.border = "none";
-    newFrame.style.display = "none";
+    newFrame.style.cssText = "width:100%;height:100%;border:none;display:none;";
 
     overlay.appendChild(newFrame);
 
@@ -661,13 +1004,12 @@ function createToolFrame() {
     return newFrame;
 }
 
-async function openTool(url) {
+async function openService(url) {
     const token = ++loadToken;
 
     overlay.style.display = "flex";
 
-    frame = createToolFrame();
-
+    frame = createServiceFrame();
     frame.style.display = "none";
 
     loadingScreen.style.opacity = "1";
@@ -695,14 +1037,11 @@ async function openTool(url) {
         frame.style.display = "block";
     };
 
-    if (url === "./homeworkhelper.html") {
-        frame.src = url;
-    } else {
-        frame.src = _p + encodeURIComponent(url);
-    }
+    const proxyBase = await _waitForProxy();
+    frame.src = proxyBase + encodeURIComponent(url);
 }
 
-function closeTool() {
+function closeService() {
     ++loadToken;
 
     overlay.style.display = "none";
@@ -721,11 +1060,6 @@ function closeTool() {
     resetLoadingScreen();
 }
 
-document.getElementById("searchInput").addEventListener("input", e => {
-    searchQuery = e.target.value.toLowerCase().trim();
-    renderGrid();
-});
-
 let isDragging = false;
 let dragOffsetX = 0;
 let dragOffsetY = 0;
@@ -743,22 +1077,32 @@ closeOverlayBtn.addEventListener("pointerdown", e => {
 });
 
 closeOverlayBtn.addEventListener("pointermove", e => {
-    if (!isDragging) return;
+    if (!isDragging) {
+        return;
+    }
 
     hasDragged = true;
+
     e.preventDefault();
 
-    let newX = e.clientX - dragOffsetX;
-    let newY = e.clientY - dragOffsetY;
+    const nx = Math.max(
+        0,
+        Math.min(
+            e.clientX - dragOffsetX,
+            overlay.clientWidth - closeOverlayBtn.offsetWidth
+        )
+    );
 
-    const maxX = overlay.clientWidth - closeOverlayBtn.offsetWidth;
-    const maxY = overlay.clientHeight - closeOverlayBtn.offsetHeight;
+    const ny = Math.max(
+        0,
+        Math.min(
+            e.clientY - dragOffsetY,
+            overlay.clientHeight - closeOverlayBtn.offsetHeight
+        )
+    );
 
-    newX = Math.max(0, Math.min(newX, maxX));
-    newY = Math.max(0, Math.min(newY, maxY));
-
-    closeOverlayBtn.style.left = newX + "px";
-    closeOverlayBtn.style.top = newY + "px";
+    closeOverlayBtn.style.left = nx + "px";
+    closeOverlayBtn.style.top = ny + "px";
 });
 
 closeOverlayBtn.addEventListener("pointerup", () => {
@@ -778,73 +1122,78 @@ closeOverlayBtn.addEventListener("click", e => {
         return;
     }
 
-    closeTool();
+    closeService();
 });
 
 overlay.addEventListener("click", e => {
     if (e.target === overlay) {
-        closeTool();
+        closeService();
     }
 });
 
 function renderGrid() {
-    const apps = [
-        { name: "YouTube", icon: "../images/youtube.webp", url: "https://youtube.com" },
-        { name: "TikTok", icon: "../images/tiktok.jpg", url: "https://tiktok.com" },
-        { name: "SoundCloud", icon: "../images/sndcld.png", url: "https://soundcloud.com" },
-        { name: "CornHub", icon: "../images/cornhub.png", url: "https://cornhub.website" },
-        { name: "NebulaGPT", icon: "../images/chatgpt.png", url: "./homeworkhelper.html" },
-        { name: "Blooket Bot", icon: "../images/blooketbot.png", url: "https://blooketbot.schoolcheats.net" },
-        { name: "Twitch", icon: "../images/twitch.png", url: "https://twitch.tv" },
-        { name: "Snapchat", icon: "../images/snap.jpg", url: "https://snapchat.com" },
-        { name: "SpenFlix (Movies)", icon: "../images/movies.svg", url: "https://watch.spencerdevs.xyz" },
-        { name: "Archive Of Our Own", icon: "../images/ao3.png", url: "https://archiveofourown.org" },
-        { name: "Webtoons", icon: "../images/webtoon.png", url: "https://webtoons.com/en" },
-        { name: "Visual Studio Code", icon: "../images/vsc.png", url: "https://vscode.dev" },
-    ];
+    const services = SERVICES[currentProvider];
 
-    const filtered = apps.filter(app =>
-        app.name.toLowerCase().includes(searchQuery)
+    const filtered = services.filter(service =>
+        service.name.toLowerCase().includes(searchQuery)
     );
 
-    document.getElementById("toolCount").textContent =
-        filtered.length + " App" + (filtered.length !== 1 ? "s" : "");
+    serviceCount.textContent =
+        filtered.length +
+        " Service" +
+        (filtered.length !== 1 ? "s" : "");
 
     if (!filtered.length) {
         grid.innerHTML = `
             <div class="empty-state">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
                     <circle cx="11" cy="11" r="8"/>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <p>No apps found matching "${searchQuery}"</p>
+                <p>No services found matching "${searchQuery}"</p>
             </div>
         `;
+
         return;
     }
 
     grid.innerHTML = "";
 
-    filtered.forEach((tool, i) => {
+    filtered.forEach((service, i) => {
         const card = document.createElement("div");
 
-        card.className = "tool-card";
+        card.className = "service-card";
         card.style.animationDelay = `${i * 0.04}s`;
-        card.onclick = () => openTool(tool.url);
+
+        card.onclick = () => openService(service.url);
 
         card.innerHTML = `
-            <div class="tool-icon">
-                <img src="${tool.icon}" alt="${tool.name}" loading="lazy">
+            <div class="service-icon">
+                <img
+                    src="${service.icon}"
+                    alt="${service.name}"
+                    loading="lazy"
+                >
             </div>
+
             <div class="overlay-gradient"></div>
-            <div class="tool-name">${tool.name}</div>
+
+            <div class="service-name">
+                ${service.name}
+            </div>
         `;
 
         grid.appendChild(card);
     });
 }
 
-P_FETCH();
 renderGrid();
 </script>
 

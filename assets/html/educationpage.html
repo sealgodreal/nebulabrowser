@@ -2,81 +2,209 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="theme-color" content="#171717">
+<script src="../convert.js"></script>
+<meta name="theme-color" content="#0a0a0a">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-* { margin: 0; box-sizing: border-box; }
-
 :root {
     --bg: #0a0a0a;
     --surface: #111111;
-    --surface2: #161616;
+    --surface-elevated: #161616;
+    --surface-hover: #1a1a1a;
     --border: #1f1f1f;
+    --border-hover: #2a2a2a;
     --text: #ffffff;
-    --text-dim: #5a5a5a;
+    --text-secondary: #a0a0a0;
+    --text-muted: #5a5a5a;
+    --accent: #8b5cf6;
+    --accent-glow: rgba(139, 92, 246, 0.25);
+    --accent-soft: rgba(139, 92, 246, 0.08);
+    --danger: #ef4444;
+    --danger-soft: rgba(239, 68, 68, 0.08);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+    --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
+    --shadow-lg: 0 16px 48px rgba(0,0,0,0.5);
+    --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-body {
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 13px;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    touch-action: manipulation;
 }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #444; }
 
 .header {
     position: sticky;
     top: 0;
     z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 24px;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+}
 
+.header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-brand {
     display: flex;
     align-items: center;
     gap: 10px;
-
-    padding: 12px 20px;
-
-    background: rgba(10,10,10,0.75);
-    backdrop-filter: blur(14px);
-
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    flex-shrink: 0;
 }
 
 .header-title {
-    font-size: 12.5px;
+    font-size: 15px;
     font-weight: 600;
-    letter-spacing: 0.2px;
+    letter-spacing: -0.01em;
+    color: var(--text);
 }
 
 .header-count {
     font-size: 12px;
-    color: var(--text-dim);
+    color: var(--text-muted);
+    font-weight: 400;
+    padding: 2px 8px;
+    background: var(--surface);
+    border-radius: 20px;
+    border: 1px solid var(--border);
+}
+
+.web-toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+.web-toggle-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.01em;
+    transition: color var(--transition-fast);
+}
+
+.web-toggle-wrap.active .web-toggle-label {
+    color: var(--accent);
+}
+
+.ios-toggle {
+    position: relative;
+    width: 44px;
+    height: 26px;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+.ios-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 13px;
+    background: #2e2e2e;
+    transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ios-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(0,0,0,0.15);
+    transition:
+        transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1),
+        width 0.12s ease;
+    will-change: transform;
+}
+
+.web-toggle-wrap:active .ios-thumb {
+    width: 24px;
+}
+
+.web-toggle-wrap.active .ios-track {
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.web-toggle-wrap.active .ios-thumb {
+    transform: translateX(18px);
+}
+
+.web-toggle-wrap.active:active .ios-thumb {
+    transform: translateX(14px);
+    width: 24px;
 }
 
 .search-wrap {
-    margin-left: auto;
     display: flex;
     align-items: center;
-    gap: 7px;
-
+    gap: 8px;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
-
-    padding: 6px 10px;
-    width: 190px;
-
-    transition: 0.2s ease;
+    border-radius: var(--radius-md);
+    padding: 8px 14px;
+    width: 220px;
+    transition: var(--transition-smooth);
 }
 
 .search-wrap:focus-within {
-    width: 230px;
-    border-color: #2f2f2f;
-    box-shadow: 0 0 0 3px rgba(255,255,255,0.03);
+    width: 280px;
+    border-color: var(--accent);
+    background: var(--surface-elevated);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.search-wrap svg {
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: var(--transition-fast);
+}
+
+.search-wrap:focus-within svg {
+    color: var(--accent);
 }
 
 .search-wrap input {
@@ -84,87 +212,229 @@ body {
     border: none;
     outline: none;
     color: var(--text);
-    font-size: 12px;
+    font-size: 13px;
     width: 100%;
+    font-family: inherit;
+}
+
+.search-wrap input::placeholder {
+    color: var(--text-muted);
 }
 
 .content {
-    padding: 18px;
+    padding: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+.grid.web-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 
 .game-card {
     background: var(--surface);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 12px;
-
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
     overflow: hidden;
     cursor: pointer;
     text-decoration: none;
-
     display: flex;
     flex-direction: column;
+    transition: var(--transition-smooth);
+    animation: fadeUp 0.35s ease both;
+    position: relative;
+}
 
-    transition: transform 0.18s ease, box-shadow 0.18s ease, border 0.18s ease;
+.game-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+    border: 1px solid transparent;
+    transition: var(--transition-fast);
+    pointer-events: none;
+    z-index: 1;
+}
 
-    animation: fadeUp 0.25s ease both;
+.game-card:hover::before {
+    border-color: rgba(139, 92, 246, 0.15);
+}
+
+.game-card.web-card:hover::before {
+    border-color: rgba(139, 92, 246, 0.2);
 }
 
 @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .game-card:hover {
-    transform: translateY(-3px) scale(1.01);
-    border-color: rgba(255,255,255,0.12);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    transform: translateY(-4px) scale(1.02);
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(139, 92, 246, 0.06);
+}
+
+.game-card.web-card:hover {
+    box-shadow: var(--shadow-lg), 0 0 30px rgba(139, 92, 246, 0.1);
+}
+
+.game-card:active {
+    transform: translateY(-2px) scale(1.01);
+    transition: var(--transition-fast);
 }
 
 .game-thumb {
-    aspect-ratio: 16/10;
-    background: var(--surface2);
+    aspect-ratio: 16 / 10;
+    background: linear-gradient(135deg, #141414, #1a1a1a);
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    position: relative;
+}
+
+.game-thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%);
+    opacity: 0;
+    transition: var(--transition-smooth);
+}
+
+.game-card:hover .game-thumb::after {
+    opacity: 1;
 }
 
 .game-thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.25s ease;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .game-card:hover .game-thumb img {
-    transform: scale(1.05);
+    transform: scale(1.08);
+}
+
+.game-thumb .fallback-icon {
+    width: 40px;
+    height: 40px;
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+.game-thumb.web-thumb {
+    background: linear-gradient(135deg, #100d1a, #130f1e);
+}
+
+.web-favicon {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.game-card:hover .web-favicon {
+    transform: scale(1.12);
+}
+
+.web-globe-icon {
+    width: 44px;
+    height: 44px;
+    color: var(--accent);
+    opacity: 0.4;
+}
+
+.web-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: 6px;
+    padding: 2px 6px;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    z-index: 2;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .game-info {
-    padding: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .game-name {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
-
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--text);
+    letter-spacing: -0.01em;
 }
 
-.empty {
+.game-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.game-url {
+    font-size: 10px;
+    color: var(--accent);
+    opacity: 0.55;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.01em;
+    margin-top: 1px;
+    transition: opacity var(--transition-fast);
+}
+
+.game-card:hover .game-url {
+    opacity: 0.85;
+}
+
+.empty-state {
     grid-column: 1 / -1;
-    padding: 60px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    gap: 16px;
+    animation: fadeUp 0.4s ease both;
+}
+
+.empty-state svg {
+    width: 48px;
+    height: 48px;
+    color: var(--text-muted);
+    opacity: 0.4;
+}
+
+.empty-state p {
+    color: var(--text-muted);
+    font-size: 14px;
     text-align: center;
-    color: var(--text-dim);
-    opacity: 0.7;
 }
 
 #gameOverlay {
@@ -174,8 +444,9 @@ body {
     display: none;
     flex-direction: column;
     z-index: 100;
-
-    animation: fadeIn 0.2s ease;
+    animation: fadeIn 0.25s ease;
+    touch-action: none;
+    overscroll-behavior: none;
 }
 
 @keyframes fadeIn {
@@ -183,43 +454,410 @@ body {
     to { opacity: 1; }
 }
 
+.overlay-topbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    background: rgba(10, 10, 10, 0.75);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    border-bottom: 1px solid var(--border);
+    z-index: 200;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.overlay-topbar.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.menu-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    color: var(--text);
+    touch-action: none;
+    position: relative;
+}
+
+.menu-btn:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-hover);
+}
+
+.menu-btn span {
+    display: block;
+    width: 16px;
+    height: 1.5px;
+    background: currentColor;
+    border-radius: 1px;
+    transition: var(--transition-fast);
+}
+
+.menu-btn.active span:nth-child(1) {
+    transform: translateY(5.5px) rotate(45deg);
+}
+
+.menu-btn.active span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.menu-btn.active span:nth-child(3) {
+    transform: translateY(-5.5px) rotate(-45deg);
+}
+
+.floating-menu-btn {
+    position: absolute;
+    top: 10px;
+    left: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    color: var(--text);
+    touch-action: none;
+    z-index: 205;
+    box-shadow: var(--shadow-md);
+}
+
+.floating-menu-btn.visible {
+    display: flex;
+    animation: slideInLeft 0.3s ease;
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.floating-menu-btn.faded {
+    opacity: 0.3;
+}
+
+.floating-menu-btn:hover,
+.floating-menu-btn:active {
+    opacity: 1 !important;
+    background: var(--surface-hover);
+    border-color: var(--border-hover);
+}
+
+.floating-menu-btn span {
+    display: block;
+    width: 16px;
+    height: 1.5px;
+    background: currentColor;
+    border-radius: 1px;
+    transition: var(--transition-fast);
+}
+
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.topbar-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    background: linear-gradient(90deg, #a78bfa, #c084fc, #e879f9, #a78bfa);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 4s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.topbar-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.close-bar-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.close-bar-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text);
+}
+
+.close-bar-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.menu-panel {
+    position: absolute;
+    top: 56px;
+    left: 14px;
+    width: 220px;
+    background: rgba(17, 17, 17, 0.98);
+    backdrop-filter: blur(24px) saturate(1.2);
+    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    z-index: 210;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: var(--shadow-lg);
+    animation: menuIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.menu-panel.open {
+    display: flex;
+}
+
+@keyframes menuIn {
+    from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.menu-btn-row {
+    display: flex;
+    gap: 8px;
+}
+
+.menu-action {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface-elevated);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    text-align: center;
+    font-family: inherit;
+    touch-action: none;
+    letter-spacing: 0.01em;
+}
+
+.menu-action:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+}
+
+.menu-action:active {
+    transform: translateY(0);
+}
+
+.menu-action.danger {
+    color: var(--danger);
+    border-color: rgba(239, 68, 68, 0.15);
+    background: var(--danger-soft);
+}
+
+.menu-action.danger:hover {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+.menu-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2px 0;
+}
+
+.proxy-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 4px 2px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    gap: 10px;
+}
+
+.proxy-toggle-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.proxy-toggle-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+}
+
+.proxy-toggle-hint {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.proxy-toggle-row.active .proxy-toggle-name {
+    color: var(--accent);
+}
+
+.proxy-toggle-row .ios-toggle {
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+.proxy-toggle-row .ios-track {
+    background: #2e2e2e;
+    transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.proxy-toggle-row .ios-thumb {
+    transition:
+        transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1),
+        width 0.12s ease;
+}
+
+.proxy-toggle-row.active .ios-track {
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.proxy-toggle-row.active .ios-thumb {
+    transform: translateX(18px);
+}
+
+#gameFrameWrap {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    overscroll-behavior: none;
+}
+
 #gameIframe {
     width: 100%;
     height: 100%;
     border: none;
+    display: block;
+    touch-action: none;
 }
 
 #loadingScreen {
     position: absolute;
     inset: 0;
     background: var(--bg);
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
+    z-index: 50;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+    overflow: hidden;
 }
 
-.game-card,
-.game-card:visited,
-.game-card:active {
-    color: inherit;
-    text-decoration: none;
+#loadingFrame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+    background: var(--bg);
+}
+
+@media (max-width: 768px) {
+    .content { padding: 16px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .grid.web-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); }
+    .header { padding: 12px 16px; }
+    .search-wrap { width: 160px; }
+    .search-wrap:focus-within { width: 200px; }
+    .game-info { padding: 10px 12px; }
+}
+
+@media (max-width: 480px) {
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .grid.web-grid { grid-template-columns: repeat(2, 1fr); }
+    .header-title { display: none; }
+}
+
+::selection {
+    background: rgba(139, 92, 246, 0.3);
+    color: #fff;
 }
 </style>
+
+<base target="_blank">
 </head>
 
 <body>
 
 <div class="header">
-    <span class="header-title">nebula games</span>
-    <div class="header-sep"></div>
-    <span class="header-count" id="gameCount"></span>
+    <div class="header-brand">
+        <span class="header-title">Nebula Games</span>
+    </div>
+    <span class="header-count" id="gameCount">0 games</span>
 
-    <div class="search-wrap">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input type="text" id="searchInput" placeholder="search games...">
+    <div class="header-right">
+        <div class="web-toggle-wrap" id="webToggleWrap" role="switch" aria-checked="false" tabindex="0" title="Toggle Web Games">
+            <span class="web-toggle-label">Web</span>
+            <div class="ios-toggle">
+                <div class="ios-track"></div>
+                <div class="ios-thumb"></div>
+            </div>
+        </div>
+
+        <div class="search-wrap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="searchInput" placeholder="Search games..." autocomplete="off">
+        </div>
     </div>
 </div>
 
@@ -228,12 +866,207 @@ body {
 </div>
 
 <div id="gameOverlay">
-    <iframe id="gameIframe"></iframe>
-    <div id="loadingScreen"></div>
+
+    <div class="overlay-topbar" id="overlayTopbar">
+        <button class="menu-btn" id="menuBtn" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <div class="topbar-brand">
+            <span class="topbar-title">Nebula</span>
+            <span class="topbar-sub">| Developed by : sealgod</span>
+        </div>
+
+        <button class="close-bar-btn" id="closeBarBtn" aria-label="Hide bar">
+            <svg viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+    </div>
+
+    <button class="floating-menu-btn" id="floatMenuBtn" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <div class="menu-panel" id="menuPanel">
+        <div class="menu-btn-row">
+            <button class="menu-action danger" id="btnExit">Exit Game</button>
+            <button class="menu-action" id="btnFullscreen">Fullscreen</button>
+        </div>
+
+        <div class="menu-divider"></div>
+
+        <div class="proxy-toggle-row" id="proxyToggleRow" role="switch" aria-checked="false" tabindex="0">
+            <div class="proxy-toggle-labels">
+                <span class="proxy-toggle-name">Use Proxy</span>
+                <span class="proxy-toggle-hint">Buggy</span>
+            </div>
+            <div class="ios-toggle">
+                <div class="ios-track"></div>
+                <div class="ios-thumb"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameFrameWrap">
+        <iframe id="gameIframe" allow="fullscreen"></iframe>
+
+        <div id="loadingScreen">
+            <iframe
+                id="loadingFrame"
+                src="loading_v2.html"
+                title="Loading"
+                scrolling="no">
+            </iframe>
+        </div>
+    </div>
+
 </div>
 
 <script>
-const GAMES = [
+let _p = "";
+let proxyEnabled = false;
+let currentGame = null;
+let currentGameType = null;
+
+(async function () {
+    const keys = await caches.keys();
+    for (const key of keys) await caches.delete(key);
+    sessionStorage.clear();
+
+    const proxyUrls = [
+        "https://brooklyn-oval-bike-tourism.trycloudflare.com",
+        "https://resources-indices-exists-maintaining.trycloudflare.com",
+        "https://modules-stop-souls-precipitation.trycloudflare.com"
+    ];
+
+    const overlay = Object.assign(document.createElement("div"), {
+        id: "proxyOverlay",
+        style: "position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;flex-direction:column;user-select:none;"
+    });
+    const statusText = Object.assign(document.createElement("div"), {
+        id: "proxyStatus",
+        style: "color:#fff;font-size:16px;font-weight:300;letter-spacing:1px;",
+        textContent: "finding unblocked proxy..."
+    });
+    overlay.appendChild(statusText);
+    document.body.appendChild(overlay);
+
+    const probeFrame = Object.assign(document.createElement("iframe"), {
+        id: "probeFrame",
+        style: "position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;border:0;",
+        sandbox: "allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+    });
+    document.body.appendChild(probeFrame);
+
+    const isFrameBlocked = () => {
+        try {
+            const src = probeFrame.src;
+            if (!src || src === "about:blank" || src.startsWith("about:")) return true;
+
+            let href = null;
+            try { href = probeFrame.contentWindow?.location?.href || probeFrame.src; } catch (_) { href = probeFrame.src; }
+
+            const lower = (href || src || "").toLowerCase();
+            const blockedKeywords = [
+                "securly.com/broker/blocked","goguardian.com/blocked","goguardian.com/filter",
+                "lightspeed.com/blocked","iboss.com/blocked","smoothwall.com/blocked",
+                "fortiguard.com/blocked","opendns.com/blocked","umbrella.com/blocked",
+                "zscaler.com/blocked","mcafee.com/blocked","barracuda.com/blocked",
+                "forcepoint.com/blocked","netnanny.com/blocked","cyberpatrol.com/blocked",
+                "surfwatch.com/blocked","covenanteyes.com/blocked","blocked","filter",
+                "restricted","denied","forbidden","notallowed","policyviolation",
+                "accessdenied","categoryblocked","webfilter","dnsfilter","contentfilter"
+            ];
+            if (blockedKeywords.some(k => lower.includes(k))) return true;
+
+            try {
+                const doc = probeFrame.contentDocument || probeFrame.contentWindow?.document;
+                if (doc) {
+                    const title = (doc.title || "").toLowerCase();
+                    if (["blocked","securly","goguardian","access denied","forbidden","restricted","filter"].some(k => title.includes(k))) return true;
+                    if (doc.body) {
+                        const bodyText = (doc.body.innerText || doc.body.textContent || "").toLowerCase();
+                        if (bodyText.includes("login to continue") && bodyText.includes("school email")) return true;
+                        if (bodyText.trim().length < 10) return true;
+                    }
+                }
+            } catch (_) {}
+            return false;
+        } catch (_) { return false; }
+    };
+
+    const fetchBlocked = async url => {
+        try { await fetch(url, { method: "HEAD", mode: "no-cors", cache: "no-store" }); return false; }
+        catch (_) { return true; }
+    };
+
+    const loadFrame = (url, timeout = 15000) => new Promise((resolve, reject) => {
+        let timer = null;
+        let settled = false;
+        const cleanup = () => { if (timer) clearTimeout(timer); probeFrame.onload = null; probeFrame.onerror = null; };
+        probeFrame.onload = () => { if (!settled) { settled = true; cleanup(); resolve(); } };
+        probeFrame.onerror = () => { if (!settled) { settled = true; cleanup(); reject(); } };
+        timer = setTimeout(() => { if (!settled) { settled = true; cleanup(); reject(); } }, timeout);
+        probeFrame.src = url;
+    });
+
+    const findProxy = async () => {
+        let attempt = 0;
+        const maxAttempts = proxyUrls.length * 3;
+        let idx = 0;
+
+        while (attempt < maxAttempts) {
+            const url = proxyUrls[idx % proxyUrls.length];
+            try {
+                await loadFrame(url, 18000);
+                let blocked = isFrameBlocked();
+                if (!blocked && await fetchBlocked(url)) {
+                    const src = probeFrame.src || "";
+                    if (src.includes("securly") || src.includes("goguardian") || src.includes("blocked") || src.includes("filter")) {
+                        blocked = true;
+                    }
+                }
+                const lower = url.toLowerCase();
+                if (lower.includes("securly.com/broker/blocked") || lower.includes("goguardian.com/blocked")) blocked = true;
+                if (!blocked) return url;
+            } catch (_) {}
+            idx = (idx + 1) % proxyUrls.length;
+            attempt++;
+            await new Promise(r => setTimeout(r, 500));
+        }
+        return null;
+    };
+
+    const found = await findProxy();
+    const overlayEl = document.getElementById("proxyOverlay");
+    const statusEl = document.getElementById("proxyStatus");
+
+    if (found) {
+        if (statusEl) statusEl.textContent = "link found! initializing...";
+        _p = found + "/learn/study/";
+        await new Promise(r => setTimeout(r, 100));
+        if (overlayEl) overlayEl.remove();
+    } else {
+        if (statusEl) statusEl.textContent = "all proxy links are blocked.";
+        await new Promise(r => setTimeout(r, 1500));
+        if (overlayEl) overlayEl.remove();
+    }
+
+    const frame = document.getElementById("probeFrame");
+    if (frame) { frame.src = "about:blank"; frame.remove(); }
+})();
+
+function getPrefix() {
+    return proxyEnabled ? _p : "";
+}
+
+const LOCAL_GAMES = [
     { name: "Geometry Dash", index: 1 },
     { name: "Five Nights at Epstein's", index: 2 },
     { name: "BitLife", index: 3 },
@@ -242,6 +1075,8 @@ const GAMES = [
     { name: "PolyTrack", index: 6 },
     { name: "Ragdoll Archers", index: 7 },
     { name: "Eaglercraft 1.12.2", index: 8 },
+    { name: "Eaglercraft 1.8", index: 32 },
+    { name: "Astra Client v1.8 (WASM)", index: 31 },
     { name: "GunSpin", index: 9 },
     { name: "Stickman Hook", index: 10 },
     { name: "Among Us", index: 11 },
@@ -251,6 +1086,8 @@ const GAMES = [
     { name: "Tomb of the Mask", index: 15 },
     { name: "Subway Surfers", index: 16 },
     { name: "Baldi's Basics", index: 17 },
+    { name: "-3", index: 33 },
+    { name: "-b", index: 34 },
     { name: "Drive Mad", index: 18 },
     { name: "Slope", index: 19 },
     { name: "Friday Night Funkin'", index: 20 },
@@ -258,98 +1095,484 @@ const GAMES = [
     { name: "Crossy Road", index: 22 },
     { name: "Fruit Ninja", index: 23 },
     { name: "Chrome Dino", index: 24 },
-    { name: "Basketball Stars", index: 25 },
+    { name: "DDLC!", index: 25 },
     { name: "The Impossible Quiz", index: 26 },
     { name: "Sandboxels", index: 27 },
     { name: "Hacker Typer", index: 28 },
+    { name: "Yandere Simulator", index: 29 },
+    { name: "SONIC.EXE", index: 30 },
+    { name: "Google Snake", index: 35 }
+];
+
+const WEB_GAMES = [
+    {
+        name: "Web Dashers (GD)",
+        url: "https://webdashers.dev",
+        displayUrl: "webdashers.dev"
+    },
+    {
+        name: "OVO",
+        url: "https://www.hoodamath.com/mobile/games/ovo/game.html",
+        displayUrl: "hoodamath.com"
+    },
+    {
+        name: "Block Blast",
+        url: "https://block-blast.gg",
+        displayUrl: "block-blast.gg"
+    },
+    {
+        name: "People Playground",
+        url: "https://selenite.cc/resources/semag/peopleplayground/index.html",
+        displayUrl: "selenite.cc"
+    },
+    {
+        name: "Deltarune",
+        url: "https://d3rtzzzsiu7gdr.cloudfront.net/files/deltarune/index.html",
+        displayUrl: "d3rtzzzsiu7gdr.cloudfront.net"
+    }
 ];
 
 let searchQuery = "";
+let webMode = false;
 
 const grid = document.getElementById("grid");
 const gameOverlay = document.getElementById("gameOverlay");
 const loadingScreen = document.getElementById("loadingScreen");
 const gameIframe = document.getElementById("gameIframe");
+const loadingFrame = document.getElementById("loadingFrame");
 
-document.getElementById("searchInput").addEventListener("input", e => {
-    searchQuery = e.target.value.toLowerCase();
+const webToggleWrap = document.getElementById("webToggleWrap");
+
+webToggleWrap.addEventListener("click", () => {
+    webMode = !webMode;
+    webToggleWrap.classList.toggle("active", webMode);
+    webToggleWrap.setAttribute("aria-checked", webMode);
     renderGrid();
 });
 
-function renderGrid() {
-    const filtered = GAMES.filter(g =>
-        g.name.toLowerCase().includes(searchQuery)
-    );
-
-    document.getElementById("gameCount").textContent =
-        filtered.length + " game" + (filtered.length !== 1 ? "s" : "");
-
-    if (!filtered.length) {
-        grid.innerHTML = `<div class="empty">no games found.</div>`;
-        return;
+webToggleWrap.addEventListener("keydown", e => {
+    if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        webToggleWrap.click();
     }
+});
 
-    grid.innerHTML = "";
+document.getElementById("searchInput").addEventListener("input", e => {
+    searchQuery = e.target.value.toLowerCase().trim();
+    renderGrid();
+});
 
-    filtered.forEach(game => {
-        const a = document.createElement("a");
-        a.className = "game-card";
-        a.href = "#";
+function getFaviconUrl(url) {
+    try {
+        const origin = new URL(url).origin;
+        return `https://www.google.com/s2/favicons?domain=${origin}&sz=128`;
+    } catch {
+        return null;
+    }
+}
 
-        a.addEventListener("click", e => {
-            e.preventDefault();
-            openGame(game);
+function renderGrid() {
+    const countEl = document.getElementById("gameCount");
+
+    if (webMode) {
+        const filtered = WEB_GAMES.filter(game =>
+            game.name.toLowerCase().includes(searchQuery) ||
+            game.displayUrl.toLowerCase().includes(searchQuery)
+        );
+
+        countEl.textContent = filtered.length + " Web Game" + (filtered.length !== 1 ? "s" : "");
+        grid.className = "grid web-grid";
+
+        if (!filtered.length) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                    <p>No web games found matching "${searchQuery}"</p>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = "";
+
+        filtered.forEach((game, i) => {
+            const card = document.createElement("a");
+            card.className = "game-card web-card";
+            card.href = "#";
+            card.style.animationDelay = `${i * 0.06}s`;
+
+            card.addEventListener("click", e => {
+                e.preventDefault();
+                openWebGame(game);
+            });
+
+            const faviconSrc = getFaviconUrl(game.url);
+
+            const thumb = document.createElement("div");
+            thumb.className = "game-thumb web-thumb";
+
+            const badge = document.createElement("div");
+            badge.className = "web-badge";
+            badge.textContent = "Web";
+            thumb.appendChild(badge);
+
+            if (faviconSrc) {
+                const img = document.createElement("img");
+                img.className = "web-favicon";
+                img.src = faviconSrc;
+                img.alt = game.name;
+                img.loading = "lazy";
+                img.onerror = () => {
+                    img.remove();
+                    thumb.innerHTML += `
+                        <svg class="web-globe-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="2" y1="12" x2="22" y2="12"/>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                    `;
+                };
+                thumb.appendChild(img);
+            } else {
+                thumb.innerHTML += `
+                    <svg class="web-globe-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                `;
+            }
+
+            const info = document.createElement("div");
+            info.className = "game-info";
+            info.innerHTML = `
+                <div class="game-name">${game.name}</div>
+                <div class="game-url">${game.displayUrl}</div>
+            `;
+
+            card.appendChild(thumb);
+            card.appendChild(info);
+            grid.appendChild(card);
         });
 
-        const thumb = document.createElement("div");
-        thumb.className = "game-thumb";
+    } else {
+        const filtered = LOCAL_GAMES.filter(game =>
+            game.name.toLowerCase().includes(searchQuery)
+        );
 
-        const img = document.createElement("img");
-        img.src = `../education/icons/${game.index}.png`;
-        img.alt = game.name;
+        countEl.textContent = filtered.length + " Game" + (filtered.length !== 1 ? "s" : "");
+        grid.className = "grid";
 
-        img.onerror = () => {
-            img.remove();
-            thumb.innerHTML = `
-                <svg class="fallback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <rect x="3" y="3" width="18" height="18" rx="3"/>
-                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                    <polyline points="21 15 16 10 5 21"/>
-                </svg>`;
+        if (!filtered.length) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                    <p>No games found matching "${searchQuery}"</p>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = "";
+
+        filtered.forEach((game, i) => {
+            const card = document.createElement("a");
+            card.className = "game-card";
+            card.href = "#";
+            card.style.animationDelay = `${i * 0.03}s`;
+
+            card.addEventListener("click", e => {
+                e.preventDefault();
+                openGame(game);
+            });
+
+            const thumb = document.createElement("div");
+            thumb.className = "game-thumb";
+
+            const img = document.createElement("img");
+            img.src = _p + `https://sealgodreal.github.io/nebulagames/icons/${game.index}.png`;
+            img.alt = game.name;
+            img.loading = "lazy";
+
+            img.onerror = () => {
+                img.remove();
+                thumb.innerHTML = `
+                    <svg class="fallback-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="3"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                `;
+            };
+
+            thumb.appendChild(img);
+
+            const info = document.createElement("div");
+            info.className = "game-info";
+
+            const gameNumber = LOCAL_GAMES.indexOf(game) + 1;
+
+            info.innerHTML = `
+                <div class="game-name">${game.name}</div>
+                <div class="game-meta">Lesson : ${gameNumber}</div>
+            `;
+
+            card.appendChild(thumb);
+            card.appendChild(info);
+            grid.appendChild(card);
+        });
+    }
+}
+
+let menuOpen = false;
+let barHidden = false;
+
+const topbar = document.getElementById("overlayTopbar");
+const closeBarBtn = document.getElementById("closeBarBtn");
+const menuBtn = document.getElementById("menuBtn");
+const floatMenuBtn = document.getElementById("floatMenuBtn");
+const menuPanel = document.getElementById("menuPanel");
+const btnExit = document.getElementById("btnExit");
+const btnFullscreen = document.getElementById("btnFullscreen");
+const proxyToggleRow = document.getElementById("proxyToggleRow");
+
+proxyToggleRow.addEventListener("click", () => {
+    proxyEnabled = !proxyEnabled;
+    proxyToggleRow.classList.toggle("active", proxyEnabled);
+    proxyToggleRow.setAttribute("aria-checked", proxyEnabled);
+
+    if (currentGame !== null) {
+        reloadCurrentGame();
+    }
+});
+
+proxyToggleRow.addEventListener("keydown", e => {
+    if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        proxyToggleRow.click();
+    }
+});
+
+async function reloadCurrentGame() {
+    menuOpen = false;
+    menuPanel.classList.remove("open");
+    menuBtn.classList.remove("active");
+
+    prepareGameIframe();
+    resetLoadingScreen();
+
+    await new Promise(resolve => requestAnimationFrame(resolve));
+
+    if (currentGameType === "local") {
+        gameIframe.src = getPrefix() + `https://sealgodreal.github.io/nebulagames/${currentGame.index}/index.html`;
+    } else if (currentGameType === "web") {
+        gameIframe.src = getPrefix() + currentGame.url;
+    }
+
+    setIframePermissions();
+    await waitForGameLoad();
+}
+
+function setIframePermissions() {
+    gameIframe.allow =
+        "camera; microphone; display-capture; autoplay; " +
+        "clipboard-read; clipboard-write; web-share; " +
+        "xr-spatial-tracking; gamepad; geolocation; accelerometer; " +
+        "ambient-light-sensor; battery; bluetooth; browsing-topics; " +
+        "compute-pressure; document-domain; encrypted-media; " +
+        "execution-while-not-rendered; execution-while-out-of-viewport; " +
+        "fullscreen; gyroscope; hid; identity-credentials-get; " +
+        "idle-detection; keyboard-map; local-fonts; magnetometer; " +
+        "midi; otp-credentials; payment; picture-in-picture; " +
+        "publickey-credentials-create; publickey-credentials-get; " +
+        "screen-wake-lock; serial; speaker-selection; storage-access; " +
+        "usb; window-management";
+}
+
+function toggleMenu(e) {
+    if (e) e.stopPropagation();
+    menuOpen = !menuOpen;
+    menuPanel.classList.toggle("open", menuOpen);
+    menuBtn.classList.toggle("active", menuOpen);
+}
+
+menuBtn.addEventListener("click", toggleMenu);
+floatMenuBtn.addEventListener("click", toggleMenu);
+
+document.addEventListener("click", e => {
+    if (
+        menuOpen &&
+        !menuPanel.contains(e.target) &&
+        e.target !== menuBtn &&
+        e.target !== floatMenuBtn &&
+        !floatMenuBtn.contains(e.target)
+    ) {
+        menuOpen = false;
+        menuPanel.classList.remove("open");
+        menuBtn.classList.remove("active");
+    }
+});
+
+let floatFadeTimer;
+
+function resetFloatFade() {
+    floatMenuBtn.classList.remove("faded");
+    clearTimeout(floatFadeTimer);
+    if (barHidden) {
+        floatFadeTimer = setTimeout(() => {
+            floatMenuBtn.classList.add("faded");
+        }, 4000);
+    }
+}
+
+floatMenuBtn.addEventListener("mouseenter", resetFloatFade);
+floatMenuBtn.addEventListener("mouseleave", resetFloatFade);
+floatMenuBtn.addEventListener("touchstart", resetFloatFade, { passive: true });
+
+closeBarBtn.addEventListener("click", () => {
+    barHidden = true;
+    topbar.classList.add("hidden");
+    menuOpen = false;
+    menuPanel.classList.remove("open");
+    menuBtn.classList.remove("active");
+    floatMenuBtn.classList.add("visible");
+    resetFloatFade();
+});
+
+btnExit.addEventListener("click", () => {
+    gameIframe.src = "about:blank";
+    gameOverlay.style.display = "none";
+
+    currentGame = null;
+    currentGameType = null;
+    menuOpen = false;
+    barHidden = false;
+
+    menuPanel.classList.remove("open");
+    menuBtn.classList.remove("active");
+    topbar.classList.remove("hidden");
+    floatMenuBtn.classList.remove("visible", "faded");
+
+    clearTimeout(floatFadeTimer);
+});
+
+btnFullscreen.addEventListener("click", () => {
+    if (!document.fullscreenElement) {
+        gameOverlay.requestFullscreen?.().catch(() => {});
+    } else {
+        document.exitFullscreen?.().catch(() => {});
+    }
+});
+
+function resetLoadingScreen() {
+    loadingScreen.style.display = "flex";
+    loadingScreen.style.opacity = "1";
+    loadingFrame.src = "loading_v2.html";
+}
+
+function hideLoadingScreen() {
+    loadingScreen.style.opacity = "0";
+    setTimeout(() => {
+        if (loadingScreen.style.opacity === "0") {
+            loadingScreen.style.display = "none";
+        }
+    }, 400);
+}
+
+function prepareGameIframe() {
+    gameIframe.onload = null;
+    gameIframe.onerror = null;
+    gameIframe.src = "about:blank";
+    gameIframe.style.transition = "none";
+    gameIframe.style.opacity = "0";
+}
+
+function waitForGameLoad() {
+    return new Promise(resolve => {
+        let finished = false;
+
+        const finish = () => {
+            if (finished) return;
+            finished = true;
+            gameIframe.style.transition = "opacity 0.4s ease";
+            gameIframe.style.opacity = "1";
+            hideLoadingScreen();
+            resolve();
         };
 
-        thumb.appendChild(img);
-
-        const info = document.createElement("div");
-        info.className = "game-info";
-        info.innerHTML = `<div class="game-name">${game.name}</div>`;
-
-        a.appendChild(thumb);
-        a.appendChild(info);
-        grid.appendChild(a);
+        gameIframe.onload = finish;
+        gameIframe.onerror = finish;
+        setTimeout(finish, 15000);
     });
 }
 
-function openGame(game) {
+async function openGame(game) {
+    currentGame = game;
+    currentGameType = "local";
+
     gameOverlay.style.display = "flex";
 
-    loadingScreen.innerHTML = `
-        <iframe src="./loading.html"
-        style="width:100%;height:100%;border:none;"></iframe>
-    `;
+    barHidden = false;
+    menuOpen = false;
 
-    gameIframe.style.opacity = "0";
+    topbar.classList.remove("hidden");
+    floatMenuBtn.classList.remove("visible", "faded");
+    menuPanel.classList.remove("open");
+    menuBtn.classList.remove("active");
 
-    gameIframe.onload = () => {
-        loadingScreen.style.opacity = "0";
-        setTimeout(() => loadingScreen.remove(), 200);
+    clearTimeout(floatFadeTimer);
 
-        gameIframe.style.transition = "opacity 0.2s ease";
-        gameIframe.style.opacity = "1";
-    };
+    prepareGameIframe();
+    resetLoadingScreen();
 
-    gameIframe.src = `../education/${game.index}/index.html`;
+    await new Promise(resolve => requestAnimationFrame(resolve));
+
+    gameIframe.src = getPrefix() + `https://sealgodreal.github.io/nebulagames/${game.index}/index.html`;
+
+    setIframePermissions();
+
+    await waitForGameLoad();
 }
+
+async function openWebGame(game) {
+    currentGame = game;
+    currentGameType = "web";
+
+    gameOverlay.style.display = "flex";
+
+    barHidden = false;
+    menuOpen = false;
+
+    topbar.classList.remove("hidden");
+    floatMenuBtn.classList.remove("visible", "faded");
+    menuPanel.classList.remove("open");
+    menuBtn.classList.remove("active");
+
+    clearTimeout(floatFadeTimer);
+
+    prepareGameIframe();
+    setIframePermissions();
+    resetLoadingScreen();
+
+    await new Promise(resolve => requestAnimationFrame(resolve));
+
+    gameIframe.src = getPrefix() + game.url;
+
+    await waitForGameLoad();
+}
+
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && gameOverlay.style.display === "flex" && !barHidden) {
+        closeBarBtn.click();
+    }
+});
 
 renderGrid();
 </script>

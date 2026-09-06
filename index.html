@@ -1,448 +1,1089 @@
+
+<!--
+
+  ! This page is a recreation of ZK-Learn Education (zkit.above.gay) !
+
+  ███╗   ██╗███████╗██████╗ ██╗   ██╗██╗      █████╗     ██╗     ███████╗ █████╗ ██████╗ ███╗   ██╗
+  ████╗  ██║██╔════╝██╔══██╗██║   ██║██║     ██╔══██╗    ██║     ██╔════╝██╔══██╗██╔══██╗████╗  ██║
+  ██╔██╗ ██║█████╗  ██████╔╝██║   ██║██║     ███████║    ██║     █████╗  ███████║██████╔╝██╔██╗ ██║
+  ██║╚██╗██║██╔══╝  ██╔══██╗██║   ██║██║     ██╔══██║    ██║     ██╔══╝  ██╔══██║██╔══██╗██║╚██╗██║
+  ██║ ╚████║███████╗██████╔╝╚██████╔╝███████╗██║  ██║    ███████╗███████╗██║  ██║██║  ██║██║ ╚████║
+  ╚═╝  ╚═══╝╚══════╝╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝    ╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝
+  | Made by : sealgod
+  | Educational Site
+
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nebula | Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;600&family=Geist:wght@300;400;600&display=swap" rel="stylesheet">
+
+<title>Nebula Learn!</title>
+<link rel="icon" href="assets/main/favicon.ico">
+
+<meta property="og:title" content="Nebula Learn!">
+<meta name="description" content="Your personal study space and student dashboard. We provide Practice Tests, Flashcards, and other educational resources for student education.">
+<meta property="og:description" content="Your personal study space and student dashboard. We provide Practice Tests, Flashcards, and other educational resources for student education.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://raw.githubusercontent.com/sealgodreal/nebulabrowser/main/assets/images/nebula.png">
+<meta property="og:image:width" content="650">
+<meta property="og:image:height" content="650">
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-:root { --ease-out-mac: cubic-bezier(0.22, 1, 0.36, 1); }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --bg-dark: #0a0a12;
+  --bg-card: #12121f;
+  --bg-element: #1a1a2e;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent: #7c3aed;
+  --accent-bright: #a855f7;
+  --accent-glow: rgba(168, 85, 247, 0.3);
+  --border: #1e1e3f;
+  --purple-deep: #2e1065;
+  --purple-mid: #4c1d95;
+}
+
+* { box-sizing: border-box; }
 
 body {
-  font-family: 'Geist', sans-serif;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
   height: 100vh;
+  overflow: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+button { border: none; background: none; cursor: pointer; font-family: inherit; }
+h1, h2, h3, p { margin: 0; }
+
+.sr-only {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.app-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 16rem;
+  background-color: var(--bg-card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1024px) {
+  .sidebar { display: none; }
+}
+
+.sidebar-header {
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border-radius: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #000;
   color: white;
-  overflow: hidden;
+  font-weight: bold;
+  font-size: 1.25rem;
+  box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.4);
 }
 
-#bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  opacity: 0.35;
-  pointer-events: none;
+.brand-text {
+  font-weight: bold;
+  font-size: 1.25rem;
+  letter-spacing: -0.025em;
+  color: white;
 }
 
-.container {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  padding: 28px 34px;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.06);
-  backdrop-filter: blur(10px);
-}
-.logo { font-size: 2.8rem; font-weight: 600; }
-.logo span { color: rgba(255,255,255,0.2); font-weight: 300; }
-.subtext { margin-top: 8px; font-size: 13px; color: #555; }
-.button {
-  margin-top: 20px;
-  display: inline-block;
-  padding: 10px 16px;
-  border-radius: 10px;
-  border: 1px solid #1a1a1a;
-  background: #080808;
-  color: #aaa;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.2s;
-  text-decoration: none;
-}
-.button:hover { background: #111; border-color: #333; color: #fff; transform: translateY(-1px); }
-
-.footer { position: absolute; bottom: 18px; font-size: 11px; color: #2a2a2a; z-index: 2; }
-
-body.fading-out { animation: pageFade 0.55s ease forwards; }
-@keyframes pageFade { from { opacity: 1; } to { opacity: 0; } }
-
-.quiet-overlay {
-  position: fixed; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 14px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.7s ease;
-  z-index: 10;
-}
-.quiet-overlay.visible { opacity: 1; }
-.quiet-text {
-  font-size: 1.05rem;
-  color: rgba(255,255,255,0.3);
-  letter-spacing: -0.01em;
-  font-weight: 300;
-}
-.quiet-text strong { color: rgba(255,255,255,0.65); font-weight: 600; }
-
-.macos-window {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 420px;
-  border-radius: 14px;
-  background: rgba(6,6,6,0.95);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255,255,255,0.05);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.95);
-  overflow: hidden;
-  animation: popIn 0.45s var(--ease-out-mac);
-  z-index: 5;
-  transition: opacity 0.3s ease, box-shadow 0.35s var(--ease-out-mac);
-}
-
-@keyframes popIn {
-  0%   { transform: translate(-50%, -50%) scale(0.92); opacity: 0; filter: blur(8px); }
-  100% { transform: translate(-50%, -50%) scale(1);    opacity: 1; filter: blur(0); }
-}
-
-.macos-window:not(.fullscreen):hover { box-shadow: 0 28px 80px rgba(0,0,0,0.9); }
-
-.macos-window.fullscreen {
-  top: 0 !important; left: 0 !important;
-  width: 100vw !important; height: 100vh !important;
-  border-radius: 0 !important;
+.sidebar-nav {
+  flex: 1;
+  padding: 1rem;
   overflow-y: auto;
-  transform: none !important;
-  transition: top 0.45s var(--ease-out-mac), left 0.45s var(--ease-out-mac),
-              width 0.45s var(--ease-out-mac), height 0.45s var(--ease-out-mac),
-              border-radius 0.45s var(--ease-out-mac),
-              opacity 0.3s ease, box-shadow 0.45s var(--ease-out-mac) !important;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.macos-window.exiting-fullscreen {
-  transition: top 0.45s var(--ease-out-mac), left 0.45s var(--ease-out-mac),
-              width 0.45s var(--ease-out-mac), height 0.45s var(--ease-out-mac),
-              border-radius 0.45s var(--ease-out-mac), transform 0.45s var(--ease-out-mac),
-              opacity 0.3s ease, box-shadow 0.45s var(--ease-out-mac) !important;
-}
-
-.macos-window.fading-out  { opacity: 0 !important; transition: opacity 0.3s ease !important; }
-.macos-window.fading-in   { opacity: 1 !important; transition: opacity 0.35s ease !important; }
-
-.titlebar {
-  height: 34px;
-  display: grid;
-  grid-template-columns: 60px 1fr 60px;
+.nav-item {
+  display: flex;
   align-items: center;
-  padding: 0 10px;
-  cursor: grab;
-  background: rgba(255,255,255,0.02);
-  user-select: none;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s;
 }
-.titlebar.no-drag { cursor: default; }
 
-.traffic { display: flex; gap: 8px; }
-.dot { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; transition: filter 0.15s; }
-.dot:hover { filter: brightness(1.3); }
-.red    { background: #ff5f57; }
-.yellow { background: #febc2e; }
-.green  { background: #28c840; }
+.nav-item:hover {
+  background-color: rgba(124, 58, 237, 0.1);
+  color: var(--text-primary);
+}
 
-.title { font-size: 12px; color: #555; text-align: center; }
-.window-body { padding: 20px; }
+.nav-item.active {
+  background: linear-gradient(90deg, rgba(124, 58, 237, 0.2), rgba(168, 85, 247, 0.1));
+  color: #f8fafc;
+  font-weight: 600;
+  border-left: 3px solid var(--accent-bright);
+}
 
-.dock {
-  position: fixed;
-  bottom: 24px;
-  left: 24px;
+.nav-section-title {
+  padding: 2.5rem 1rem 1rem;
+  font-size: 0.625rem;
+  font-weight: bold;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+.class-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+.sidebar-footer {
+  padding: 1.5rem;
+  border-top: 1px solid rgba(30, 30, 63, 0.5);
+}
+
+.btn-signout {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-signout:hover {
+  background-color: rgba(124, 58, 237, 0.1);
+  border-color: var(--accent);
+}
+
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--bg-dark);
+}
+
+.top-bar {
+  height: 5rem;
+  border-bottom: 1px solid var(--border);
+  padding: 0 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.search-box {
+  position: relative;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.search-input {
+  width: 100%;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem 0.625rem 3rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.icon-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.icon-btn:hover {
+  background-color: rgba(124, 58, 237, 0.1);
+  color: var(--text-primary);
+}
+
+.notification-dot {
+  position: absolute;
+  top: 0.625rem;
+  right: 0.625rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: var(--accent-bright);
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.6);
+}
+
+.divider {
+  height: 1.5rem;
+  width: 1px;
+  background-color: var(--border);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: white;
+  padding: 0.625rem 1.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+}
+
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2.5rem;
+}
+
+.welcome-card {
+  margin-bottom: 2.5rem;
+  background: linear-gradient(135deg, #1a1a2e, #0a0a12);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  padding: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.welcome-text h1 {
+  font-size: 2.25rem;
+  font-weight: bold;
+  color: white;
+  margin: 0 0 0.75rem 0;
+}
+
+.welcome-text p {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  max-width: 32rem;
+  margin: 0;
+}
+
+.welcome-actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-white {
+  background-color: white;
+  color: #0a0a12;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: bold;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+}
+
+.btn-white:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.15);
+}
+
+.btn-outline {
+  background-color: rgba(26, 26, 46, 0.5);
+  border: 1px solid #2e1065;
+  color: #c4b5fd;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover {
+  background-color: rgba(124, 58, 237, 0.1);
+  border-color: var(--accent);
+}
+
+.decoration-icon {
   display: none;
-  padding: 9px 20px;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 20px;
-  backdrop-filter: blur(14px);
-  font-size: 12px; color: rgba(255,255,255,0.5);
-  cursor: pointer;
-  opacity: 0;
-  z-index: 20;
-  transition: opacity 0.45s ease, color 0.2s;
 }
-.dock.visible { opacity: 1; }
-.dock:hover { color: #fff; }
+@media (min-width: 768px) {
+  .decoration-icon {
+    display: block;
+    position: absolute;
+    right: -2.5rem;
+    bottom: -2.5rem;
+    font-size: 15rem;
+    color: rgba(168, 85, 247, 0.04);
+  }
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+}
+
+.link-action {
+  color: #c4b5fd;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.link-action:hover {
+  color: var(--accent-bright);
+}
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+@media (min-width: 768px) {
+  .courses-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.course-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.course-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.1);
+}
+
+.course-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.course-icon-box {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.875rem;
+}
+
+.course-tag {
+  font-size: 0.625rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.course-title {
+  font-weight: bold;
+  font-size: 1.25rem;
+  color: white;
+  margin: 0 0 0.25rem 0;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.progress-track {
+  width: 100%;
+  background-color: #1a1a2e;
+  height: 0.5rem;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #7c3aed, #a855f7);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+}
+
+.activity-section {
+  padding-top: 1.5rem;
+}
+
+.activity-list {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.activity-item {
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  border-bottom: 1px solid rgba(30, 30, 63, 0.5);
+}
+.activity-item:last-child { border-bottom: none; }
+
+.activity-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-content { flex: 1; }
+.activity-content p { margin: 0; }
+.activity-title { font-size: 0.875rem; font-weight: 500; color: #e2e8f0; }
+.activity-meta { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.125rem; }
+
+.btn-small-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background-color: #1a1a2e;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-small-icon:hover {
+  background-color: rgba(124, 58, 237, 0.2);
+  color: var(--accent-bright);
+}
+
+.grade-score { text-align: right; font-size: 1rem; font-weight: 900; color: #a78bfa; }
+
+.sidebar-widgets {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.widget-box {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  padding: 2rem;
+}
+
+.widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.widget-title {
+  font-weight: bold;
+  color: white;
+  letter-spacing: 0.025em;
+  margin: 0;
+}
+
+.todo-item {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.todo-item:last-child { margin-bottom: 0; }
+.todo-item:hover {
+  opacity: 0.8;
+}
+
+.todo-line {
+  width: 0.375rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.todo-check {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.5rem;
+  border: 2px solid #2e1065;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.todo-check-done {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border: none;
+}
+
+.grade-display {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.grade-value { font-size: 3rem; font-weight: 900; color: white; line-height: 1; }
+.grade-trend { color: #a78bfa; font-size: 0.875rem; font-weight: bold; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.25rem; }
+
+.grade-bars { display: flex; gap: 0.375rem; height: 0.625rem; width: 100%; }
+.grade-bar { flex: 1; border-radius: 9999px; background: linear-gradient(90deg, #7c3aed, #a855f7); box-shadow: 0 0 8px rgba(124, 58, 237, 0.4); }
+.grade-bar.opacity-60 { opacity: 0.6; box-shadow: none; background: #8b5cf6; }
+.grade-bar.empty { background-color: #1a1a2e; box-shadow: none; }
+
+.btn-full {
+  width: 100%;
+  margin-top: 2.5rem;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: var(--text-secondary);
+  background-color: rgba(26, 26, 46, 0.5);
+  border-radius: 0.75rem;
+  transition: all 0.2s;
+}
+
+.btn-full:hover {
+  background-color: rgba(124, 58, 237, 0.1);
+  color: var(--text-primary);
+}
+
+.bg-blue-10 { background-color: rgba(59, 130, 246, 0.1); }
+.text-blue { color: #60a5fa; }
+.border-blue-30 { border-color: rgba(59, 130, 246, 0.3); }
+.bg-blue-20 { background-color: rgba(59, 130, 246, 0.2); }
+.shadow-blue { box-shadow: 0 0 8px rgba(59,130,246,0.5); }
+
+.bg-emerald-10 { background-color: rgba(16, 185, 129, 0.1); }
+.text-emerald { color: #34d399; }
+.border-emerald-30 { border-color: rgba(16, 185, 129, 0.3); }
+.bg-emerald-20 { background-color: rgba(16, 185, 129, 0.2); }
+.shadow-emerald { box-shadow: 0 0 8px rgba(16,185,129,0.5); }
+
+.bg-amber-10 { background-color: rgba(245, 158, 11, 0.1); }
+.text-amber { color: #fbbf24; }
+.border-amber-30 { border-color: rgba(245, 158, 11, 0.3); }
+.bg-amber-20 { background-color: rgba(245, 158, 11, 0.2); }
+.shadow-amber { box-shadow: 0 0 8px rgba(245,158,11,0.5); }
+
+.bg-purple-10 { background-color: rgba(168, 85, 247, 0.1); }
+.text-purple { color: #c084fc; }
+.border-purple-30 { border-color: rgba(168, 85, 247, 0.3); }
+.bg-purple-20 { background-color: rgba(168, 85, 247, 0.2); }
+
+.text-indigo { color: #a78bfa; }
+.bg-red { background-color: #ef4444; }
+.bg-orange { background-color: #f97316; }
+.bg-slate { background-color: #475569; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #0a0a12; }
+::-webkit-scrollbar-thumb { background-color: #2e1065; border-radius: 20px; }
+
+.flex-1 { flex: 1; }
+
+.welcome-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.1), transparent 70%);
+  pointer-events: none;
+}
+
+.course-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-bright), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.course-card {
+  position: relative;
+}
+
+.course-card:hover::after {
+  opacity: 1;
+}
 </style>
+<base target="_blank">
 </head>
 <body>
 
-<canvas id="bg"></canvas>
-
-<div class="quiet-overlay" id="quietOverlay">
-  <div class="quiet-text">it's quiet here. you should try out <strong>nebula</strong>!</div>
+<div class="sr-only" aria-selected="true">
+<h1>Nebula Learn! District Learning Management System (LMS) Master Course Directory</h1>
+<h2>Section 1: District Academic Policies and Digital Citizenship</h2>
+<p>
+Welcome to the Nebula Learn Student Portal and Learning Management System. This platform serves as the central hub for all digital coursework, peer collaboration, and academic resource distribution. All students utilizing this portal are bound by the District Acceptable Use Policy (AUP) and the Academic Integrity Honor Code. Digital citizenship is a core pillar of our pedagogical approach. Students must ensure that all communications on the message boards, assignment submissions, and peer-review interactions maintain a professional and respectful tone.
+</p>
+<p>
+Plagiarism, including the uncredited use of secondary sources, unauthorized collaboration on summative assessments, and the utilization of artificial intelligence to generate essays, is strictly prohibited and will result in a zero for the assignment alongside disciplinary review. The grading rubric for all standard courses follows a weighted system: Summative Assessments (Exams/Projects) constitute 60% of the final grade, Formative Assessments (Quizzes/Labs) constitute 30%, and Daily Coursework/Participation constitutes 10%. Late submissions will incur a 10% penalty per operational school day. Technical support for portal access, password resets, and software integration is available via the IT Help Desk during standard school hours.
+</p>
+<h2>Section 2: AP Physics 1 Comprehensive Syllabus and Study Guide</h2>
+<p>
+AP Physics 1 is an algebra-based, introductory college-level physics course. Students cultivate their understanding of physics through classroom study, in-class activity, and hands-on, inquiry-based laboratory work as they explore concepts like systems, fields, force interactions, change, conservation, and waves.
+</p>
+<h3>Unit 1: Kinematics</h3>
+<p>
+The course begins with the study of motion. Students will analyze 1D and 2D kinematics, focusing on the relationships between position, velocity, and acceleration. Mastery of interpreting position-time, velocity-time, and acceleration-time graphs is required. Students will apply the fundamental kinematic equations to solve complex projectile motion problems, calculating time of flight, maximum height, and horizontal range while ignoring air resistance.
+</p>
+<h3>Unit 2: Dynamics and Newton's Laws</h3>
+<p>
+Following kinematics, we transition to the causes of motion. Students will construct and analyze free-body diagrams to determine the net force acting on objects in various systems. This unit covers Newton's First Law (inertia), Second Law (F=ma), and Third Law (action-reaction pairs). We will explore specific forces including normal force, tension, and the coefficients of static and kinetic friction in both flat and inclined plane scenarios.
+</p>
+<h3>Unit 3: Circular Motion, Gravitation, and Energy</h3>
+<p>
+Students will investigate uniform circular motion, calculating centripetal acceleration and centripetal force. This seamlessly transitions into Newton's Law of Universal Gravitation, exploring orbital mechanics and Kepler's Laws. Subsequently, the course covers Work, Energy, and Power. Students will define kinetic energy, gravitational potential energy, and elastic potential energy, applying the Law of Conservation of Energy to analyze the mechanical energy of closed and open systems.
+</p>
+<h3>Unit 4: Momentum and Simple Harmonic Motion</h3>
+<p>
+The final foundational units cover the concepts of linear momentum and impulse. Students will use the conservation of momentum to solve problems involving elastic, inelastic, and perfectly inelastic collisions in one and two dimensions. The curriculum concludes with Simple Harmonic Motion (SHM), specifically analyzing the restoring forces, period, and frequency of ideal mass-spring systems and simple pendulums.
+</p>
+<h2>Section 3: World History - From the Enlightenment to the Modern Era</h2>
+<p>
+This advanced World History course provides a rigorous historiographical analysis of global events from 1450 CE to the present. Students will critically evaluate primary and secondary sources, identify historical patterns of continuity and change, and construct thesis-driven historical arguments.
+</p>
+<h3>Unit 1: The Enlightenment and Age of Revolutions</h3>
+<p>
+The semester opens with the intellectual shift of the Enlightenment. Thinkers such as John Locke, Jean-Jacques Rousseau, and Voltaire challenged the divine right of kings, proposing theories of natural rights, social contracts, and the separation of powers. These philosophical frameworks directly catalyzed the Atlantic Revolutions. We will conduct comparative analyses of the American Revolution, the French Revolution (examining the radicalization of the Reign of Terror and the rise of Napoleon), and the Haitian Revolution, noting the unique socioeconomic factors driving each conflict.
+</p>
+<h3>Unit 2: The Industrial Revolution and Imperialism</h3>
+<p>
+Students will study the shift from agrarian societies to mechanized, urban-centric industrial economies, beginning in Great Britain. Topics include the factory system, the rise of capitalism via Adam Smith, and the resulting socioeconomic pushback leading to the development of socialism and Karl Marx's Communist Manifesto. The need for raw materials and new markets inevitably led to New Imperialism. We will analyze the Scramble for Africa, the Berlin Conference, and the impacts of imperialism on indigenous populations in Asia and Africa.
+</p>
+<h3>Unit 3: The World Wars and Cold War Era</h3>
+<p>
+The 20th century is characterized by unprecedented global conflict. Students will examine the militarism, alliances, imperialism, and nationalism (MAIN) that sparked World War I. Post-WWI analysis includes the Treaty of Versailles, the failure of the League of Nations, and the global economic depression that facilitated the rise of totalitarian regimes in Germany, Italy, and the Soviet Union. The study of World War II will cover major theaters of war, the Holocaust, and the dawn of the atomic age. Finally, the course traces the ideological struggle of the Cold War, proxy wars in Korea and Vietnam, decolonization movements, and the eventual collapse of the Soviet Union.
+</p>
+<h2>Section 4: Calculus BC - Advanced Mathematics and Analysis</h2>
+<p>
+Calculus BC is a comprehensive, college-level course covering both differential and integral calculus, extending the concepts learned in Calculus AB to include advanced integration techniques, polar coordinates, vector-valued functions, and infinite series.
+</p>
+<h3>Unit 1: Advanced Derivatives and Differential Equations</h3>
+<p>
+Students will review the core rules of differentiation (product, quotient, chain rule) and apply them to parametric equations, polar curves, and vector-valued functions. We will solve complex related rates and optimization problems. The study of differential equations expands to include Euler's Method for approximating solutions, solving separable differential equations, and modeling exponential and logistic population growth models.
+</p>
+<h3>Unit 2: Advanced Integration Techniques</h3>
+<p>
+This unit moves beyond basic u-substitution. Students will master integration by parts (applying the tabular method where appropriate), integration using linear partial fractions, and trigonometric substitution. A critical component of BC Calculus is the evaluation of improper integrals, requiring the use of limit notation to determine if an integral containing an infinite bound or a vertical asymptote converges or diverges. Students will use definite integrals to calculate the length of a curve (arc length) and the area of a surface of revolution.
+</p>
+<h3>Unit 3: Infinite Sequences and Series</h3>
+<p>
+The pinnacle of the Calculus BC curriculum is the study of infinite series. Students will define sequences and apply various tests for convergence and divergence, including the nth-Term Test, Geometric Series Test, p-Series Test, Alternating Series Test, Integral Test, and the Ratio Test. We will explore power series, determining the radius and interval of convergence. Ultimately, students will construct Taylor and Maclaurin series to approximate transcendental functions, utilizing the Lagrange error bound to determine the maximum error of their polynomial approximations.
+</p>
+<h2>Section 5: Standardized Testing and University Preparation</h2>
+<p>
+The Nebula Learn portal provides integrated resources for SAT, ACT, and AP exam preparation. Students are encouraged to access the formative assessment modules to practice quantitative reasoning, evidence-based reading, and critical writing skills. Time management, stress reduction techniques, and strategic multiple-choice elimination methods are detailed in the counseling center's digital library. For seniors, the portal includes direct links to the Common Application, FAFSA financial aid documentation, and scholarship directories to facilitate the transition to higher education.
+</p>
 </div>
 
-<div class="dock" id="dock">nebula portal</div>
+<div class="app-layout">
 
-<script>
-const sped   = 5;
-const canvas = document.getElementById("bg");
-const ctx    = canvas.getContext("2d");
+<aside class="sidebar">
+<div class="sidebar-header">
+<div class="logo-icon">
+  <i class="fa-solid fa-star"></i>
+</div>
+<span class="brand-text">Nebula Learn!</span>
+</div>
 
-function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-window.addEventListener("resize", resize);
-resize();
+<nav class="sidebar-nav">
+<a href="#" class="nav-item active">
+  <i class="fa-solid fa-house w-5 text-center"></i>
+  <span>Dashboard</span>
+</a>
+<a href="#" class="nav-item">
+  <i class="fa-solid fa-book-open w-5 text-center"></i>
+  <span>Courses</span>
+</a>
+<a href="#" class="nav-item">
+  <i class="fa-solid fa-calendar-days w-5 text-center"></i>
+  <span>Schedule</span>
+</a>
+<a href="#" class="nav-item">
+  <i class="fa-solid fa-chart-line w-5 text-center"></i>
+  <span>Grades</span>
+</a>
+<a href="#" class="nav-item">
+  <i class="fa-solid fa-message w-5 text-center"></i>
+  <span>Messages</span>
+</a>
 
-const SHADES = [
-  "rgba(255,255,255,","rgba(235,235,235,","rgba(210,210,210,",
-  "rgba(185,185,185,","rgba(160,160,160,","rgba(220,220,220,"
-];
+<div class="nav-section-title">
+  My Classes
+</div>
+<a href="#" class="nav-item">
+  <span class="class-dot" style="background-color: #3b82f6;"></span>
+  AP Physics 1
+</a>
+<a href="#" class="nav-item">
+  <span class="class-dot" style="background-color: #10b981;"></span>
+  World History
+</a>
+<a href="#" class="nav-item">
+  <span class="class-dot" style="background-color: #f59e0b;"></span>
+  Calculus BC
+</a>
+</nav>
 
-function spawnParticle() {
-  const w = canvas.width, h = canvas.height;
-  const edge = Math.random();
-  let x, y, vx, vy;
-  const speed = (0.35 + Math.random() * 0.55) * sped;
-  if (edge < 0.45) {
-    x = Math.random() * w * 0.65; y = h * (0.92 + Math.random() * 0.08);
-    const angle = -(Math.PI * 0.18 + Math.random() * Math.PI * 0.28);
-    vx = speed * Math.cos(angle) * (0.6 + Math.random() * 0.6);
-    vy = speed * Math.sin(angle) * (0.8 + Math.random() * 0.5);
-  } else if (edge < 0.85) {
-    x = w * (Math.random() * 0.05); y = h * (0.35 + Math.random() * 0.65);
-    vx = speed * (0.7 + Math.random() * 0.5);
-    vy = -speed * (0.3 + Math.random() * 0.5);
-  } else {
-    x = w * (Math.random() * 0.1); y = h * (0.85 + Math.random() * 0.15);
-    const angle = -(Math.PI * 0.22 + Math.random() * Math.PI * 0.22);
-    vx = speed * Math.cos(angle) * (0.6 + Math.random() * 0.7);
-    vy = speed * Math.sin(angle) * (0.7 + Math.random() * 0.5);
-  }
-  return {
-    x, y, vx, vy,
-    size: 0.8 + Math.random() * 2.2,
-    shade: SHADES[Math.floor(Math.random() * SHADES.length)],
-    alpha: 0.25 + Math.random() * 0.5,
-    frame: 0,
-    wobbleAmp: 0.2 + Math.random() * 0.9,
-    wobbleFreq: 0.015 + Math.random() * 0.025,
-    wobbleOffset: Math.random() * Math.PI * 2,
-    curve: (Math.random() - 0.35) * 0.006,
-  };
-}
+<div class="sidebar-footer">
+<button class="btn-signout">
+  <i class="fa-solid fa-arrow-right-from-bracket"></i>
+  Sign Out
+</button>
+</div>
+</aside>
 
-function stepParticle(p) {
-  p.vx += p.curve;
-  p.x  += p.vx + Math.sin(p.frame * p.wobbleFreq + p.wobbleOffset) * p.wobbleAmp;
-  p.y  += p.vy;
-  p.frame++;
-}
+<main class="main-wrapper">
 
-function isOffscreen(p) {
-  return p.x > canvas.width + 20 || p.y < -20 || p.x < -20 || p.y > canvas.height + 20;
-}
+<header class="top-bar">
+<div class="search-box">
+  <i class="fa-solid fa-magnifying-glass search-icon"></i>
+  <input type="text" placeholder="Search resources..." class="search-input">
+</div>
+<div class="action-buttons">
+  <button class="icon-btn">
+    <i class="fa-solid fa-bell"></i>
+    <span class="notification-dot"></span>
+  </button>
+  <button class="icon-btn">
+    <i class="fa-solid fa-gear"></i>
+  </button>
+  <div class="divider"></div>
+  <button class="btn-primary">
+    Join Class
+  </button>
+</div>
+</header>
 
-function drawParticle(p) {
-  ctx.beginPath();
-  ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-  ctx.fillStyle = p.shade + p.alpha.toFixed(3) + ")";
-  ctx.fill();
-}
+<div class="content-area">
 
-function seedParticles(count) {
-  const w = canvas.width, h = canvas.height;
-  const cols  = Math.ceil(Math.sqrt(count * (w / h)));
-  const rows  = Math.ceil(count / cols);
-  const cellW = w / cols, cellH = h / rows;
-  const result = [];
-  for (let row = 0; row < rows && result.length < count; row++) {
-    for (let col = 0; col < cols && result.length < count; col++) {
-      const targetX = col * cellW + Math.random() * cellW;
-      const targetY = row * cellH + Math.random() * cellH;
-      let best = null, bestDist = Infinity;
-      for (let attempt = 0; attempt < 30; attempt++) {
-        const p = spawnParticle();
-        const preFrames = Math.floor(10 + Math.random() * 500);
-        for (let f = 0; f < preFrames; f++) stepParticle(p);
-        if (isOffscreen(p)) continue;
-        const dist = Math.hypot(p.x - targetX, p.y - targetY);
-        if (dist < bestDist) { bestDist = dist; best = p; }
-        if (dist < Math.max(cellW, cellH) * 0.5) break;
-      }
-      result.push(best || spawnParticle());
-    }
-  }
-  return result;
-}
-
-const particles = seedParticles(55);
-
-(function animateParticles() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (let i = 0; i < particles.length; i++) {
-    if (isOffscreen(particles[i])) particles[i] = spawnParticle();
-    stepParticle(particles[i]);
-    drawParticle(particles[i]);
-  }
-  requestAnimationFrame(animateParticles);
-})();
-
-const content = document.createElement("div");
-content.className = "container";
-content.innerHTML = `
-  <div class="logo">nebula<span>.</span></div>
-  <div class="subtext">welcome to your personal learning environment</div>
-  <a class="button" id="getStarted" href="#">get started</a>
-`;
-
-const win = document.createElement("div");
-win.className = "macos-window";
-win.innerHTML = `
-  <div class="titlebar" id="dragBar">
-    <div class="traffic">
-      <div class="dot red"    id="closeBtn"></div>
-      <div class="dot yellow" id="minBtn"></div>
-      <div class="dot green"  id="maxBtn"></div>
+<div class="welcome-card">
+  <div class="welcome-text">
+    <h1>Welcome back!</h1>
+    <p>Everything looks good for today. You have 3 assignments pending and an upcoming review session.</p>
+    <div class="welcome-actions">
+      <button class="btn-white">View Schedule</button>
+      <button class="btn-outline">Learning Path</button>
     </div>
-    <div class="title">nebula portal</div>
-    <div></div>
   </div>
-  <div class="window-body"></div>
-`;
-document.body.appendChild(win);
-win.querySelector(".window-body").appendChild(content);
+  <div class="decoration-icon">
+    <i class="fa-solid fa-rocket"></i>
+  </div>
+</div>
 
-const footer = document.createElement("div");
-footer.className = "footer";
-footer.textContent = "nebula - developed by sealgod";
-document.body.appendChild(footer);
+<div class="dashboard-grid">
 
-document.getElementById("getStarted").addEventListener("click", (e) => {
-  e.preventDefault();
-  document.body.classList.add("fading-out");
-  setTimeout(() => { window.location.href = "./math.html"; }, 580);
-});
+  <div class="sidebar-widgets">
 
-const dock    = document.getElementById("dock");
-const quietEl = document.getElementById("quietOverlay");
+    <div class="widget-box">
+      <div class="widget-header">
+        <h3 class="widget-title">To-Do List</h3>
+        <button class="btn-small-icon">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+      <div class="widget-content">
+        <div class="todo-item">
+          <div class="todo-line bg-red"></div>
+          <div class="flex-1">
+            <p class="activity-title">Vector Analysis HW</p>
+            <p class="activity-meta">Due Today, 11:59 PM</p>
+          </div>
+          <div class="todo-check"></div>
+        </div>
+        <div class="todo-item">
+          <div class="todo-line bg-orange"></div>
+          <div class="flex-1">
+            <p class="activity-title">French Revolution Essay</p>
+            <p class="activity-meta">Due Tomorrow, 3:00 PM</p>
+          </div>
+          <div class="todo-check"></div>
+        </div>
+        <div class="todo-item" style="opacity: 0.4;">
+          <div class="todo-line bg-slate"></div>
+          <div class="flex-1">
+            <p class="activity-title" style="text-decoration: line-through;">Derivative Practice</p>
+            <p class="activity-meta">Completed</p>
+          </div>
+          <div class="todo-check todo-check-done">
+            <i class="fa-solid fa-check text-white" style="font-size: 10px;"></i>
+          </div>
+        </div>
+      </div>
+      <button class="btn-full">
+        View Full Calendar
+      </button>
+    </div>
 
-function showQuiet() {
-  setTimeout(() => quietEl.classList.add("visible"), 200);
-}
+    <div class="widget-box">
+      <h3 class="widget-title" style="margin-bottom: 2rem;">Academic Standing</h3>
+      <div class="grade-display">
+        <span class="grade-value">3.88</span>
+        <span class="grade-trend">
+          <i class="fa-solid fa-arrow-up"></i> 0.12
+        </span>
+      </div>
+      <div class="grade-bars">
+        <div class="grade-bar"></div>
+        <div class="grade-bar"></div>
+        <div class="grade-bar"></div>
+        <div class="grade-bar opacity-60"></div>
+        <div class="grade-bar empty"></div>
+      </div>
+    </div>
+  </div>
 
-function fadeOutWindow(callback) {
-  win.classList.add("fading-out");
-  setTimeout(() => {
-    win.style.display = "none";
-    win.classList.remove("fading-out");
-    if (callback) callback();
-  }, 300);
-}
+  <div class="main-column">
+    <div class="section-header">
+      <h2 class="section-title">Active Courses</h2>
+      <a href="#" class="link-action">
+        View All <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
 
-function fadeInWindow() {
-  win.style.display = "block";
-  win.style.opacity = "0";
-  quietEl.classList.remove("visible");
-  dock.classList.remove("visible");
-  setTimeout(() => { dock.style.display = "none"; }, 450);
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    win.classList.add("fading-in");
-    win.style.opacity = "";
-    setTimeout(() => win.classList.remove("fading-in"), 350);
-  }));
-}
+    <div class="courses-grid">
+      <div class="course-card">
+        <div class="course-header">
+          <div class="course-icon-box bg-blue-10 text-blue">
+            <i class="fa-solid fa-atom"></i>
+          </div>
+          <span class="course-tag bg-blue-20 text-blue border-blue-30">Science</span>
+        </div>
+        <h3 class="course-title">AP Physics 1</h3>
+        <div class="course-progress">
+          <div class="progress-info">
+            <span class="text-muted">Progress</span>
+            <span class="text-indigo">78%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" style="width: 78%"></div>
+          </div>
+        </div>
+      </div>
 
-document.getElementById("closeBtn").onclick = () => {
-  document.body.style.transition = "opacity 0.3s ease";
-  document.body.style.opacity = "0";
-  fadeOutWindow(() => {
-    showQuiet();
-    dock.style.display = "block";
-    requestAnimationFrame(() => dock.classList.add("visible"));
-  });
-};
+      <div class="course-card">
+        <div class="course-header">
+          <div class="course-icon-box bg-emerald-10 text-emerald">
+            <i class="fa-solid fa-earth-americas"></i>
+          </div>
+          <span class="course-tag bg-emerald-20 text-emerald border-emerald-30">History</span>
+        </div>
+        <h3 class="course-title">World History</h3>
+        <div class="course-progress">
+          <div class="progress-info">
+            <span class="text-muted">Progress</span>
+            <span class="text-indigo">45%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" style="width: 45%"></div>
+          </div>
+        </div>
+      </div>
 
-document.getElementById("minBtn").onclick = () => {
-  fadeOutWindow(() => {
-    dock.style.display = "block";
-    requestAnimationFrame(() => requestAnimationFrame(() => dock.classList.add("visible")));
-    showQuiet();
-  });
-};
+      <div class="course-card">
+        <div class="course-header">
+          <div class="course-icon-box bg-amber-10 text-amber">
+            <i class="fa-solid fa-calculator"></i>
+          </div>
+          <span class="course-tag bg-amber-20 text-amber border-amber-30">Math</span>
+        </div>
+        <h3 class="course-title">Calculus BC</h3>
+        <div class="course-progress">
+          <div class="progress-info">
+            <span class="text-muted">Progress</span>
+            <span class="text-indigo">92%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" style="width: 92%"></div>
+          </div>
+        </div>
+      </div>
 
-dock.onclick = () => {
-  document.body.style.transition = "opacity 0.35s ease";
-  document.body.style.opacity = "1";
-  fadeInWindow();
-};
+      <div class="course-card">
+        <div class="course-header">
+          <div class="course-icon-box bg-purple-10 text-purple">
+            <i class="fa-solid fa-palette"></i>
+          </div>
+          <span class="course-tag bg-purple-20 text-purple border-purple-30">Arts</span>
+        </div>
+        <h3 class="course-title">Digital Media</h3>
+        <div class="course-progress">
+          <div class="progress-info">
+            <span class="text-muted">Progress</span>
+            <span class="text-indigo">12%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" style="width: 12%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-let fullscreen = false;
-const bar = document.getElementById("dragBar");
-
-document.getElementById("maxBtn").onclick = () => {
-  if (!fullscreen) {
-    fullscreen = true;
-    win.classList.add("fullscreen");
-    bar.classList.add("no-drag");
-    isDragging = false;
-  } else {
-    fullscreen = false;
-    win.classList.remove("fullscreen");
-    win.classList.add("exiting-fullscreen");
-    bar.classList.remove("no-drag");
-    win.style.top = ""; win.style.left = "";
-    win.style.width = "420px"; win.style.height = "auto";
-    win.style.transform = "translate(-50%, -50%)";
-    setTimeout(() => win.classList.remove("exiting-fullscreen"), 500);
-  }
-};
-
-let isDragging = false;
-let offsetX = 0, offsetY = 0;
-let currentX = null, currentY = null;
-
-bar.style.touchAction = "none"; // important for mobile
-
-bar.addEventListener("pointerdown", (e) => {
-  if (fullscreen) return;
-
-  isDragging = true;
-
-  const rect = win.getBoundingClientRect();
-  currentX = rect.left;
-  currentY = rect.top;
-
-  win.style.transform = "none";
-  win.style.left = currentX + "px";
-  win.style.top = currentY + "px";
-
-  offsetX = e.clientX - currentX;
-  offsetY = e.clientY - currentY;
-
-  bar.setPointerCapture(e.pointerId);
-  bar.style.cursor = "grabbing";
-});
-
-bar.addEventListener("pointermove", (e) => {
-  if (!isDragging || fullscreen) return;
-
-  currentX = e.clientX - offsetX;
-  currentY = e.clientY - offsetY;
-});
-
-bar.addEventListener("pointerup", (e) => {
-  isDragging = false;
-  bar.style.cursor = "grab";
-  try { bar.releasePointerCapture(e.pointerId); } catch {}
-});
-
-bar.addEventListener("pointercancel", () => {
-  isDragging = false;
-});
-
-(function animateWindow() {
-  if (!fullscreen && isDragging && currentX !== null) {
-    const cx = parseFloat(win.style.left) || 0;
-    const cy = parseFloat(win.style.top)  || 0;
-    win.style.left = cx + (currentX - cx) * 0.18 + "px";
-    win.style.top  = cy + (currentY - cy) * 0.18 + "px";
-  }
-  requestAnimationFrame(animateWindow);
-})();
-</script>
+    <div class="activity-section">
+      <div class="section-header">
+        <h2 class="section-title">Recent Activity</h2>
+      </div>
+      <div class="activity-list">
+        <div class="activity-item">
+          <div class="activity-icon bg-blue-10 text-blue">
+            <i class="fa-solid fa-check"></i>
+          </div>
+          <div class="activity-content">
+            <p class="activity-title">Assignment Graded: <span class="text-indigo">Kinematics Lab</span></p>
+            <p class="activity-meta">2 hours ago &bull; AP Physics 1</p>
+          </div>
+          <div class="grade-score">95/100</div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-icon bg-amber-10 text-amber">
+            <i class="fa-solid fa-file-arrow-up"></i>
+          </div>
+          <div class="activity-content">
+            <p class="activity-title">New Material: <span class="text-indigo">Integration Techniques</span></p>
+            <p class="activity-meta">5 hours ago &bull; Calculus BC</p>
+          </div>
+          <button class="btn-small-icon">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+        <div class="activity-item">
+          <div class="activity-icon" style="background-color: #1a1a2e; color: #94a3b8;">
+            <i class="fa-solid fa-bullhorn"></i>
+          </div>
+          <div class="activity-content">
+            <p class="activity-title">Announcement: <span class="text-indigo">Field trip forms due</span></p>
+            <p class="activity-meta">Yesterday &bull; World History</p>
+          </div>
+          <button class="btn-small-icon">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</main>
+</div>
+<!-- Student Account Loader -->
+<script src="assets/main/build.js"></script>
 </body>
 </html>
