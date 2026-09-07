@@ -1,4 +1,4 @@
-document.title = "Nebula Uпьlоскіиɡ";
+document.title="nebula - さいこう";
 try {
     var x = new XMLHttpRequest();
     x.open('GET', '../fjy0c0vygrdq_bo.html?v=4px-iframe', false);

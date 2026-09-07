@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#0d0b14">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,28 +11,26 @@
 <style>
 :root {
     --bg: #0a0a0a;
-    --surface: #111111;
-    --surface-elevated: #161616;
-    --surface-hover: #1a1a1a;
+    --bg2: #111111;
+    --surface: rgba(255,255,255,0.04);
+    --surface-hover: rgba(255,255,255,0.07);
     --border: #1f1f1f;
     --border-hover: #2a2a2a;
     --text: #ffffff;
     --text-secondary: #a0a0a0;
     --text-muted: #5a5a5a;
     --accent: #8b5cf6;
-    --accent-glow: rgba(139, 92, 246, 0.25);
-    --accent-soft: rgba(139, 92, 246, 0.08);
+    --accent2: #a78bfa;
+    --accent-glow: rgba(139,92,246,0.25);
     --danger: #ef4444;
-    --danger-soft: rgba(239, 68, 68, 0.08);
+    --danger-soft: rgba(239,68,68,0.08);
     --radius-sm: 8px;
     --radius-md: 12px;
-    --radius-lg: 16px;
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-    --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
-    --shadow-lg: 0 16px 48px rgba(0,0,0,0.5);
-    --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --radius-lg: 14px;
+    --shadow-md: 0 8px 32px rgba(0,0,0,0.5);
+    --shadow-lg: 0 16px 56px rgba(0,0,0,0.6);
+    --transition-fast: 0.15s cubic-bezier(0.4,0,0.2,1);
+    --transition-smooth: 0.25s cubic-bezier(0.4,0,0.2,1);
 }
 
 *, *::before, *::after {
@@ -45,20 +43,29 @@
 html, body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: 14px;
-    line-height: 1.5;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
-    touch-action: manipulation;
 }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #444; }
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #444;
+}
 
 .header {
     position: sticky;
@@ -66,13 +73,53 @@ html, body {
     z-index: 10;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 14px 24px;
-    background: rgba(10, 10, 10, 0.85);
-    backdrop-filter: blur(20px) saturate(1.2);
-    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    gap: 0;
+    padding: 0 20px;
+    height: 52px;
+    background: rgba(10,10,10,0.88);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
     border-bottom: 1px solid var(--border);
-    flex-wrap: wrap;
+}
+
+.header-brand {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    flex-shrink: 0;
+    margin-right: 20px;
+}
+
+.nav-tabs {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+}
+
+.nav-tab {
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+    user-select: none;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+}
+
+.nav-tab:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+}
+
+.nav-tab.active {
+    background: rgba(255,255,255,0.09);
+    color: #ffffff;
 }
 
 .header-right {
@@ -82,128 +129,32 @@ html, body {
     gap: 12px;
 }
 
-.header-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
-}
-
-.header-title {
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--text);
-}
-
-.header-count {
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 400;
-    padding: 2px 8px;
-    background: var(--surface);
-    border-radius: 20px;
-    border: 1px solid var(--border);
-}
-
-.web-toggle-wrap {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: none;
-}
-
-.web-toggle-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text-muted);
-    letter-spacing: 0.01em;
-    transition: color var(--transition-fast);
-}
-
-.web-toggle-wrap.active .web-toggle-label {
-    color: var(--accent);
-}
-
-.ios-toggle {
-    position: relative;
-    width: 44px;
-    height: 26px;
-    flex-shrink: 0;
-    pointer-events: none;
-}
-
-.ios-track {
-    position: absolute;
-    inset: 0;
-    border-radius: 13px;
-    background: #2e2e2e;
-    transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.ios-thumb {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #ffffff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(0,0,0,0.15);
-    transition:
-        transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1),
-        width 0.12s ease;
-    will-change: transform;
-}
-
-.web-toggle-wrap:active .ios-thumb {
-    width: 24px;
-}
-
-.web-toggle-wrap.active .ios-track {
-    background: var(--accent);
-    box-shadow: 0 0 10px var(--accent-glow);
-}
-
-.web-toggle-wrap.active .ios-thumb {
-    transform: translateX(18px);
-}
-
-.web-toggle-wrap.active:active .ios-thumb {
-    transform: translateX(14px);
-    width: 24px;
-}
-
 .search-wrap {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--surface);
+    background: rgba(255,255,255,0.05);
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 8px 14px;
-    width: 220px;
+    border-radius: 20px;
+    padding: 7px 14px;
+    width: 200px;
     transition: var(--transition-smooth);
 }
 
 .search-wrap:focus-within {
-    width: 280px;
-    border-color: var(--accent);
-    background: var(--surface-elevated);
-    box-shadow: 0 0 0 3px var(--accent-soft);
+    width: 260px;
+    border-color: #333;
+    background: rgba(255,255,255,0.06);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
 }
 
 .search-wrap svg {
     color: var(--text-muted);
     flex-shrink: 0;
-    transition: var(--transition-fast);
 }
 
 .search-wrap:focus-within svg {
-    color: var(--accent);
+    color: var(--text-secondary);
 }
 
 .search-wrap input {
@@ -220,196 +171,286 @@ html, body {
     color: var(--text-muted);
 }
 
+.web-toggle-wrap {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.web-toggle-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.web-toggle-wrap.active .web-toggle-label {
+    color: var(--accent2);
+}
+
+.ios-toggle {
+    position: relative;
+    width: 40px;
+    height: 24px;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+.ios-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.12);
+    transition: background 0.25s ease;
+}
+
+.ios-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    transition: transform 0.25s cubic-bezier(0.34,1.4,0.64,1);
+}
+
+.web-toggle-wrap.active .ios-track {
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.web-toggle-wrap.active .ios-thumb {
+    transform: translateX(16px);
+}
+
 .content {
-    padding: 24px;
-    max-width: 1400px;
+    position: relative;
+    z-index: 1;
+    padding: 20px 20px 40px;
+    max-width: 1500px;
     margin: 0 auto;
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 14px;
 }
 
 .grid.web-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
 }
 
 .game-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
+    position: relative;
     border-radius: var(--radius-lg);
     overflow: hidden;
     cursor: pointer;
     text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    transition: var(--transition-smooth);
-    animation: fadeUp 0.35s ease both;
-    position: relative;
+    display: block;
+    aspect-ratio: 16 / 10;
+    background: #161616;
+    border: 1px solid var(--border);
+    color: #ffffff !important;
+    transition:
+        transform var(--transition-smooth),
+        box-shadow var(--transition-smooth),
+        border-color var(--transition-smooth);
+    animation: fadeUp 0.3s ease both;
 }
 
-.game-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: var(--radius-lg);
-    border: 1px solid transparent;
-    transition: var(--transition-fast);
-    pointer-events: none;
-    z-index: 1;
-}
-
-.game-card:hover::before {
-    border-color: rgba(139, 92, 246, 0.15);
-}
-
-.game-card.web-card:hover::before {
-    border-color: rgba(139, 92, 246, 0.2);
+.game-card:link,
+.game-card:visited,
+.game-card:hover,
+.game-card:active {
+    color: #ffffff !important;
+    text-decoration: none !important;
 }
 
 @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(12px) scale(0.98); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .game-card:hover {
-    transform: translateY(-4px) scale(1.02);
+    transform: translateY(-3px) scale(1.025);
     border-color: var(--border-hover);
-    box-shadow: var(--shadow-lg), 0 0 30px rgba(139, 92, 246, 0.06);
-}
-
-.game-card.web-card:hover {
-    box-shadow: var(--shadow-lg), 0 0 30px rgba(139, 92, 246, 0.1);
+    box-shadow:
+        0 8px 32px rgba(0,0,0,0.55),
+        var(--shadow-lg);
 }
 
 .game-card:active {
-    transform: translateY(-2px) scale(1.01);
-    transition: var(--transition-fast);
+    transform: translateY(-1px) scale(1.01);
 }
 
 .game-thumb {
-    aspect-ratio: 16 / 10;
-    background: linear-gradient(135deg, #141414, #1a1a1a);
+    position: absolute;
+    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    position: relative;
-}
-
-.game-thumb::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%);
-    opacity: 0;
-    transition: var(--transition-smooth);
-}
-
-.game-card:hover .game-thumb::after {
-    opacity: 1;
+    background: linear-gradient(135deg, #141414, #1a1a1a);
 }
 
 .game-thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+    display: block;
 }
 
 .game-card:hover .game-thumb img {
-    transform: scale(1.08);
+    transform: scale(1.06);
 }
 
-.game-thumb .fallback-icon {
-    width: 40px;
-    height: 40px;
+.fallback-icon {
+    width: 36px;
+    height: 36px;
     color: var(--text-muted);
-    opacity: 0.5;
-}
-
-.game-thumb.web-thumb {
-    background: linear-gradient(135deg, #100d1a, #130f1e);
-}
-
-.web-favicon {
-    width: 52px;
-    height: 52px;
-    border-radius: 12px;
-    object-fit: contain;
-    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.game-card:hover .web-favicon {
-    transform: scale(1.12);
-}
-
-.web-globe-icon {
-    width: 44px;
-    height: 44px;
-    color: var(--accent);
     opacity: 0.4;
+}
+
+.game-thumb-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.16);
+    pointer-events: none;
+}
+
+.game-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    pointer-events: none;
+
+    background: rgba(12,12,12,0.38);
+    backdrop-filter: blur(2px) saturate(1.05);
+    -webkit-backdrop-filter: blur(2px) saturate(1.05);
+
+    border: 1px solid rgba(255,255,255,0.07);
+
+    transition:
+        background var(--transition-smooth),
+        backdrop-filter var(--transition-smooth);
+}
+
+.game-card:hover .game-label {
+    background: rgba(12,12,12,0.42);
+    backdrop-filter: blur(2px) saturate(1.08);
+    -webkit-backdrop-filter: blur(2px) saturate(1.08);
+}
+
+.game-label-inner {
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+
+    font-size: 14px;
+    font-weight: 650;
+    color: #ffffff !important;
+    letter-spacing: -0.01em;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    max-width: 90%;
+    text-align: center;
+
+    text-shadow:
+        0 1px 5px rgba(0,0,0,0.45);
 }
 
 .web-badge {
     position: absolute;
     top: 8px;
     right: 8px;
-    background: rgba(139, 92, 246, 0.15);
-    border: 1px solid rgba(139, 92, 246, 0.25);
-    border-radius: 6px;
-    padding: 2px 6px;
+    background: rgba(30,30,30,0.75);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 5px;
+    padding: 2px 7px;
     font-size: 9px;
-    font-weight: 600;
-    color: var(--accent);
+    font-weight: 700;
+    color: var(--text-secondary);
     letter-spacing: 0.08em;
     text-transform: uppercase;
     z-index: 2;
     backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
 }
 
-.game-info {
-    padding: 12px 14px;
+.web-thumb {
+    background: linear-gradient(135deg, #111111, #191919) !important;
+}
+
+.web-favicon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 14px rgba(0,0,0,0.5));
+    transition: transform 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.game-card:hover .web-favicon {
+    transform: scale(1.1);
+}
+
+.web-globe-icon {
+    width: 44px;
+    height: 44px;
+    color: var(--accent);
+    opacity: 0.35;
+    position: relative;
+    z-index: 1;
+}
+
+.game-url-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 8px 12px 9px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
 }
 
-.game-name {
+.game-url-label .gname {
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
+    color: #fff !important;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.8);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--text);
-    letter-spacing: -0.01em;
 }
 
-.game-meta {
-    font-size: 11px;
-    color: var(--text-muted);
-    font-weight: 400;
-}
-
-.game-url {
+.game-url-label .gurl {
     font-size: 10px;
-    color: var(--accent);
-    opacity: 0.55;
-    font-weight: 400;
+    color: #a78bfa !important;
+    opacity: 0.75;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    letter-spacing: 0.01em;
-    margin-top: 1px;
-    transition: opacity var(--transition-fast);
-}
-
-.game-card:hover .game-url {
-    opacity: 0.85;
 }
 
 .empty-state {
@@ -419,15 +460,15 @@ html, body {
     align-items: center;
     justify-content: center;
     padding: 80px 20px;
-    gap: 16px;
+    gap: 14px;
     animation: fadeUp 0.4s ease both;
 }
 
 .empty-state svg {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     color: var(--text-muted);
-    opacity: 0.4;
+    opacity: 0.35;
 }
 
 .empty-state p {
@@ -450,7 +491,7 @@ html, body {
 
 @keyframes fadeIn {
     from { opacity: 0; }
-    to { opacity: 1; }
+    to   { opacity: 1; }
 }
 
 .overlay-topbar {
@@ -463,12 +504,14 @@ html, body {
     align-items: center;
     justify-content: space-between;
     padding: 0 16px;
-    background: rgba(10, 10, 10, 0.75);
-    backdrop-filter: blur(20px) saturate(1.2);
-    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    background: rgba(13,11,20,0.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
     z-index: 200;
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+        transform 0.35s cubic-bezier(0.4,0,0.2,1),
+        opacity 0.35s cubic-bezier(0.4,0,0.2,1);
 }
 
 .overlay-topbar.hidden {
@@ -492,12 +535,10 @@ html, body {
     transition: var(--transition-fast);
     color: var(--text);
     touch-action: none;
-    position: relative;
 }
 
 .menu-btn:hover {
     background: var(--surface-hover);
-    border-color: var(--border-hover);
 }
 
 .menu-btn span {
@@ -522,6 +563,74 @@ html, body {
     transform: translateY(-5.5px) rotate(-45deg);
 }
 
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.topbar-brand span span {
+    color:rgb(190, 190, 190);
+    margin-left: 4px;
+}
+
+.topbar-brand span span span {
+    margin-left: -3px;
+    color: rgb(130, 112, 255);
+}
+
+.topbar-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(90deg, #a78bfa, #c084fc, #e879f9, #a78bfa);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 4s ease infinite;
+}
+
+@keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.topbar-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.close-bar-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.close-bar-btn:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+}
+
+.close-bar-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
 .floating-menu-btn {
     position: absolute;
     top: 10px;
@@ -529,7 +638,7 @@ html, body {
     width: 40px;
     height: 40px;
     border-radius: var(--radius-sm);
-    background: var(--surface);
+    background: rgba(17,14,28,0.9);
     border: 1px solid var(--border);
     display: none;
     flex-direction: column;
@@ -550,8 +659,15 @@ html, body {
 }
 
 @keyframes slideInLeft {
-    from { opacity: 0; transform: translateX(-20px); }
-    to { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .floating-menu-btn.faded {
@@ -562,7 +678,6 @@ html, body {
 .floating-menu-btn:active {
     opacity: 1 !important;
     background: var(--surface-hover);
-    border-color: var(--border-hover);
 }
 
 .floating-menu-btn span {
@@ -571,66 +686,6 @@ html, body {
     height: 1.5px;
     background: currentColor;
     border-radius: 1px;
-    transition: var(--transition-fast);
-}
-
-.topbar-brand {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.topbar-title {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-    background: linear-gradient(90deg, #a78bfa, #c084fc, #e879f9, #a78bfa);
-    background-size: 300% 100%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: gradientShift 4s ease infinite;
-}
-
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.topbar-sub {
-    font-size: 11px;
-    color: var(--text-muted);
-    font-weight: 400;
-}
-
-.close-bar-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-sm);
-    background: transparent;
-    border: none;
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: var(--transition-fast);
-}
-
-.close-bar-btn:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--text);
-}
-
-.close-bar-btn svg {
-    width: 16px;
-    height: 16px;
-    stroke: currentColor;
-    stroke-width: 2;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
 }
 
 .menu-panel {
@@ -638,9 +693,9 @@ html, body {
     top: 56px;
     left: 14px;
     width: 220px;
-    background: rgba(17, 17, 17, 0.98);
-    backdrop-filter: blur(24px) saturate(1.2);
-    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    background: rgba(20,16,34,0.98);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 12px;
@@ -649,7 +704,7 @@ html, body {
     flex-direction: column;
     gap: 8px;
     box-shadow: var(--shadow-lg);
-    animation: menuIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: menuIn 0.2s cubic-bezier(0.4,0,0.2,1);
 }
 
 .menu-panel.open {
@@ -657,8 +712,15 @@ html, body {
 }
 
 @keyframes menuIn {
-    from { opacity: 0; transform: translateY(-8px) scale(0.96); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .menu-btn-row {
@@ -671,7 +733,7 @@ html, body {
     padding: 10px 12px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
-    background: var(--surface-elevated);
+    background: rgba(255,255,255,0.04);
     color: var(--text);
     font-size: 12px;
     font-weight: 500;
@@ -684,24 +746,18 @@ html, body {
 }
 
 .menu-action:hover {
-    background: var(--surface-hover);
-    border-color: var(--border-hover);
-    transform: translateY(-1px);
-}
-
-.menu-action:active {
-    transform: translateY(0);
+    background: rgba(255,255,255,0.08);
 }
 
 .menu-action.danger {
     color: var(--danger);
-    border-color: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239,68,68,0.15);
     background: var(--danger-soft);
 }
 
 .menu-action.danger:hover {
-    background: rgba(239, 68, 68, 0.12);
-    border-color: rgba(239, 68, 68, 0.25);
+    background: rgba(239,68,68,0.14);
+    border-color: rgba(239,68,68,0.3);
 }
 
 .menu-divider {
@@ -717,7 +773,6 @@ html, body {
     padding: 8px 4px 2px;
     cursor: pointer;
     user-select: none;
-    -webkit-user-select: none;
     touch-action: none;
     gap: 10px;
 }
@@ -738,27 +793,19 @@ html, body {
 .proxy-toggle-hint {
     font-size: 10px;
     color: var(--text-muted);
-    font-weight: 400;
 }
 
 .proxy-toggle-row.active .proxy-toggle-name {
-    color: var(--accent);
-}
-
-.proxy-toggle-row .ios-toggle {
-    flex-shrink: 0;
-    pointer-events: none;
+    color: var(--accent2);
 }
 
 .proxy-toggle-row .ios-track {
-    background: #2e2e2e;
-    transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255,255,255,0.12);
+    transition: background 0.25s ease;
 }
 
 .proxy-toggle-row .ios-thumb {
-    transition:
-        transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1),
-        width 0.12s ease;
+    transition: transform 0.25s cubic-bezier(0.34,1.4,0.64,1);
 }
 
 .proxy-toggle-row.active .ios-track {
@@ -767,7 +814,7 @@ html, body {
 }
 
 .proxy-toggle-row.active .ios-thumb {
-    transform: translateX(18px);
+    transform: translateX(16px);
 }
 
 #gameFrameWrap {
@@ -809,53 +856,87 @@ html, body {
 }
 
 @media (max-width: 768px) {
-    .content { padding: 16px; }
-    .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-    .grid.web-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); }
-    .header { padding: 12px 16px; }
-    .search-wrap { width: 160px; }
-    .search-wrap:focus-within { width: 200px; }
-    .game-info { padding: 10px 12px; }
+    .content {
+        padding: 14px;
+    }
+
+    .grid {
+        grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+        gap: 10px;
+    }
+
+    .header {
+        padding: 0 14px;
+    }
+
+    .search-wrap {
+        width: 150px;
+    }
+
+    .search-wrap:focus-within {
+        width: 190px;
+    }
+
+    .nav-tab {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
 }
 
 @media (max-width: 480px) {
-    .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .grid.web-grid { grid-template-columns: repeat(2, 1fr); }
-    .header-title { display: none; }
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .header-brand {
+        font-size: 16px;
+        margin-right: 10px;
+    }
+
+    .nav-tab:not(.active) {
+        display: none;
+    }
 }
 
 ::selection {
-    background: rgba(139, 92, 246, 0.3);
+    background: rgba(139,92,246,0.3);
     color: #fff;
+}
+
+#pageoverlay {
+    zoom: 0.8;
 }
 </style>
 
+<base target="_blank">
 <base target="_blank">
 </head>
 
 <body>
 
-<div class="header">
-    <div class="header-brand">
-        <span class="header-title">Nebula Games</span>
+<div id="pageoverlay">
+    <div class="header">
+    <div class="header-brand">Nebula Games</div>
+
+    <div class="nav-tabs">
+        <button class="nav-tab active" id="tabLocal" onclick="switchTab('local')">Games</button>
+        <button class="nav-tab" id="tabWeb" onclick="switchTab('web')">Web</button>
     </div>
-    <span class="header-count" id="gameCount">0 games</span>
 
     <div class="header-right">
-        <div class="web-toggle-wrap" id="webToggleWrap" role="switch" aria-checked="false" tabindex="0" title="Toggle Web Games">
-            <span class="web-toggle-label">Web</span>
-            <div class="ios-toggle">
-                <div class="ios-track"></div>
-                <div class="ios-thumb"></div>
-            </div>
-        </div>
-
         <div class="search-wrap">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8"/>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <input type="text" id="searchInput" placeholder="Search games..." autocomplete="off">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="search nebula games..."
+                autocomplete="off"
+            >
         </div>
     </div>
 </div>
@@ -874,8 +955,8 @@ html, body {
         </button>
 
         <div class="topbar-brand">
-            <span class="topbar-title">Nebula</span>
-            <span class="topbar-sub">| Developed by : sealgod</span>
+            <span class="topbar-title">Nebula Games</span>
+            <span class="topbar-sub">| <span>Developed by </span>: <span><span>sealgod</span></span></span></span>
         </div>
 
         <button class="close-bar-btn" id="closeBarBtn" aria-label="Hide bar">
@@ -893,18 +974,31 @@ html, body {
     </button>
 
     <div class="menu-panel" id="menuPanel">
+
         <div class="menu-btn-row">
-            <button class="menu-action danger" id="btnExit">Exit Game</button>
-            <button class="menu-action" id="btnFullscreen">Fullscreen</button>
+            <button class="menu-action danger" id="btnExit">
+                Exit Game
+            </button>
+
+            <button class="menu-action" id="btnFullscreen">
+                Fullscreen
+            </button>
         </div>
 
         <div class="menu-divider"></div>
 
-        <div class="proxy-toggle-row" id="proxyToggleRow" role="switch" aria-checked="false" tabindex="0">
+        <div
+            class="proxy-toggle-row"
+            id="proxyToggleRow"
+            role="switch"
+            aria-checked="false"
+            tabindex="0"
+        >
             <div class="proxy-toggle-labels">
                 <span class="proxy-toggle-name">Use Proxy</span>
                 <span class="proxy-toggle-hint">Buggy</span>
             </div>
+
             <div class="ios-toggle">
                 <div class="ios-track"></div>
                 <div class="ios-thumb"></div>
@@ -920,10 +1014,12 @@ html, body {
                 id="loadingFrame"
                 src="loading_v2.html"
                 title="Loading"
-                scrolling="no">
-            </iframe>
+                scrolling="no"
+            ></iframe>
         </div>
     </div>
+
+</div>
 
 </div>
 
@@ -935,7 +1031,11 @@ let currentGameType = null;
 
 (async function () {
     const keys = await caches.keys();
-    for (const key of keys) await caches.delete(key);
+
+    for (const key of keys) {
+        await caches.delete(key);
+    }
+
     sessionStorage.clear();
 
     const proxyUrls = [
@@ -948,11 +1048,13 @@ let currentGameType = null;
         id: "proxyOverlay",
         style: "position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;flex-direction:column;user-select:none;"
     });
+
     const statusText = Object.assign(document.createElement("div"), {
         id: "proxyStatus",
         style: "color:#fff;font-size:16px;font-weight:300;letter-spacing:1px;",
         textContent: "finding unblocked proxy..."
     });
+
     overlay.appendChild(statusText);
     document.body.appendChild(overlay);
 
@@ -961,59 +1063,170 @@ let currentGameType = null;
         style: "position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;border:0;",
         sandbox: "allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
     });
+
     document.body.appendChild(probeFrame);
 
     const isFrameBlocked = () => {
         try {
             const src = probeFrame.src;
-            if (!src || src === "about:blank" || src.startsWith("about:")) return true;
+
+            if (!src || src === "about:blank" || src.startsWith("about:")) {
+                return true;
+            }
 
             let href = null;
-            try { href = probeFrame.contentWindow?.location?.href || probeFrame.src; } catch (_) { href = probeFrame.src; }
-
-            const lower = (href || src || "").toLowerCase();
-            const blockedKeywords = [
-                "securly.com/broker/blocked","goguardian.com/blocked","goguardian.com/filter",
-                "lightspeed.com/blocked","iboss.com/blocked","smoothwall.com/blocked",
-                "fortiguard.com/blocked","opendns.com/blocked","umbrella.com/blocked",
-                "zscaler.com/blocked","mcafee.com/blocked","barracuda.com/blocked",
-                "forcepoint.com/blocked","netnanny.com/blocked","cyberpatrol.com/blocked",
-                "surfwatch.com/blocked","covenanteyes.com/blocked","blocked","filter",
-                "restricted","denied","forbidden","notallowed","policyviolation",
-                "accessdenied","categoryblocked","webfilter","dnsfilter","contentfilter"
-            ];
-            if (blockedKeywords.some(k => lower.includes(k))) return true;
 
             try {
-                const doc = probeFrame.contentDocument || probeFrame.contentWindow?.document;
+                href =
+                    probeFrame.contentWindow?.location?.href ||
+                    probeFrame.src;
+            } catch (_) {
+                href = probeFrame.src;
+            }
+
+            const lower = (href || src || "").toLowerCase();
+
+            const blockedKeywords = [
+                "securly.com/broker/blocked",
+                "goguardian.com/blocked",
+                "goguardian.com/filter",
+                "lightspeed.com/blocked",
+                "iboss.com/blocked",
+                "smoothwall.com/blocked",
+                "fortiguard.com/blocked",
+                "opendns.com/blocked",
+                "umbrella.com/blocked",
+                "zscaler.com/blocked",
+                "mcafee.com/blocked",
+                "barracuda.com/blocked",
+                "forcepoint.com/blocked",
+                "netnanny.com/blocked",
+                "cyberpatrol.com/blocked",
+                "surfwatch.com/blocked",
+                "covenanteyes.com/blocked",
+                "blocked",
+                "filter",
+                "restricted",
+                "denied",
+                "forbidden",
+                "notallowed",
+                "policyviolation",
+                "accessdenied",
+                "categoryblocked",
+                "webfilter",
+                "dnsfilter",
+                "contentfilter"
+            ];
+
+            if (blockedKeywords.some(k => lower.includes(k))) {
+                return true;
+            }
+
+            try {
+                const doc =
+                    probeFrame.contentDocument ||
+                    probeFrame.contentWindow?.document;
+
                 if (doc) {
                     const title = (doc.title || "").toLowerCase();
-                    if (["blocked","securly","goguardian","access denied","forbidden","restricted","filter"].some(k => title.includes(k))) return true;
+
+                    if (
+                        [
+                            "blocked",
+                            "securly",
+                            "goguardian",
+                            "access denied",
+                            "forbidden",
+                            "restricted",
+                            "filter"
+                        ].some(k => title.includes(k))
+                    ) {
+                        return true;
+                    }
+
                     if (doc.body) {
-                        const bodyText = (doc.body.innerText || doc.body.textContent || "").toLowerCase();
-                        if (bodyText.includes("login to continue") && bodyText.includes("school email")) return true;
-                        if (bodyText.trim().length < 10) return true;
+                        const bodyText =
+                            (
+                                doc.body.innerText ||
+                                doc.body.textContent ||
+                                ""
+                            ).toLowerCase();
+
+                        if (
+                            bodyText.includes("login to continue") &&
+                            bodyText.includes("school email")
+                        ) {
+                            return true;
+                        }
+
+                        if (bodyText.trim().length < 10) {
+                            return true;
+                        }
                     }
                 }
             } catch (_) {}
+
             return false;
-        } catch (_) { return false; }
+
+        } catch (_) {
+            return false;
+        }
     };
 
     const fetchBlocked = async url => {
-        try { await fetch(url, { method: "HEAD", mode: "no-cors", cache: "no-store" }); return false; }
-        catch (_) { return true; }
+        try {
+            await fetch(url, {
+                method: "HEAD",
+                mode: "no-cors",
+                cache: "no-store"
+            });
+
+            return false;
+        } catch (_) {
+            return true;
+        }
     };
 
-    const loadFrame = (url, timeout = 15000) => new Promise((resolve, reject) => {
-        let timer = null;
-        let settled = false;
-        const cleanup = () => { if (timer) clearTimeout(timer); probeFrame.onload = null; probeFrame.onerror = null; };
-        probeFrame.onload = () => { if (!settled) { settled = true; cleanup(); resolve(); } };
-        probeFrame.onerror = () => { if (!settled) { settled = true; cleanup(); reject(); } };
-        timer = setTimeout(() => { if (!settled) { settled = true; cleanup(); reject(); } }, timeout);
-        probeFrame.src = url;
-    });
+    const loadFrame = (url, timeout = 15000) =>
+        new Promise((resolve, reject) => {
+            let timer = null;
+            let settled = false;
+
+            const cleanup = () => {
+                if (timer) {
+                    clearTimeout(timer);
+                }
+
+                probeFrame.onload = null;
+                probeFrame.onerror = null;
+            };
+
+            probeFrame.onload = () => {
+                if (!settled) {
+                    settled = true;
+                    cleanup();
+                    resolve();
+                }
+            };
+
+            probeFrame.onerror = () => {
+                if (!settled) {
+                    settled = true;
+                    cleanup();
+                    reject();
+                }
+            };
+
+            timer = setTimeout(() => {
+                if (!settled) {
+                    settled = true;
+                    cleanup();
+                    reject();
+                }
+            }, timeout);
+
+            probeFrame.src = url;
+        });
 
     const findProxy = async () => {
         let attempt = 0;
@@ -1022,43 +1235,85 @@ let currentGameType = null;
 
         while (attempt < maxAttempts) {
             const url = proxyUrls[idx % proxyUrls.length];
+
             try {
                 await loadFrame(url, 18000);
+
                 let blocked = isFrameBlocked();
+
                 if (!blocked && await fetchBlocked(url)) {
                     const src = probeFrame.src || "";
-                    if (src.includes("securly") || src.includes("goguardian") || src.includes("blocked") || src.includes("filter")) {
+
+                    if (
+                        src.includes("securly") ||
+                        src.includes("goguardian") ||
+                        src.includes("blocked") ||
+                        src.includes("filter")
+                    ) {
                         blocked = true;
                     }
                 }
+
                 const lower = url.toLowerCase();
-                if (lower.includes("securly.com/broker/blocked") || lower.includes("goguardian.com/blocked")) blocked = true;
-                if (!blocked) return url;
+
+                if (
+                    lower.includes("securly.com/broker/blocked") ||
+                    lower.includes("goguardian.com/blocked")
+                ) {
+                    blocked = true;
+                }
+
+                if (!blocked) {
+                    return url;
+                }
+
             } catch (_) {}
+
             idx = (idx + 1) % proxyUrls.length;
             attempt++;
+
             await new Promise(r => setTimeout(r, 500));
         }
+
         return null;
     };
 
     const found = await findProxy();
+
     const overlayEl = document.getElementById("proxyOverlay");
     const statusEl = document.getElementById("proxyStatus");
 
     if (found) {
-        if (statusEl) statusEl.textContent = "link found! initializing...";
+        if (statusEl) {
+            statusEl.textContent = "link found! initializing...";
+        }
+
         _p = found + "/learn/study/";
+
         await new Promise(r => setTimeout(r, 100));
-        if (overlayEl) overlayEl.remove();
+
+        if (overlayEl) {
+            overlayEl.remove();
+        }
+
     } else {
-        if (statusEl) statusEl.textContent = "all proxy links are blocked.";
+        if (statusEl) {
+            statusEl.textContent = "all proxy links are blocked.";
+        }
+
         await new Promise(r => setTimeout(r, 1500));
-        if (overlayEl) overlayEl.remove();
+
+        if (overlayEl) {
+            overlayEl.remove();
+        }
     }
 
     const frame = document.getElementById("probeFrame");
-    if (frame) { frame.src = "about:blank"; frame.remove(); }
+
+    if (frame) {
+        frame.src = "about:blank";
+        frame.remove();
+    }
 })();
 
 function getPrefix() {
@@ -1067,6 +1322,7 @@ function getPrefix() {
 
 const LOCAL_GAMES = [
     { name: "Geometry Dash", index: 1 },
+    { name: "Web Dashers", index: 41 },
     { name: "Five Nights at Epstein's", index: 2 },
     { name: "BitLife", index: 3 },
     { name: "Paper.io 2", index: 4 },
@@ -1076,6 +1332,7 @@ const LOCAL_GAMES = [
     { name: "Eaglercraft 1.12.2", index: 8 },
     { name: "Eaglercraft 1.8", index: 32 },
     { name: "Astra Client v1.8 (WASM)", index: 31 },
+    { name: "Death Client v1.8 (WASM)", index: 39 },
     { name: "GunSpin", index: 9 },
     { name: "Stickman Hook", index: 10 },
     { name: "Among Us", index: 11 },
@@ -1087,6 +1344,7 @@ const LOCAL_GAMES = [
     { name: "Baldi's Basics", index: 17 },
     { name: "-3", index: 33 },
     { name: "-b", index: 34 },
+    { name: "UvuvwevwevweOnyetenvewv", index: 40 },
     { name: "Drive Mad", index: 18 },
     { name: "Slope", index: 19 },
     { name: "Friday Night Funkin'", index: 20 },
@@ -1100,20 +1358,17 @@ const LOCAL_GAMES = [
     { name: "Hacker Typer", index: 28 },
     { name: "Yandere Simulator", index: 29 },
     { name: "SONIC.EXE", index: 30 },
-    { name: "Google Snake", index: 35 }
+    { name: "Google Snake", index: 35 },
+    { name: "Bad Parenting 1", index: 36 },
+    { name: "Survival Race", index: 37 },
+    { name: "1v1.LOL", index: 38 },
+    { name: "OvO", index: 42 },
+    { name: "OvO 2", index: 43 },
+    { name: "Lethal Ape", index: 44 },
+    { name: "Angry Birds", index: 45 }
 ];
 
 const WEB_GAMES = [
-    {
-        name: "Web Dashers (GD)",
-        url: "https://webdashers.dev",
-        displayUrl: "webdashers.dev"
-    },
-    {
-        name: "OVO",
-        url: "https://www.hoodamath.com/mobile/games/ovo/game.html",
-        displayUrl: "hoodamath.com"
-    },
     {
         name: "Block Blast",
         url: "https://block-blast.gg",
@@ -1140,26 +1395,26 @@ const loadingScreen = document.getElementById("loadingScreen");
 const gameIframe = document.getElementById("gameIframe");
 const loadingFrame = document.getElementById("loadingFrame");
 
-const webToggleWrap = document.getElementById("webToggleWrap");
+document
+    .getElementById("searchInput")
+    .addEventListener("input", e => {
+        searchQuery = e.target.value.toLowerCase().trim();
+        renderGrid();
+    });
 
-webToggleWrap.addEventListener("click", () => {
-    webMode = !webMode;
-    webToggleWrap.classList.toggle("active", webMode);
-    webToggleWrap.setAttribute("aria-checked", webMode);
+function switchTab(mode) {
+    webMode = mode === "web";
+
+    document
+        .getElementById("tabLocal")
+        .classList.toggle("active", !webMode);
+
+    document
+        .getElementById("tabWeb")
+        .classList.toggle("active", webMode);
+
     renderGrid();
-});
-
-webToggleWrap.addEventListener("keydown", e => {
-    if (e.key === " " || e.key === "Enter") {
-        e.preventDefault();
-        webToggleWrap.click();
-    }
-});
-
-document.getElementById("searchInput").addEventListener("input", e => {
-    searchQuery = e.target.value.toLowerCase().trim();
-    renderGrid();
-});
+}
 
 function getFaviconUrl(url) {
     try {
@@ -1171,163 +1426,153 @@ function getFaviconUrl(url) {
 }
 
 function renderGrid() {
-    const countEl = document.getElementById("gameCount");
 
     if (webMode) {
-        const filtered = WEB_GAMES.filter(game =>
-            game.name.toLowerCase().includes(searchQuery) ||
-            game.displayUrl.toLowerCase().includes(searchQuery)
+
+        const filtered = WEB_GAMES.filter(g =>
+            g.name.toLowerCase().includes(searchQuery) ||
+            g.displayUrl.toLowerCase().includes(searchQuery)
         );
 
-        countEl.textContent = filtered.length + " Web Game" + (filtered.length !== 1 ? "s" : "");
         grid.className = "grid web-grid";
 
         if (!filtered.length) {
+
             grid.innerHTML = `
                 <div class="empty-state">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.5"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"/>
                         <line x1="2" y1="12" x2="22" y2="12"/>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10
+                                 15.3 15.3 0 0 1-4 10
+                                 15.3 15.3 0 0 1-4-10
+                                 15.3 15.3 0 0 1 4-10z"/>
                     </svg>
-                    <p>No web games found matching "${searchQuery}"</p>
+
+                    <p>No web games matching "${searchQuery}"</p>
                 </div>
             `;
+
             return;
         }
 
         grid.innerHTML = "";
 
         filtered.forEach((game, i) => {
-            const card = document.createElement("a");
-            card.className = "game-card web-card";
-            card.href = "#";
-            card.style.animationDelay = `${i * 0.06}s`;
-
-            card.addEventListener("click", e => {
-                e.preventDefault();
-                openWebGame(game);
+            const card = createGameCard({
+                name: game.name,
+                imageSrc: getFaviconUrl(game.url) || "",
+                onClick: () => openWebGame(game),
+                delay: i * 0.05
             });
-
-            const faviconSrc = getFaviconUrl(game.url);
-
-            const thumb = document.createElement("div");
-            thumb.className = "game-thumb web-thumb";
-
-            const badge = document.createElement("div");
-            badge.className = "web-badge";
-            badge.textContent = "Web";
-            thumb.appendChild(badge);
-
-            if (faviconSrc) {
-                const img = document.createElement("img");
-                img.className = "web-favicon";
-                img.src = faviconSrc;
-                img.alt = game.name;
-                img.loading = "lazy";
-                img.onerror = () => {
-                    img.remove();
-                    thumb.innerHTML += `
-                        <svg class="web-globe-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="2" y1="12" x2="22" y2="12"/>
-                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                        </svg>
-                    `;
-                };
-                thumb.appendChild(img);
-            } else {
-                thumb.innerHTML += `
-                    <svg class="web-globe-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="2" y1="12" x2="22" y2="12"/>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                    </svg>
-                `;
-            }
-
-            const info = document.createElement("div");
-            info.className = "game-info";
-            info.innerHTML = `
-                <div class="game-name">${game.name}</div>
-                <div class="game-url">${game.displayUrl}</div>
-            `;
-
-            card.appendChild(thumb);
-            card.appendChild(info);
             grid.appendChild(card);
         });
 
     } else {
-        const filtered = LOCAL_GAMES.filter(game =>
-            game.name.toLowerCase().includes(searchQuery)
+
+        const filtered = LOCAL_GAMES.filter(g =>
+            g.name.toLowerCase().includes(searchQuery)
         );
 
-        countEl.textContent = filtered.length + " Game" + (filtered.length !== 1 ? "s" : "");
         grid.className = "grid";
 
         if (!filtered.length) {
+
             grid.innerHTML = `
                 <div class="empty-state">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="1.5"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"/>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        <line x1="21" y1="21"
+                              x2="16.65"
+                              y2="16.65"/>
                     </svg>
-                    <p>No games found matching "${searchQuery}"</p>
+
+                    <p>No games matching "${searchQuery}"</p>
                 </div>
             `;
+
             return;
         }
 
         grid.innerHTML = "";
 
         filtered.forEach((game, i) => {
-            const card = document.createElement("a");
-            card.className = "game-card";
-            card.href = "#";
-            card.style.animationDelay = `${i * 0.03}s`;
-
-            card.addEventListener("click", e => {
-                e.preventDefault();
-                openGame(game);
+            const card = createGameCard({
+                name: game.name,
+                imageSrc: _p + `https://sealgodreal.github.io/nebulagames/icons/${game.index}.png`,
+                onClick: () => openGame(game),
+                delay: i * 0.025
             });
-
-            const thumb = document.createElement("div");
-            thumb.className = "game-thumb";
-
-            const img = document.createElement("img");
-            img.src = _p + `https://sealgodreal.github.io/nebulagames/icons/${game.index}.png`;
-            img.alt = game.name;
-            img.loading = "lazy";
-
-            img.onerror = () => {
-                img.remove();
-                thumb.innerHTML = `
-                    <svg class="fallback-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="3"/>
-                        <circle cx="8.5" cy="8.5" r="1.5"/>
-                        <polyline points="21 15 16 10 5 21"/>
-                    </svg>
-                `;
-            };
-
-            thumb.appendChild(img);
-
-            const info = document.createElement("div");
-            info.className = "game-info";
-
-            const gameNumber = LOCAL_GAMES.indexOf(game) + 1;
-
-            info.innerHTML = `
-                <div class="game-name">${game.name}</div>
-                <div class="game-meta">Lesson : ${gameNumber}</div>
-            `;
-
-            card.appendChild(thumb);
-            card.appendChild(info);
             grid.appendChild(card);
         });
     }
+}
+
+function createGameCard({ name, imageSrc, onClick, delay }) {
+    const card = document.createElement("a");
+    card.className = "game-card";
+    card.href = "#";
+    card.style.animationDelay = `${delay}s`;
+
+    card.addEventListener("click", e => {
+        e.preventDefault();
+        onClick();
+    });
+
+    const thumb = document.createElement("div");
+    thumb.className = "game-thumb";
+
+    const img = document.createElement("img");
+    img.src = imageSrc;
+    img.alt = name;
+    img.loading = "lazy";
+
+    img.onerror = () => {
+        img.remove();
+        thumb.innerHTML += `
+            <svg class="fallback-icon"
+                 viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="1.5"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="3"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+            </svg>
+        `;
+    };
+
+    thumb.appendChild(img);
+
+    const overlayDiv = document.createElement("div");
+    overlayDiv.className = "game-thumb-overlay";
+    thumb.appendChild(overlayDiv);
+
+    const label = document.createElement("div");
+    label.className = "game-label";
+
+    const labelText = document.createElement("span");
+    labelText.className = "game-label-inner";
+    labelText.textContent = name;
+
+    label.appendChild(labelText);
+
+    card.appendChild(thumb);
+    card.appendChild(label);
+
+    return card;
 }
 
 let menuOpen = false;
@@ -1343,9 +1588,18 @@ const btnFullscreen = document.getElementById("btnFullscreen");
 const proxyToggleRow = document.getElementById("proxyToggleRow");
 
 proxyToggleRow.addEventListener("click", () => {
+
     proxyEnabled = !proxyEnabled;
-    proxyToggleRow.classList.toggle("active", proxyEnabled);
-    proxyToggleRow.setAttribute("aria-checked", proxyEnabled);
+
+    proxyToggleRow.classList.toggle(
+        "active",
+        proxyEnabled
+    );
+
+    proxyToggleRow.setAttribute(
+        "aria-checked",
+        proxyEnabled
+    );
 
     if (currentGame !== null) {
         reloadCurrentGame();
@@ -1353,59 +1607,84 @@ proxyToggleRow.addEventListener("click", () => {
 });
 
 proxyToggleRow.addEventListener("keydown", e => {
+
     if (e.key === " " || e.key === "Enter") {
+
         e.preventDefault();
+
         proxyToggleRow.click();
     }
 });
 
 async function reloadCurrentGame() {
+
     menuOpen = false;
+
     menuPanel.classList.remove("open");
     menuBtn.classList.remove("active");
 
     prepareGameIframe();
     resetLoadingScreen();
 
-    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve =>
+        requestAnimationFrame(resolve)
+    );
 
     if (currentGameType === "local") {
-        gameIframe.src = getPrefix() + `https://sealgodreal.github.io/nebulagames/${currentGame.index}/index.html`;
+
+        gameIframe.src =
+            getPrefix() +
+            `https://sealgodreal.github.io/nebulagames/${currentGame.index}/index.html`;
+
     } else if (currentGameType === "web") {
-        gameIframe.src = getPrefix() + currentGame.url;
+
+        gameIframe.src =
+            getPrefix() +
+            currentGame.url;
     }
 
     setIframePermissions();
+
     await waitForGameLoad();
 }
 
 function setIframePermissions() {
+
     gameIframe.allow =
-        "camera; microphone; display-capture; autoplay; " +
-        "clipboard-read; clipboard-write; web-share; " +
-        "xr-spatial-tracking; gamepad; geolocation; accelerometer; " +
-        "ambient-light-sensor; battery; bluetooth; browsing-topics; " +
-        "compute-pressure; document-domain; encrypted-media; " +
-        "execution-while-not-rendered; execution-while-out-of-viewport; " +
-        "fullscreen; gyroscope; hid; identity-credentials-get; " +
-        "idle-detection; keyboard-map; local-fonts; magnetometer; " +
-        "midi; otp-credentials; payment; picture-in-picture; " +
-        "publickey-credentials-create; publickey-credentials-get; " +
-        "screen-wake-lock; serial; speaker-selection; storage-access; " +
+        "camera; microphone; display-capture; autoplay; clipboard-read; clipboard-write; web-share; " +
+        "xr-spatial-tracking; gamepad; geolocation; accelerometer; ambient-light-sensor; battery; " +
+        "bluetooth; browsing-topics; compute-pressure; document-domain; encrypted-media; " +
+        "execution-while-not-rendered; execution-while-out-of-viewport; fullscreen; gyroscope; hid; " +
+        "identity-credentials-get; idle-detection; keyboard-map; local-fonts; magnetometer; midi; " +
+        "otp-credentials; payment; picture-in-picture; publickey-credentials-create; " +
+        "publickey-credentials-get; screen-wake-lock; serial; speaker-selection; storage-access; " +
         "usb; window-management";
 }
 
 function toggleMenu(e) {
-    if (e) e.stopPropagation();
+
+    if (e) {
+        e.stopPropagation();
+    }
+
     menuOpen = !menuOpen;
-    menuPanel.classList.toggle("open", menuOpen);
-    menuBtn.classList.toggle("active", menuOpen);
+
+    menuPanel.classList.toggle(
+        "open",
+        menuOpen
+    );
+
+    menuBtn.classList.toggle(
+        "active",
+        menuOpen
+    );
 }
 
 menuBtn.addEventListener("click", toggleMenu);
 floatMenuBtn.addEventListener("click", toggleMenu);
 
 document.addEventListener("click", e => {
+
     if (
         menuOpen &&
         !menuPanel.contains(e.target) &&
@@ -1413,7 +1692,9 @@ document.addEventListener("click", e => {
         e.target !== floatMenuBtn &&
         !floatMenuBtn.contains(e.target)
     ) {
+
         menuOpen = false;
+
         menuPanel.classList.remove("open");
         menuBtn.classList.remove("active");
     }
@@ -1422,97 +1703,157 @@ document.addEventListener("click", e => {
 let floatFadeTimer;
 
 function resetFloatFade() {
+
     floatMenuBtn.classList.remove("faded");
+
     clearTimeout(floatFadeTimer);
+
     if (barHidden) {
+
         floatFadeTimer = setTimeout(() => {
             floatMenuBtn.classList.add("faded");
         }, 4000);
     }
 }
 
-floatMenuBtn.addEventListener("mouseenter", resetFloatFade);
-floatMenuBtn.addEventListener("mouseleave", resetFloatFade);
-floatMenuBtn.addEventListener("touchstart", resetFloatFade, { passive: true });
+floatMenuBtn.addEventListener(
+    "mouseenter",
+    resetFloatFade
+);
+
+floatMenuBtn.addEventListener(
+    "mouseleave",
+    resetFloatFade
+);
+
+floatMenuBtn.addEventListener(
+    "touchstart",
+    resetFloatFade,
+    { passive: true }
+);
 
 closeBarBtn.addEventListener("click", () => {
+
     barHidden = true;
+
     topbar.classList.add("hidden");
+
     menuOpen = false;
+
     menuPanel.classList.remove("open");
     menuBtn.classList.remove("active");
+
     floatMenuBtn.classList.add("visible");
+
     resetFloatFade();
 });
 
 btnExit.addEventListener("click", () => {
+
     gameIframe.src = "about:blank";
+
     gameOverlay.style.display = "none";
 
     currentGame = null;
     currentGameType = null;
+
     menuOpen = false;
     barHidden = false;
 
     menuPanel.classList.remove("open");
     menuBtn.classList.remove("active");
+
     topbar.classList.remove("hidden");
-    floatMenuBtn.classList.remove("visible", "faded");
+
+    floatMenuBtn.classList.remove(
+        "visible",
+        "faded"
+    );
 
     clearTimeout(floatFadeTimer);
 });
 
 btnFullscreen.addEventListener("click", () => {
+
     if (!document.fullscreenElement) {
-        gameOverlay.requestFullscreen?.().catch(() => {});
+
+        gameOverlay
+            .requestFullscreen?.()
+            .catch(() => {});
+
     } else {
-        document.exitFullscreen?.().catch(() => {});
+
+        document
+            .exitFullscreen?.()
+            .catch(() => {});
     }
 });
 
 function resetLoadingScreen() {
+
     loadingScreen.style.display = "flex";
     loadingScreen.style.opacity = "1";
+
     loadingFrame.src = "loading_v2.html";
 }
 
 function hideLoadingScreen() {
+
     loadingScreen.style.opacity = "0";
+
     setTimeout(() => {
+
         if (loadingScreen.style.opacity === "0") {
             loadingScreen.style.display = "none";
         }
+
     }, 400);
 }
 
 function prepareGameIframe() {
+
     gameIframe.onload = null;
     gameIframe.onerror = null;
+
     gameIframe.src = "about:blank";
+
     gameIframe.style.transition = "none";
     gameIframe.style.opacity = "0";
 }
 
 function waitForGameLoad() {
+
     return new Promise(resolve => {
+
         let finished = false;
 
         const finish = () => {
-            if (finished) return;
+
+            if (finished) {
+                return;
+            }
+
             finished = true;
-            gameIframe.style.transition = "opacity 0.4s ease";
+
+            gameIframe.style.transition =
+                "opacity 0.4s ease";
+
             gameIframe.style.opacity = "1";
+
             hideLoadingScreen();
+
             resolve();
         };
 
         gameIframe.onload = finish;
         gameIframe.onerror = finish;
+
         setTimeout(finish, 15000);
     });
 }
 
 async function openGame(game) {
+
     currentGame = game;
     currentGameType = "local";
 
@@ -1522,7 +1863,12 @@ async function openGame(game) {
     menuOpen = false;
 
     topbar.classList.remove("hidden");
-    floatMenuBtn.classList.remove("visible", "faded");
+
+    floatMenuBtn.classList.remove(
+        "visible",
+        "faded"
+    );
+
     menuPanel.classList.remove("open");
     menuBtn.classList.remove("active");
 
@@ -1531,9 +1877,13 @@ async function openGame(game) {
     prepareGameIframe();
     resetLoadingScreen();
 
-    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve =>
+        requestAnimationFrame(resolve)
+    );
 
-    gameIframe.src = getPrefix() + `https://sealgodreal.github.io/nebulagames/${game.index}/index.html`;
+    gameIframe.src =
+        getPrefix() +
+        `https://sealgodreal.github.io/nebulagames/${game.index}/index.html`;
 
     setIframePermissions();
 
@@ -1541,6 +1891,7 @@ async function openGame(game) {
 }
 
 async function openWebGame(game) {
+
     currentGame = game;
     currentGameType = "web";
 
@@ -1550,7 +1901,12 @@ async function openWebGame(game) {
     menuOpen = false;
 
     topbar.classList.remove("hidden");
-    floatMenuBtn.classList.remove("visible", "faded");
+
+    floatMenuBtn.classList.remove(
+        "visible",
+        "faded"
+    );
+
     menuPanel.classList.remove("open");
     menuBtn.classList.remove("active");
 
@@ -1560,15 +1916,24 @@ async function openWebGame(game) {
     setIframePermissions();
     resetLoadingScreen();
 
-    await new Promise(resolve => requestAnimationFrame(resolve));
+    await new Promise(resolve =>
+        requestAnimationFrame(resolve)
+    );
 
-    gameIframe.src = getPrefix() + game.url;
+    gameIframe.src =
+        getPrefix() +
+        game.url;
 
     await waitForGameLoad();
 }
 
 document.addEventListener("keydown", e => {
-    if (e.key === "Escape" && gameOverlay.style.display === "flex" && !barHidden) {
+
+    if (
+        e.key === "Escape" &&
+        gameOverlay.style.display === "flex" &&
+        !barHidden
+    ) {
         closeBarBtn.click();
     }
 });

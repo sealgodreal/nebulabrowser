@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -17,25 +17,27 @@
 
 :root {
     --bg: #0a0a0a;
-    --surface: #111111;
+    --bg2: #111111;
+    --surface: rgba(255,255,255,0.04);
+    --surface-hover: rgba(255,255,255,0.07);
     --surface-elevated: #161616;
-    --surface-hover: #1a1a1a;
     --border: #1f1f1f;
     --border-hover: #2a2a2a;
     --text: #ffffff;
     --text-secondary: #a0a0a0;
     --text-muted: #5a5a5a;
     --accent: #8b5cf6;
+    --accent2: #a78bfa;
     --accent-glow: rgba(139, 92, 246, 0.25);
     --accent-soft: rgba(139, 92, 246, 0.08);
     --danger: #ef4444;
     --danger-soft: rgba(239, 68, 68, 0.08);
     --radius-sm: 8px;
     --radius-md: 12px;
-    --radius-lg: 16px;
+    --radius-lg: 14px;
     --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-    --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
-    --shadow-lg: 0 16px 48px rgba(0,0,0,0.5);
+    --shadow-md: 0 8px 32px rgba(0,0,0,0.5);
+    --shadow-lg: 0 16px 56px rgba(0,0,0,0.6);
     --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -49,52 +51,46 @@ html, body {
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    overflow: auto;
     touch-action: manipulation;
 }
 
-::-webkit-scrollbar {
-    width: 6px;
-}
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #444; }
 
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #333;
-    border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #444;
+#pageOverlay {
+    zoom: 0.8;
 }
 
 .header {
-    border-bottom: 1px solid var(--border);
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
     position: sticky;
     top: 0;
     z-index: 10;
-    background: rgba(10, 10, 10, 0.85);
-    backdrop-filter: blur(20px) saturate(1.2);
-    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0 20px;
+    height: 52px;
+    background: rgba(10,10,10,0.88);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
 }
 
 .header-brand {
     display: flex;
     align-items: center;
-    gap: 10px;
     flex-shrink: 0;
+    margin-right: 20px;
 }
 
 .header-title {
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
     color: var(--text);
 }
 
@@ -103,176 +99,42 @@ html, body {
     color: var(--text-muted);
     font-weight: 400;
     padding: 2px 8px;
-    background: var(--surface);
+    background: rgba(255,255,255,0.05);
     border-radius: 20px;
     border: 1px solid var(--border);
+    margin-left: 10px;
     flex-shrink: 0;
 }
 
-.provider-switcher {
-    position: relative;
+.header-right {
     margin-left: auto;
-    flex-shrink: 0;
-}
-
-.provider-btn {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 8px 12px;
-    color: var(--text-secondary);
-    font-size: 13px;
-    font-family: inherit;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition-fast);
-    white-space: nowrap;
-    user-select: none;
-}
-
-.provider-btn:hover {
-    border-color: var(--border-hover);
-    color: var(--text);
-    background: var(--surface-elevated);
-}
-
-.provider-btn[aria-expanded="true"] {
-    border-color: var(--accent);
-    color: var(--text);
-    background: var(--surface-elevated);
-    box-shadow: 0 0 0 3px var(--accent-soft);
-}
-
-.provider-btn svg.chevron {
-    width: 12px;
-    height: 12px;
-    stroke: currentColor;
-    stroke-width: 2.2;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    transition: transform var(--transition-fast);
-    flex-shrink: 0;
-}
-
-.provider-btn[aria-expanded="true"] svg.chevron {
-    transform: rotate(180deg);
-}
-
-.provider-dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    min-width: 160px;
-    background: var(--surface-elevated);
-    border: 1px solid var(--border-hover);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
-    overflow: hidden;
-    display: none;
-    flex-direction: column;
-    z-index: 200;
-    animation: dropIn 0.15s cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-.provider-dropdown.open {
-    display: flex;
-}
-
-@keyframes dropIn {
-    from {
-        opacity: 0;
-        transform: translateY(-6px) scale(0.97);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-.provider-option {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 14px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    transition: var(--transition-fast);
-    border: none;
-    background: transparent;
-    font-family: inherit;
-    text-align: left;
-    width: 100%;
-    user-select: none;
-}
-
-.provider-option:hover {
-    background: var(--surface-hover);
-    color: var(--text);
-}
-
-.provider-option.selected {
-    color: var(--accent);
-    background: var(--accent-soft);
-}
-
-.provider-option .checkmark {
-    margin-left: auto;
-    width: 14px;
-    height: 14px;
-    stroke: var(--accent);
-    stroke-width: 2.5;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    opacity: 0;
-}
-
-.provider-option.selected .checkmark {
-    opacity: 1;
-}
-
-.dropdown-divider {
-    height: 1px;
-    background: var(--border);
-    margin: 2px 0;
 }
 
 .search-wrap {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--surface);
+    background: rgba(255,255,255,0.05);
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 8px 14px;
-    width: 220px;
+    border-radius: 20px;
+    padding: 7px 14px;
+    width: 200px;
     transition: var(--transition-smooth);
     flex-shrink: 0;
 }
 
 .search-wrap:focus-within {
-    width: 280px;
-    border-color: var(--accent);
-    background: var(--surface-elevated);
-    box-shadow: 0 0 0 3px var(--accent-soft);
+    width: 260px;
+    border-color: #333;
+    background: rgba(255,255,255,0.06);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
 }
 
-.search-wrap svg {
-    color: var(--text-muted);
-    flex-shrink: 0;
-    transition: var(--transition-fast);
-}
-
-.search-wrap:focus-within svg {
-    color: var(--accent);
-}
+.search-wrap svg { color: var(--text-muted); flex-shrink: 0; transition: var(--transition-fast); }
+.search-wrap:focus-within svg { color: var(--text-secondary); }
 
 .search-wrap input {
     background: transparent;
@@ -284,136 +146,118 @@ html, body {
     font-family: inherit;
 }
 
-.search-wrap input::placeholder {
-    color: var(--text-muted);
-}
+.search-wrap input::placeholder { color: var(--text-muted); }
 
 .content {
-    padding: 40px 24px;
+    position: relative;
+    z-index: 1;
+    padding: 20px 20px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
     display: flex;
     justify-content: center;
+    align-items: flex-start;
 }
 
 .grid {
-    width: 100%;
-    max-width: 1000px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(161px, 1fr));
+    grid-template-columns: repeat(auto-fill, 160px);
+    gap: 14px;
     justify-content: center;
-    gap: 16px;
+    align-items: center;
+    justify-items: center;
+    width: calc(5 * 160px + 4 * 14px);
+    max-width: calc(100vw - 40px);
+    margin: 0 auto;
 }
 
 .service-card {
     position: relative;
-    aspect-ratio: 1 / 1;
     border-radius: var(--radius-lg);
     overflow: hidden;
-    background: var(--surface);
-    border: 1px solid var(--border);
     cursor: pointer;
-    transition: var(--transition-smooth);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
+    width: 160px;
+    height: 160px;
+    background: #161616;
+    border: 1px solid var(--border);
+    color: #ffffff;
+    transition:
+        transform var(--transition-smooth),
+        box-shadow var(--transition-smooth),
+        border-color var(--transition-smooth);
+    animation: fadeUp 0.3s ease both;
     user-select: none;
-    animation: fadeUp 0.35s ease both;
-}
-
-.service-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: var(--radius-lg);
-    border: 1px solid transparent;
-    transition: var(--transition-fast);
-    pointer-events: none;
-    z-index: 2;
-}
-
-.service-card:hover::before {
-    border-color: rgba(139, 92, 246, 0.15);
 }
 
 @keyframes fadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(12px) scale(0.98);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .service-card:hover {
-    transform: translateY(-6px) scale(1.03);
+    transform: translateY(-3px) scale(1.025);
     border-color: var(--border-hover);
-    box-shadow: var(--shadow-lg), 0 0 30px rgba(139, 92, 246, 0.06);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.55), var(--shadow-lg);
 }
 
-.service-card:active {
-    transform: translateY(-3px) scale(1.015);
-    transition: var(--transition-fast);
-}
+.service-card:active { transform: translateY(-1px) scale(1.01); }
 
 .service-icon {
     position: absolute;
     inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #141414, #1a1a1a);
 }
 
 .service-icon img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: brightness(0.9);
-    transform: scale(1.05);
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block;
 }
 
-.service-card:hover .service-icon img {
-    transform: scale(1.12);
-    filter: brightness(0.75);
-}
+.service-card:hover .service-icon img { transform: scale(1.06); }
 
-.service-card .overlay-gradient {
+.service-label {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        to top,
-        rgba(0,0,0,0.65),
-        rgba(0,0,0,0.15),
-        rgba(0,0,0,0.05)
-    );
-    opacity: 0;
-    transition: var(--transition-smooth);
-    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    pointer-events: none;
+    background: rgba(12,12,12,0.38);
+    backdrop-filter: blur(2px) saturate(1.05);
+    -webkit-backdrop-filter: blur(2px) saturate(1.05);
+    border: 1px solid rgba(255,255,255,0.07);
+    transition: background var(--transition-smooth), backdrop-filter var(--transition-smooth);
 }
 
-.service-card:hover .overlay-gradient {
-    opacity: 1;
+.service-card:hover .service-label {
+    background: rgba(12,12,12,0.42);
+    backdrop-filter: blur(2px) saturate(1.08);
+    -webkit-backdrop-filter: blur(2px) saturate(1.08);
 }
 
 .service-name {
-    position: absolute;
-    bottom: 14px;
-    left: 14px;
-    right: 14px;
-    font-size: 16px;
-    font-weight: 600;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: var(--transition-smooth);
-    color: var(--text);
-    z-index: 3;
+    font-size: 14px;
+    font-weight: 650;
+    color: #ffffff;
     letter-spacing: -0.01em;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+    text-align: center;
+    text-shadow: 0 1px 5px rgba(0,0,0,0.45);
 }
 
-.service-card:hover .service-name {
-    opacity: 1;
-    transform: translateY(0);
-}
+.overlay-gradient { display: none; }
 
 .empty-state {
     grid-column: 1 / -1;
@@ -422,22 +266,12 @@ html, body {
     align-items: center;
     justify-content: center;
     padding: 80px 20px;
-    gap: 16px;
+    gap: 14px;
     animation: fadeUp 0.4s ease both;
 }
 
-.empty-state svg {
-    width: 48px;
-    height: 48px;
-    color: var(--text-muted);
-    opacity: 0.4;
-}
-
-.empty-state p {
-    color: var(--text-muted);
-    font-size: 14px;
-    text-align: center;
-}
+.empty-state svg { width: 44px; height: 44px; color: var(--text-muted); opacity: 0.35; }
+.empty-state p { color: var(--text-muted); font-size: 14px; text-align: center; }
 
 #serviceOverlay {
     position: fixed;
@@ -448,12 +282,7 @@ html, body {
     flex-direction: column;
 }
 
-#serviceFrame {
-    width: 100%;
-    height: 100%;
-    border: none;
-    display: none;
-}
+#serviceFrame { width: 100%; height: 100%; border: none; display: none; }
 
 #loadingScreen {
     position: absolute;
@@ -466,11 +295,7 @@ html, body {
     z-index: 10000;
 }
 
-#loadingScreen iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-}
+#loadingScreen iframe { width: 100%; height: 100%; border: none; }
 
 .close-overlay-btn {
     position: absolute;
@@ -496,11 +321,7 @@ html, body {
     -webkit-user-select: none;
 }
 
-.close-overlay-btn:hover {
-    background: var(--surface-hover);
-    color: var(--text);
-    border-color: var(--border-hover);
-}
+.close-overlay-btn:hover { background: var(--surface-hover); color: var(--text); border-color: var(--border-hover); }
 
 .close-overlay-btn svg {
     width: 14px;
@@ -512,17 +333,10 @@ html, body {
     stroke-linejoin: round;
 }
 
-.close-overlay-btn.dragging {
-    opacity: 0.8;
-    cursor: grabbing;
-    transition: none;
-}
+.close-overlay-btn.dragging { opacity: 0.8; cursor: grabbing; transition: none; }
 
 .disclaimer {
-    width: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 24px 24px 32px;
+    padding: 16px 20px 28px;
     text-align: center;
     color: var(--text-muted);
     font-size: 11px;
@@ -530,41 +344,19 @@ html, body {
 }
 
 @media (max-width: 768px) {
-    .content {
-        padding: 24px 16px;
-    }
-
-    .grid {
-        grid-template-columns: repeat(auto-fill, minmax(138px, 1fr));
-        gap: 12px;
-    }
-
-    .header {
-        padding: 12px 16px;
-        gap: 8px;
-    }
-
-    .search-wrap {
-        width: 140px;
-    }
-
-    .search-wrap:focus-within {
-        width: 180px;
-    }
-
-    .header-title {
-        font-size: 14px;
-    }
-
-    .provider-btn span {
-        display: none;
-    }
+    .content { padding: 16px 12px 32px; }
+    .grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+    .header-title { font-size: 17px; }
+    .search-wrap { width: 160px; }
+    .search-wrap:focus-within { width: 200px; }
+    .provider-btn span { display: none; }
 }
 
-::selection {
-    background: rgba(139, 92, 246, 0.3);
-    color: #fff;
+@media (max-width: 480px) {
+    .grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
 }
+
+::selection { background: rgba(139, 92, 246, 0.3); color: #fff; }
 </style>
 
 <base target="_blank">
@@ -572,73 +364,22 @@ html, body {
 
 <body>
 
+<div id="pageOverlay">
+
 <div class="header">
     <div class="header-brand">
         <span class="header-title">Nebula Cloud</span>
+        <span class="header-count" id="serviceCount">0 Services</span>
     </div>
 
-    <span class="header-count" id="serviceCount">0 services</span>
-
-    <div class="provider-switcher" id="providerSwitcher">
-        <button class="provider-btn" id="providerBtn" aria-haspopup="listbox" aria-expanded="false">
-            <span id="providerBtnLabel">nowgg.fun</span>
-            <svg class="chevron" viewBox="0 0 24 24">
-                <polyline points="6 9 12 15 18 9"/>
+    <div class="header-right">
+        <div class="search-wrap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-        </button>
-
-        <div class="provider-dropdown" id="providerDropdown" role="listbox">
-            <button
-                class="provider-option selected"
-                id="optNowggFun"
-                data-provider="nowggfun"
-                role="option"
-                aria-selected="true"
-            >
-                nowgg.fun
-                <svg class="checkmark" viewBox="0 0 24 24">
-                    <polyline points="20 6 9 17 4 12"/>
-                </svg>
-            </button>
-
-            <div class="dropdown-divider"></div>
-
-            <button
-                class="provider-option"
-                id="optNowGg"
-                data-provider="nowgg"
-                role="option"
-                aria-selected="false"
-            >
-                now.gg
-                <svg class="checkmark" viewBox="0 0 24 24">
-                    <polyline points="20 6 9 17 4 12"/>
-                </svg>
-            </button>
+            <input type="text" id="searchInput" placeholder="Search services..." autocomplete="off">
         </div>
-    </div>
-
-    <div class="search-wrap">
-        <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-        >
-            <circle cx="11" cy="11" r="8"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="Search services..."
-            autocomplete="off"
-        >
     </div>
 </div>
 
@@ -648,6 +389,8 @@ html, body {
 
 <div class="disclaimer" id="disclaimer">
     Nebula Cloud uses the service "nowgg.fun" by Frogiee1 (frogiee.one). This service is not owned or controlled by us.
+</div>
+
 </div>
 
 <div id="serviceOverlay">
@@ -671,7 +414,6 @@ html, body {
 </div>
 
 <script>
-const nowggEnd = "?ng_uaId=&ng_uaSessionId=&ng_visitId=&ng_ngReferrer=NA&ng_ngEntryPoint=https%253A%252F%252Fnow.gg%252F&ng_utmSource=&ng_utmMedium=&ng_utmCampaign=&ng_ntmSource=MyGames&ng_userSource=direct&ng_userCampaign=&ng_userAcqVar=";
 const SERVICES = {
     nowggfun: [
         {
@@ -699,40 +441,11 @@ const SERVICES = {
             icon: "../images/mctrial.png",
             url: "https://nowgg.fun/apps/aptoide/5874/aptoide.html?deep_link=aptoidesearch://com.mojang.minecrafttrialpe"
         }
-    ],
-
-    nowgg: [
-        {
-            name: "Android",
-            icon: "../images/android.webp",
-            url: "https://now.gg/apps/uncube/7074/now.html" + nowggEnd
-        },
-        {
-            name: "App Store (Aptoide)",
-            icon: "../images/aptoide.png",
-            url: "https://now.gg/apps/aptoide/5874/aptoide.html" + nowggEnd 
-        },
-        {
-            name: "Roblox",
-            icon: "../images/roblox.jpg",
-            url: "https://now.gg/apps/aptoide/5874/aptoide.html?deep_link=aptoidesearch://com.roblox.client" + nowggEnd
-        },
-        {
-            name: "Geometry Dash",
-            icon: "../images/gd.png",
-            url: "https://now.gg/apps/robtop-games/1400/geometry-dash.html" + nowggEnd
-        },
-        {
-            name: "Minecraft Trial",
-            icon: "../images/mctrial.png",
-            url: "https://now.gg/apps/aptoide/5874/aptoide.html?deep_link=aptoidesearch://com.mojang.minecrafttrialpe" + nowggEnd
-        }
     ]
 };
 
 const DISCLAIMERS = {
-    nowggfun: 'Nebula Cloud uses the service "nowgg.fun" by Frogiee1 (frogiee.one). This service is not owned or controlled by us.',
-    nowgg: 'Nebula Cloud uses the service "now.gg". This service is not owned or controlled by us.'
+    nowggfun: 'Nebula Cloud uses the service "nowgg.fun" by Frogiee1 (frogiee.one). This service is not owned or controlled by us.'
 };
 
 let currentProvider = "nowggfun";
@@ -745,68 +458,8 @@ const closeOverlayBtn = document.getElementById("closeOverlayBtn");
 const serviceCount = document.getElementById("serviceCount");
 const disclaimer = document.getElementById("disclaimer");
 
-const providerBtn = document.getElementById("providerBtn");
-const providerDropdown = document.getElementById("providerDropdown");
-const providerBtnLabel = document.getElementById("providerBtnLabel");
-
 let frame = document.getElementById("serviceFrame");
 let loadToken = 0;
-
-function openProviderDropdown() {
-    providerDropdown.classList.add("open");
-    providerBtn.setAttribute("aria-expanded", "true");
-}
-
-function closeProviderDropdown() {
-    providerDropdown.classList.remove("open");
-    providerBtn.setAttribute("aria-expanded", "false");
-}
-
-providerBtn.addEventListener("click", e => {
-    e.stopPropagation();
-
-    const isOpen = providerDropdown.classList.contains("open");
-
-    if (isOpen) {
-        closeProviderDropdown();
-    } else {
-        openProviderDropdown();
-    }
-});
-
-document.addEventListener("click", e => {
-    if (!document.getElementById("providerSwitcher").contains(e.target)) {
-        closeProviderDropdown();
-    }
-});
-
-document.querySelectorAll(".provider-option").forEach(opt => {
-    opt.addEventListener("click", () => {
-        const provider = opt.dataset.provider;
-
-        if (provider === currentProvider) {
-            closeProviderDropdown();
-            return;
-        }
-
-        currentProvider = provider;
-
-        providerBtnLabel.textContent =
-            provider === "nowggfun" ? "nowgg.fun" : "now.gg";
-
-        document.querySelectorAll(".provider-option").forEach(o => {
-            const selected = o.dataset.provider === provider;
-
-            o.classList.toggle("selected", selected);
-            o.setAttribute("aria-selected", selected);
-        });
-
-        disclaimer.textContent = DISCLAIMERS[currentProvider];
-
-        closeProviderDropdown();
-        renderGrid();
-    });
-});
 
 document.getElementById("searchInput").addEventListener("input", e => {
     searchQuery = e.target.value.toLowerCase().trim();
@@ -1175,17 +828,10 @@ function renderGrid() {
 
         card.innerHTML = `
             <div class="service-icon">
-                <img
-                    src="${service.icon}"
-                    alt="${service.name}"
-                    loading="lazy"
-                >
+                <img src="${service.icon}" alt="${service.name}" loading="lazy">
             </div>
-
-            <div class="overlay-gradient"></div>
-
-            <div class="service-name">
-                ${service.name}
+            <div class="service-label">
+                <span class="service-name">${service.name}</span>
             </div>
         `;
 
@@ -1198,3 +844,4 @@ renderGrid();
 
 </body>
 </html>
+

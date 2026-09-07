@@ -1,4 +1,3 @@
-const ENC_KEY = "bebula";
 const REDIRECT_URLS = [
     "https://www.blooket.com/",
     "https://kahoot.it/",
@@ -41,12 +40,11 @@ const MINI_BAR_HIDE_DELAY = 3000;
 
 const SUBTEXTS = [
     "usenebula.netlify.app",
-    "if the proxy doesnt work for you, please try using another browser",
-    "if cloud gaming doesnt work then uhh idk",
+    "discord.gg/gCTFQZK6C6",
+    "if the proxy gets stuck loading then clear browser data or switch browsers",
     "yes i used the big gpt for the logo",
     "is nebula gonna be the next MASSIVE proxy??",
     "scramjet is lwk pretty tuff",
-    "should i make a discord server?",
     "sub to the yt channel: @nebulaunblocking",
     "follow the tt: @nebulaunbl0cking",
     "unblocked gta6? (please cyberleek)",
@@ -254,25 +252,6 @@ function openAppEntry(app) {
     else openApp(app.url);
 }
 
-function encryptUrl(url) {
-    let result = "";
-    for (let i = 0; i < url.length; i++) {
-        result += String.fromCharCode(url.charCodeAt(i) ^ ENC_KEY.charCodeAt(i % ENC_KEY.length));
-    }
-    return btoa(result).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
-}
-
-function decryptUrl(enc) {
-    let padded = enc.replace(/-/g, "+").replace(/_/g, "/");
-    while (padded.length % 4) padded += "=";
-    const decoded = atob(padded);
-    let result = "";
-    for (let i = 0; i < decoded.length; i++) {
-        result += String.fromCharCode(decoded.charCodeAt(i) ^ ENC_KEY.charCodeAt(i % ENC_KEY.length));
-    }
-    return result;
-}
-
 function getRandomUrl() {
     return REDIRECT_URLS[Math.floor(Math.random() * REDIRECT_URLS.length)];
 }
@@ -462,10 +441,10 @@ function hideLoading() {
     }, 500);
 }
 
-function openGame()        { openAppWithNoP("./assets/html/educationpage.html"); }
-function openTools()       { openAppWithNoP("./assets/html/learningtools.html"); }
-function openAIAssistant() { openAppWithNoP("./assets/html/homeworkhelper.html"); }
-function openCloudG()      { openAppWithNoP("./assets/html/cloudeducation.html"); }
+function openGame()        { openAppWithNoP("edu/study.html"); }
+function openTools()       { openAppWithNoP("edu/apps.html"); }
+function openAIAssistant() { openAppWithNoP("edu/ai.html"); }
+function openCloudG()      { openAppWithNoP("edu/cloud.html"); }
 
 window.goHome               = goHome;
 window.toggleTopBar         = toggleTopBar;

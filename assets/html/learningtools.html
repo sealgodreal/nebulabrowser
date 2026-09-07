@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -17,24 +17,26 @@
 
 :root {
     --bg: #0a0a0a;
-    --surface: #111111;
+    --bg2: #111111;
+    --surface: rgba(255,255,255,0.04);
+    --surface-hover: rgba(255,255,255,0.07);
     --surface-elevated: #161616;
-    --surface-hover: #1a1a1a;
     --border: #1f1f1f;
     --border-hover: #2a2a2a;
     --text: #ffffff;
     --text-secondary: #a0a0a0;
     --text-muted: #5a5a5a;
     --accent: #8b5cf6;
+    --accent2: #a78bfa;
     --accent-glow: rgba(139, 92, 246, 0.25);
     --accent-soft: rgba(139, 92, 246, 0.08);
     --danger: #ef4444;
     --radius-sm: 8px;
     --radius-md: 12px;
-    --radius-lg: 16px;
+    --radius-lg: 14px;
     --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-    --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
-    --shadow-lg: 0 16px 48px rgba(0,0,0,0.5);
+    --shadow-md: 0 8px 32px rgba(0,0,0,0.5);
+    --shadow-lg: 0 16px 56px rgba(0,0,0,0.6);
     --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-smooth: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -53,7 +55,7 @@ html, body {
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -70,30 +72,32 @@ html, body {
 }
 
 .header {
-    border-bottom: 1px solid var(--border);
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
     position: sticky;
     top: 0;
     z-index: 10;
-    background: rgba(10, 10, 10, 0.85);
-    backdrop-filter: blur(20px) saturate(1.2);
-    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0 20px;
+    height: 52px;
+    background: rgba(10,10,10,0.88);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    border-bottom: 1px solid var(--border);
 }
 
 .header-brand {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0;
     flex-shrink: 0;
+    margin-right: 20px;
 }
 
 .header-title {
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
     color: var(--text);
 }
 
@@ -102,29 +106,36 @@ html, body {
     color: var(--text-muted);
     font-weight: 400;
     padding: 2px 8px;
-    background: var(--surface);
+    background: rgba(255,255,255,0.05);
     border-radius: 20px;
     border: 1px solid var(--border);
+    margin-left: 10px;
 }
 
-.search-wrap {
+.header-right {
     margin-left: auto;
     display: flex;
     align-items: center;
+    gap: 12px;
+}
+
+.search-wrap {
+    display: flex;
+    align-items: center;
     gap: 8px;
-    background: var(--surface);
+    background: rgba(255,255,255,0.05);
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 8px 14px;
-    width: 220px;
+    border-radius: 20px;
+    padding: 7px 14px;
+    width: 200px;
     transition: var(--transition-smooth);
 }
 
 .search-wrap:focus-within {
-    width: 280px;
-    border-color: var(--accent);
-    background: var(--surface-elevated);
-    box-shadow: 0 0 0 3px var(--accent-soft);
+    width: 260px;
+    border-color: #333;
+    background: rgba(255,255,255,0.06);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.04);
 }
 
 .search-wrap svg {
@@ -134,7 +145,7 @@ html, body {
 }
 
 .search-wrap:focus-within svg {
-    color: var(--accent);
+    color: var(--text-secondary);
 }
 
 .search-wrap input {
@@ -151,58 +162,48 @@ html, body {
     color: var(--text-muted);
 }
 
+#pageOverlay {
+    zoom: 0.8;
+}
+
 .content {
-    padding: 40px 24px;
-    display: flex;
-    justify-content: center;
+    position: relative;
+    z-index: 1;
+    padding: 20px 20px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .grid {
-    width: 100%;
-    max-width: 1000px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, 160px);
+    gap: 14px;
     justify-content: center;
-    gap: 16px;
 }
 
 .tool-card {
     position: relative;
-    aspect-ratio: 1 / 1;
     border-radius: var(--radius-lg);
     overflow: hidden;
-    background: var(--surface);
-    border: 1px solid var(--border);
     cursor: pointer;
-    transition: var(--transition-smooth);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
+    aspect-ratio: 1 / 1;
+    background: #161616;
+    border: 1px solid var(--border);
+    color: #ffffff;
+    transition:
+        transform var(--transition-smooth),
+        box-shadow var(--transition-smooth),
+        border-color var(--transition-smooth);
+    animation: fadeUp 0.3s ease both;
     user-select: none;
-    animation: fadeUp 0.35s ease both;
-}
-
-.tool-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: var(--radius-lg);
-    border: 1px solid transparent;
-    transition: var(--transition-fast);
-    pointer-events: none;
-    z-index: 2;
-}
-
-.tool-card:hover::before {
-    border-color: rgba(139, 92, 246, 0.15);
 }
 
 @keyframes fadeUp {
     from {
         opacity: 0;
-        transform: translateY(12px) scale(0.98);
+        transform: translateY(10px) scale(0.98);
     }
-
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -210,73 +211,78 @@ html, body {
 }
 
 .tool-card:hover {
-    transform: translateY(-6px) scale(1.03);
+    transform: translateY(-3px) scale(1.025);
     border-color: var(--border-hover);
-    box-shadow: var(--shadow-lg), 0 0 30px rgba(139, 92, 246, 0.06);
+    box-shadow:
+        0 8px 32px rgba(0,0,0,0.55),
+        var(--shadow-lg);
 }
 
 .tool-card:active {
-    transform: translateY(-3px) scale(1.015);
-    transition: var(--transition-fast);
+    transform: translateY(-1px) scale(1.01);
 }
 
 .tool-icon {
     position: absolute;
     inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #141414, #1a1a1a);
 }
 
 .tool-icon img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: brightness(0.9);
-    transform: scale(1.05);
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block;
 }
 
 .tool-card:hover .tool-icon img {
-    transform: scale(1.12);
-    filter: brightness(0.75);
+    transform: scale(1.06);
 }
 
-.tool-card .overlay-gradient {
+.tool-label {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        to top,
-        rgba(0,0,0,0.65),
-        rgba(0,0,0,0.15),
-        rgba(0,0,0,0.05)
-    );
-    opacity: 0;
-    transition: var(--transition-smooth);
-    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    pointer-events: none;
+
+    background: rgba(12,12,12,0.38);
+    backdrop-filter: blur(2px) saturate(1.05);
+    -webkit-backdrop-filter: blur(2px) saturate(1.05);
+
+    border: 1px solid rgba(255,255,255,0.07);
+
+    transition:
+        background var(--transition-smooth),
+        backdrop-filter var(--transition-smooth);
 }
 
-.tool-card:hover .overlay-gradient {
-    opacity: 1;
+.tool-card:hover .tool-label {
+    background: rgba(12,12,12,0.42);
+    backdrop-filter: blur(2px) saturate(1.08);
+    -webkit-backdrop-filter: blur(2px) saturate(1.08);
 }
 
 .tool-name {
-    position: absolute;
-    bottom: 14px;
-    left: 14px;
-    right: 14px;
-    font-size: 13px;
-    font-weight: 600;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: var(--transition-smooth);
-    color: var(--text);
-    z-index: 3;
+    font-size: 14px;
+    font-weight: 650;
+    color: #ffffff;
     letter-spacing: -0.01em;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+    text-align: center;
+    text-shadow: 0 1px 5px rgba(0,0,0,0.45);
 }
 
-.tool-card:hover .tool-name {
-    opacity: 1;
-    transform: translateY(0);
-}
+.overlay-gradient { display: none; }
 
 .empty-state {
     grid-column: 1 / -1;
@@ -285,12 +291,12 @@ html, body {
     align-items: center;
     justify-content: center;
     padding: 80px 20px;
-    gap: 16px;
+    gap: 14px;
     animation: fadeUp 0.4s ease both;
 }
 
 .empty-state svg {
-    width: 48px;
+    width: 44px;
     height: 48px;
     color: var(--text-muted);
     opacity: 0.4;
@@ -383,16 +389,16 @@ html, body {
 
 @media (max-width: 768px) {
     .content {
-        padding: 24px 16px;
+        padding: 16px 12px 32px;
     }
 
     .grid {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 12px;
+        gap: 10px;
     }
 
-    .header {
-        padding: 12px 16px;
+    .header-title {
+        font-size: 17px;
     }
 
     .search-wrap {
@@ -401,10 +407,6 @@ html, body {
 
     .search-wrap:focus-within {
         width: 200px;
-    }
-
-    .header-title {
-        font-size: 14px;
     }
 }
 
@@ -426,25 +428,29 @@ html, body {
 
 <body>
 
+<div id="pageOverlay">
+
 <div class="header">
     <div class="header-brand">
         <span class="header-title">Nebula Apps</span>
+        <span class="header-count" id="toolCount">0 Apps</span>
     </div>
 
-    <span class="header-count" id="toolCount">0 apps</span>
-
-    <div class="search-wrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-
-        <input type="text" id="searchInput" placeholder="Search apps..." autocomplete="off">
+    <div class="header-right">
+        <div class="search-wrap">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" id="searchInput" placeholder="Search apps..." autocomplete="off">
+        </div>
     </div>
 </div>
 
 <div class="content">
     <div class="grid" id="grid"></div>
+</div>
+
 </div>
 
 <div id="toolOverlay">
@@ -796,7 +802,7 @@ function renderGrid() {
         { name: "Blooket Bot", icon: "../images/blooketbot.png", url: "https://blooketbot.schoolcheats.net" },
         { name: "Twitch", icon: "../images/twitch.png", url: "https://twitch.tv" },
         { name: "Snapchat", icon: "../images/snap.jpg", url: "https://snapchat.com" },
-        { name: "SpenFlix (Movies)", icon: "../images/movies.svg", url: "https://watch.spencerdevs.xyz" },
+        { name: "Movies", icon: "../images/movies.svg", url: "https://watch.spencerdevs.xyz" },
         { name: "Archive Of Our Own", icon: "../images/ao3.png", url: "https://archiveofourown.org" },
         { name: "Webtoons", icon: "../images/webtoon.png", url: "https://webtoons.com/en" },
         { name: "Visual Studio Code", icon: "../images/vsc.png", url: "https://vscode.dev" },
@@ -835,8 +841,9 @@ function renderGrid() {
             <div class="tool-icon">
                 <img src="${tool.icon}" alt="${tool.name}" loading="lazy">
             </div>
-            <div class="overlay-gradient"></div>
-            <div class="tool-name">${tool.name}</div>
+            <div class="tool-label">
+                <span class="tool-name">${tool.name}</span>
+            </div>
         `;
 
         grid.appendChild(card);
@@ -849,3 +856,4 @@ renderGrid();
 
 </body>
 </html>
+
