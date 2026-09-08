@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #08090a;
+    --surface:  #121416;
+    --border:   #202327;
+    --accent:   #718895;
+    --accent-d: #526975;
+    --text:     #d5d5d5;
+    --muted:    #74797d;
+    --danger:   #e05c5c;
+    --ok:       #4caf7d;
+    --radius:   10px;
+    --mono:     "SF Mono", "Fira Code", "Fira Mono", monospace;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #connect-panel {
+    width: min(420px, 92vw);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 2.25rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  #connect-panel h1 { font-size: 1.25rem; font-weight: 600; letter-spacing: -.01em; }
+  #connect-panel p  { font-size: .875rem; color: var(--muted); margin-top: 2px; }
+
+  label {
+    font-size: .8rem; font-weight: 500; color: var(--muted);
+    letter-spacing: .04em; display: block; margin-bottom: .375rem;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    letter-spacing: .08em;
+    padding: .65rem .875rem;
+    outline: none;
+    transition: border-color .15s;
+    text-transform: uppercase;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--border); letter-spacing: .04em; }
+
+  button#connect-btn {
+    width: 100%; background: var(--accent); color: #fff;
+    border: none; border-radius: 6px;
+    font-size: .9rem; font-weight: 600; padding: .75rem;
+    cursor: pointer; transition: background .15s, opacity .15s;
+  }
+  button#connect-btn:hover    { background: var(--accent-d); }
+  button#connect-btn:disabled { opacity: .45; cursor: default; }
+
+  button#create-connection-btn {
+    width: 100%; background: #666b70; color: #fff;
+    border: none; border-radius: 6px;
+    font-size: .9rem; font-weight: 600; padding: .75rem;
+    cursor: pointer; transition: background .15s, opacity .15s;
+  }
+  button#create-connection-btn:hover { background: #555a5f; }
+
+  #status {
+    font-size: .82rem; text-align: center; min-height: 1.2em;
+    color: var(--muted); transition: color .2s;
+  }
+  #status.ok    { color: var(--ok); }
+  #status.error { color: var(--danger); }
+  #status.info  { color: var(--accent); }
+
+  #viewer {
+    display: none; flex-direction: column;
+    width: 100%; height: 100vh; background: #000;
+  }
+
+  #toolbar {
+    position: relative;
+    display: flex; align-items: center; gap: .75rem;
+    padding: .5rem 1rem;
+    background: var(--surface);
+    flex-shrink: 0;
+    user-select: none;
+  }
+  #viewer.toolbar-hidden #toolbar { display: none; }
+  #toolbar span   { font-size: .8rem; color: var(--muted); }
+  #toolbar strong { color: var(--text); font-family: var(--mono); font-size: .85rem; }
+
+  #hide-toolbar-btn {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: transparent;
+    border: 0;
+    color: var(--muted);
+    font: inherit;
+    font-size: .78rem;
+    cursor: pointer;
+    padding: .2rem .5rem;
+  }
+  #hide-toolbar-btn:hover { color: var(--text); }
+
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex-shrink: 0; }
+  .dot.warn { background: #f5a623; }
+
+  #connection-status { display: flex; flex-direction: column; align-items: flex-start; gap: 0; line-height: 1.2; }
+  #connection-status strong { color: var(--text); font-size: .9rem; font-weight: 600; }
+  #connection-status small { color: #55585b; font-size: .72rem; }
+
+  #disconnect-btn {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 5px;
+    font-size: .78rem;
+    padding: .3rem .75rem;
+    cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+  #disconnect-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+  #stream-wrap {
+    flex: 1; position: relative; overflow: hidden; background: #000;
+  }
+  video#stream {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  #stream-wrap.controlling video#stream { cursor: none; }
+
+  #cursor-dot {
+    display: none;
+    position: absolute;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: rgba(79,140,255,.85);
+    border: 2px solid #fff;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    box-shadow: 0 0 6px rgba(79,140,255,.6);
+  }
+  #stream-wrap.controlling #cursor-dot { display: block; }
+
+  #overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.65);
+    align-items: center; justify-content: center; z-index: 10;
+  }
+  #overlay.show { display: flex; }
+  #overlay-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 2rem 2.5rem;
+    text-align: center; max-width: 340px;
+  }
+  #overlay-box h2 { font-size: 1.05rem; margin-bottom: .5rem; }
+  #overlay-box p  { font-size: .875rem; color: var(--muted); }
+
+  .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin .7s linear infinite;
+    margin: 0 auto 1.25rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div id="connect-panel">
+  <div>
+    <h1>Nebula Remote</h1>
+    <p>Connect to your desktop from anywhere.</p>
+  </div>
+  <div>
+    <label for="token-input">Session token</label>
+    <input id="token-input" type="text"
+           placeholder="XXX-XXXX-XXX"
+           maxlength="12"
+           autocomplete="off" spellcheck="false" />
+  </div>
+  <button id="connect-btn">Connect</button>
+  <button id="create-connection-btn" type="button">Create Connection</button>
+  <div id="status"></div>
+</div>
+
+<div id="viewer">
+  <div id="toolbar">
+    <div id="connection-status">
+      <strong>Nebula Remote</strong>
+      <small>Connected!</small>
+    </div>
+    <button id="hide-toolbar-btn" type="button">Hide this bar</button>
+    <button id="disconnect-btn">Disconnect</button>
+  </div>
+  <div id="stream-wrap">
+    <video id="stream" autoplay playsinline></video>
+    <div id="cursor-dot"></div>
+  </div>
+</div>
+
+<div id="overlay">
+  <div id="overlay-box">
+    <div class="spinner" id="overlay-spinner"></div>
+    <h2 id="overlay-title">Connecting...</h2>
+    <p id="overlay-msg">Connecting to the host, please be patient.</p>
+  </div>
+</div>
+
+<script>
+const ICE_SERVERS = [ // lwk do NOT wanna setup my own turn server
+  { urls: "stun:stun.l.google.com:19302" },
+  { urls: "stun:stun1.l.google.com:19302" },
+  {
+    urls:       "turn:openrelay.metered.ca:80",
+    username:   "openrelayproject",
+    credential: "openrelayproject",
+  },
+  {
+    urls:       "turn:openrelay.metered.ca:443",
+    username:   "openrelayproject",
+    credential: "openrelayproject",
+  },
+  {
+    urls:       "turn:openrelay.metered.ca:443?transport=tcp",
+    username:   "openrelayproject",
+    credential: "openrelayproject",
+  },
+];
+
+let ws           = null;
+let pc           = null;
+let inputChannel = null;
+let controlling  = false;
+let currentToken = "";
+
+const panel          = document.getElementById("connect-panel");
+const viewer         = document.getElementById("viewer");
+const overlay        = document.getElementById("overlay");
+const tokenInput     = document.getElementById("token-input");
+const connectBtn     = document.getElementById("connect-btn");
+const createConnectionBtn = document.getElementById("create-connection-btn");
+const statusEl       = document.getElementById("status");
+const streamEl       = document.getElementById("stream");
+const streamWrap     = document.getElementById("stream-wrap");
+const cursorDot      = document.getElementById("cursor-dot");
+const overlayTitle   = document.getElementById("overlay-title");
+const overlayMsg     = document.getElementById("overlay-msg");
+const overlaySpinner = document.getElementById("overlay-spinner");
+const hideToolbarBtn = document.getElementById("hide-toolbar-btn");
+
+const setStatus = (msg, cls = "") => { statusEl.textContent = msg; statusEl.className = cls; };
+const wsSend    = (obj) => { if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify(obj)); };
+const dcSend    = (obj) => { if (inputChannel?.readyState === "open") inputChannel.send(JSON.stringify(obj)); };
+
+function showOverlay(title, msg, spinner = true) {
+  overlayTitle.textContent = title;
+  overlayMsg.textContent   = msg;
+  overlaySpinner.style.display = spinner ? "block" : "none";
+  overlay.classList.add("show");
+}
+function hideOverlay() { overlay.classList.remove("show"); }
+
+function reset() {
+  setControlling(false);
+  if (pc)  { pc.close();  pc  = null; }
+  if (ws)  {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: "viewer-disconnected" }));
+    }
+    ws.close();
+    ws = null;
+  }
+  inputChannel = null;
+  streamEl.srcObject = null;
+  hideOverlay();
+  panel.style.display  = "";
+  viewer.style.display = "none";
+  connectBtn.disabled  = false;
+  setStatus("");
+}
+
+function setControlling(on) {
+  controlling = on;
+  if (on) {
+    streamWrap.classList.add("controlling");
+    streamWrap.setAttribute("tabindex", "0");
+    streamWrap.focus();
+  } else {
+    streamWrap.classList.remove("controlling");
+    cursorDot.style.left = "-999px";
+  }
+}
+
+function getVideoBounds() {
+  const r       = streamWrap.getBoundingClientRect();
+  const vw      = streamEl.videoWidth  || r.width;
+  const vh      = streamEl.videoHeight || r.height;
+  const wrapAR  = r.width / r.height;
+  const videoAR = vw / vh;
+  let rw, rh, rx, ry;
+  if (videoAR > wrapAR) {
+    rw = r.width;
+    rh = r.width / videoAR;
+    rx = r.left;
+    ry = r.top + (r.height - rh) / 2;
+  } else {
+    rh = r.height;
+    rw = r.height * videoAR;
+    ry = r.top;
+    rx = r.left + (r.width - rw) / 2;
+  }
+  return { rx, ry, rw, rh };
+}
+
+streamWrap.addEventListener("mousemove", (e) => {
+  if (!controlling) return;
+  const { rx, ry, rw, rh } = getVideoBounds();
+  const relX = Math.max(0, Math.min(1, (e.clientX - rx) / rw));
+  const relY = Math.max(0, Math.min(1, (e.clientY - ry) / rh));
+  const wr = streamWrap.getBoundingClientRect();
+  cursorDot.style.left = `${(rx - wr.left + relX * rw).toFixed(1)}px`;
+  cursorDot.style.top  = `${(ry - wr.top  + relY * rh).toFixed(1)}px`;
+  dcSend({ type: "mousemove", rx: relX, ry: relY });
+});
+
+streamWrap.addEventListener("mousedown", (e) => {
+  if (!controlling) return;
+  e.preventDefault();
+  dcSend({ type: "mousedown", button: e.button });
+});
+
+streamWrap.addEventListener("mouseup", (e) => {
+  if (!controlling) return;
+  dcSend({ type: "mouseup", button: e.button });
+});
+
+streamWrap.addEventListener("contextmenu", (e) => {
+  if (controlling) e.preventDefault();
+});
+
+streamWrap.addEventListener("wheel", (e) => {
+  if (!controlling) return;
+  e.preventDefault();
+  dcSend({ type: "wheel", deltaX: e.deltaX, deltaY: e.deltaY, deltaMode: e.deltaMode });
+}, { passive: false });
+
+document.addEventListener("keydown", (e) => {
+  if (!controlling) return;
+  e.preventDefault();
+  dcSend({ type: "keydown", key: e.key, code: e.code });
+});
+
+document.addEventListener("keyup", (e) => {
+  if (!controlling) return;
+  e.preventDefault();
+  dcSend({ type: "keyup", key: e.key, code: e.code });
+});
+
+tokenInput.addEventListener("input", () => {
+  let v = tokenInput.value.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+  if (v.length > 3) v = v.slice(0, 3) + "-" + v.slice(3);
+  if (v.length > 8) v = v.slice(0, 8) + "-" + v.slice(8);
+  tokenInput.value = v.slice(0, 12);
+});
+tokenInput.addEventListener("keydown", (e) => { if (e.key === "Enter") connectBtn.click(); });
+
+connectBtn.addEventListener("click", async () => {
+  const token = tokenInput.value.trim();
+  if (!/^[A-Z0-9]{3}-[A-Z0-9]{4}-[A-Z0-9]{3}$/.test(token)) {
+    setStatus("Token must be in XXX-XXXX-XXX format.", "error");
+    return;
+  }
+
+  connectBtn.disabled = true;
+  setStatus("Connecting to server …", "info");
+  showOverlay("Connecting", "Connecting to the host.");
+
+  ws = new WebSocket("wss://nremotebackendbysealgod.onrender.com");
+
+  ws.onopen = () => {
+    currentToken = token;
+    setStatus("Requesting session …", "info");
+    wsSend({ type: "join", token });
+  };
+
+  ws.onerror = () => {
+    setStatus("Could not reach the server. Is it running?", "error");
+    connectBtn.disabled = false;
+  };
+
+  ws.onclose = () => {
+    if (viewer.style.display === "flex") {
+      showOverlay("Host disconnected", "The host has ended the session.", false);
+      setTimeout(reset, 3000);
+    }
+  };
+
+  ws.onmessage = async (evt) => {
+    const msg = JSON.parse(evt.data);
+    switch (msg.type) {
+      case "error":
+        setStatus(msg.message, "error"); reset(); break;
+
+      case "approved":
+        hideOverlay();
+        setStatus("Approved! Establishing stream …", "info");
+        await setupPeerConnection();
+        break;
+
+      case "denied":
+        showOverlay("Connection denied", "The host did not approve your request.", false);
+        setTimeout(reset, 3000);
+        break;
+
+      case "offer":
+        await handleOffer(msg); break;
+
+      case "ice-candidate":
+        if (pc && msg.candidate) {
+          try { await pc.addIceCandidate(new RTCIceCandidate(msg.candidate)); }
+          catch (e) { console.warn("ICE add failed:", e); }
+        }
+        break;
+
+      case "host-disconnected":
+        showOverlay("Host disconnected", "The session has ended.", false);
+        setTimeout(reset, 3000);
+        break;
+    }
+  };
+
+});
+
+createConnectionBtn.addEventListener("click", async () => {
+  alert("You must have Python installed to run this file.");
+  try {
+    const response = await fetch("./py/NebulaRemote.py");
+    if (!response.ok) throw new Error(`download failed (${response.status})`);
+    const pythonFile = await response.blob();
+    const downloadUrl = URL.createObjectURL(pythonFile);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = "NebulaRemote.py";
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(downloadUrl);
+  } catch {
+    alert("Failed to download the Python client.");
+  }
+});
+
+async function setupPeerConnection() {
+  pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+
+  pc.ontrack = (evt) => {
+    if (evt.streams?.[0]) {
+      streamEl.srcObject = evt.streams[0];
+      panel.style.display  = "none";
+      viewer.style.display = "flex";
+      hideOverlay();
+      setStatus("");
+    }
+  };
+
+  pc.ondatachannel = (evt) => {
+    if (evt.channel.label === "input") {
+      inputChannel = evt.channel;
+      inputChannel.onopen  = () => {
+        hideOverlay();
+        setControlling(true);
+      };
+      inputChannel.onclose = () => { inputChannel = null; setControlling(false); };
+    }
+  };
+
+  pc.onicecandidate = (evt) => {
+    if (evt.candidate) wsSend({ type: "ice-candidate", candidate: evt.candidate.toJSON() });
+  };
+
+  pc.onconnectionstatechange = () => {
+    if (pc.connectionState === "connected") {
+      hideOverlay();
+    }
+    if (pc.connectionState === "failed" || pc.connectionState === "disconnected") {
+      showOverlay("Connection lost", "The stream was interrupted.", false);
+      setTimeout(reset, 3000);
+    }
+  };
+}
+
+async function handleOffer(msg) {
+  if (!pc) await setupPeerConnection();
+  await pc.setRemoteDescription(new RTCSessionDescription({ type: msg.sdpType, sdp: msg.sdp }));
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  await new Promise((resolve) => {
+    if (pc.iceGatheringState === "complete") { resolve(); return; }
+    const check = () => {
+      if (pc.iceGatheringState === "complete") {
+        pc.removeEventListener("icegatheringstatechange", check);
+        resolve();
+      }
+    };
+    pc.addEventListener("icegatheringstatechange", check);
+    setTimeout(resolve, 10000);
+  });
+  wsSend({ type: "answer", sdp: pc.localDescription.sdp, sdpType: pc.localDescription.type });
+}
+
+document.getElementById("disconnect-btn").addEventListener("click", reset);
+hideToolbarBtn.addEventListener("click", () => viewer.classList.add("toolbar-hidden"));
+</script>
+</body>
+</html>
