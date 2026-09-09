@@ -471,7 +471,7 @@ window.showPrivacyPolicy    = showPrivacyPolicy;
 window.setTheme             = setTheme;
 window.openGame             = openGame;
 window.openCloudG           = openCloudG;
-window.openRemotee          = openRemotee;
+window.openRemoteConn       = openRemoteConn;
 
 function navigateFrame(url, updateHistory = false) {
     const frame = document.getElementById("browserFrame");

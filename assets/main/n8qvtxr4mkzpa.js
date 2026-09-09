@@ -443,7 +443,7 @@ function hideLoading() {
 
 function openGame()        { openAppWithNoP("edu/study.html"); }
 function openTools()       { openAppWithNoP("edu/apps.html"); }
-function openRemotee()     { openAppWithNoP("edu/remote.html"); }
+function openRemoteConn()  { openAppWithNoP("edu/remote.html"); }
 function openCloudG()      { openAppWithNoP("edu/cloud.html"); }
 
 window.goHome              = goHome;
@@ -471,7 +471,7 @@ window.showPrivacyPolicy   = showPrivacyPolicy;
 window.setTheme            = setTheme;
 window.openGame            = openGame;
 window.openCloudG          = openCloudG;
-window.openRemotee         = openRemotee;
+window.openRemoteConn      = openRemoteConn;
 
 function navigateFrame(url, updateHistory = false) {
     const frame = document.getElementById("browserFrame");
