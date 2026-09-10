@@ -617,6 +617,20 @@ function tagScripts(mode) {
   }, 5000);
 }
 
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const state = params.get('state');
+  if (state === 'full' || state === 'browser') {
+    const cleanUrl =
+      window.location.pathname +
+      window.location.hash;
+    window.history.replaceState({}, '', cleanUrl);
+    window.addEventListener('load', () => {
+      selectMode(state);
+    });
+  }
+})();
+
 </script>
 
 </body>

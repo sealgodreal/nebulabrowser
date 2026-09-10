@@ -705,10 +705,11 @@ let currentGameType = null;
         let idx = 0;
         while (attempt < maxAttempts) {
             const url = proxyUrls[idx % proxyUrls.length];
+            const proxyPath = url.replace(/\/$/, "") + "/learn/study/";
             try {
-                await loadFrame(url, 18000);
+                await loadFrame(proxyPath, 18000);
                 let blocked = isFrameBlocked();
-                if (!blocked && await fetchBlocked(url)) {
+                if (!blocked && await fetchBlocked(proxyPath)) {
                     const src = probeFrame.src || "";
                     if (src.includes("securly") || src.includes("goguardian") || src.includes("blocked") || src.includes("filter")) blocked = true;
                 }

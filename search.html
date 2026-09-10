@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>nebula - さいこう</title>
+<link rel="icon" href="assets/main/favicon.ico">
+<meta charset="UTF-8">
+<meta name="theme-color" content="#171717">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;box-sizing:border-box}
+:root{
+    --bg:#0a0a0a;
+    --surface:#111;
+    --surface2:#161616;
+    --border:#1f1f1f;
+    --border-subtle:#171717;
+    --text:#fff;
+    --text-muted:#666;
+    --text-dim:#404040;
+    --hover:#141414;
+    --tab-h:36px
+}
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    margin: 0;
+    padding: 0;
+}
+body{
+    color:var(--text);
+    font-family:Inter,system-ui,sans-serif;
+    font-size:13px;
+    -webkit-font-smoothing:antialiased;
+}
+.browser-wrapper {
+    transform: scale(0.8);
+    transform-origin: top left;
+    width: 125%;
+    height: 125%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.topbar{
+    background:var(--bg);
+    user-select:none;
+    border-bottom:1px solid var(--border-subtle);
+    position:relative;
+    z-index:9
+}
+.tabs{
+    display:flex;
+    align-items:stretch;
+    height:var(--tab-h);
+    padding:0 6px;
+    gap:1px;
+    border-bottom:1px solid var(--border-subtle);
+    overflow:hidden;
+    transition:none
+}
+.topbar.collapsing .tabs{
+    transform:translateY(-100%);
+    opacity:0
+}
+.topbar.expanding .tabs{
+    transform:translateY(-100%);
+    opacity:0;
+    pointer-events:none
+}
+.topbar.expanding.showing .tabs{
+    transform:translateY(0);
+    opacity:1;
+    pointer-events:auto
+}
+.topbar.collapsed .tabs{
+    height:0;
+    padding-top:0;
+    padding-bottom:0;
+    border-bottom-color:transparent;
+    transform:translateY(-100%);
+    opacity:0;
+    pointer-events:none
+}
+.tab{
+    background:transparent;
+    border:none;
+    padding:0 12px;
+    border-radius:6px 6px 0 0;
+    font-size:12px;
+    font-weight:400;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    color:var(--text-muted);
+    max-width:200px;
+    min-width:80px;
+    overflow:hidden;
+    white-space:nowrap;
+    transition:background .1s,color .1s;
+    position:relative;
+    flex-shrink:1
+}
+.tab:hover{
+    background:var(--hover);
+    color:#999
+}
+.tab.active{
+    background:var(--surface);
+    color:var(--text);
+    font-weight:500
+}
+.tab.active:after{
+    content:'';
+    position:absolute;
+    bottom:-1px;
+    left:0;
+    right:0;
+    height:1px;
+    background:var(--surface)
+}
+.tab-favicon{
+    width:16px;
+    height:16px;
+    font-size:14px;
+    line-height:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:visible;
+    flex-shrink:0
+}
+.tab-label{
+    flex:1;
+    overflow:hidden;
+    text-overflow:ellipsis
+}
+.close{
+    opacity:0;
+    font-size:11px;
+    line-height:1;
+    padding:2px 3px;
+    border-radius:3px;
+    color:var(--text-muted);
+    flex-shrink:0;
+    transition:opacity .1s,background .1s
+}
+.tab:hover .close{
+    opacity:1
+}
+.close:hover{
+    background:var(--surface2);
+    color:var(--text)
+}
+.new-tab{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:28px;
+    height:24px;
+    margin:auto 2px;
+    cursor:pointer;
+    color:var(--text-dim);
+    font-size:18px;
+    font-weight:300;
+    border-radius:4px;
+    transition:color .1s,background .1s;
+    flex-shrink:0
+}
+.new-tab:hover{
+    color:var(--text-muted);
+    background:var(--hover)
+}
+.navbar{
+    display:flex;
+    align-items:center;
+    gap:2px;
+    padding:6px 8px;
+    height:44px
+}
+.nav-btn{
+    background:none;
+    border:none;
+    color:var(--text-dim);
+    font-size:14px;
+    width:28px;
+    height:28px;
+    cursor:pointer;
+    border-radius:5px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:background .1s,color .1s;
+    flex-shrink:0;
+    text-decoration:none
+}
+.nav-btn:hover{
+    background:var(--hover);
+    color:var(--text-muted)
+}
+.nav-btn:active{
+    background:var(--surface2)
+}
+.nav-btn svg{
+    pointer-events:none
+}
+.home-btn{
+    width:32px;
+    height:32px
+}
+.home-btn svg{
+    width:17px;
+    height:17px
+}
+.omnibox-wrap{
+    flex:1;
+    display:flex;
+    padding:0 6px
+}
+.omnibox{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    background:var(--surface);
+    border:1px solid #383838;
+    border-radius:6px;
+    padding:5px 12px;
+    width:100%;
+    position:relative;
+    overflow:hidden;
+    transition:background .15s
+}
+.omnibox-border{
+    position:absolute;
+    z-index:0;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    opacity:.78;
+    filter:drop-shadow(0 0 3px rgba(102,102,102,.24));
+    transition:opacity .15s
+}
+.omnibox-border rect{
+    fill:none;
+    stroke:#444;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-dasharray:32 68;
+    stroke-dashoffset:0;
+    vector-effect:non-scaling-stroke;
+    animation:omnibox-border-travel 4s linear infinite
+}
+.omnibox:focus-within{
+    background:#131313
+}
+.omnibox:focus-within .omnibox-border{
+    opacity:1
+}
+.omnibox > *{
+    position:relative;
+    z-index:1
+}
+.omnibox > .omnibox-border{
+    position:absolute;
+    z-index:0
+}
+@keyframes omnibox-border-travel{
+    to{stroke-dashoffset:-100}
+}
+@media (prefers-reduced-motion:reduce){
+    .omnibox-border rect{animation:none}
+}
+.omnibox-icon{
+    color:var(--text-dim);
+    flex-shrink:0;
+    display:flex;
+    align-items:center
+}
+.omnibox input{
+    flex:1;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--text);
+    font-size:12.5px;
+    font-family:Inter,sans-serif;
+    font-weight:400;
+    letter-spacing:.01em;
+    text-align:left
+}
+.omnibox input::placeholder{
+    color:var(--text-dim)
+}
+.omnibox input:disabled{
+    opacity:0.5;
+    cursor:not-allowed
+}
+.page{
+    position:absolute;
+    top:80px;
+    bottom:0;
+    left:0;
+    right:0;
+    background:var(--bg);
+    transition:none
+}
+.topbar.collapsed + .page{
+    top:44px
+}
+.webview{
+    position:absolute;
+    width:100%;
+    height:100%;
+    border:none;
+    display:none;
+    background:var(--bg)
+}
+#proxyOverlay {
+    position:fixed !important;
+    top:0 !important;
+    left:0 !important;
+    width:100vw !important;
+    height:100vh !important;
+    background:#000 !important;
+    z-index:999999 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    font-family:'Segoe UI',Arial,sans-serif !important;
+    flex-direction:column !important;
+    user-select:none !important;
+}
+#loadingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0a0a0a;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: none;
+    pointer-events: none;
+}
+#loadingOverlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+#loadingOverlay.hidden {
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+    pointer-events: none;
+}
+#loadingOverlay iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #0a0a0a;
+}
+</style>
+</head>
+<body>
+<div class="browser-wrapper">
+    <div class="topbar">
+        <div class="tabs" id="tabs"></div>
+        <div class="navbar">
+            <button class="nav-btn" onclick="goBack()" title="Back">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"/>
+                </svg>
+            </button>
+            <button class="nav-btn" onclick="goForward()" title="Forward">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"/>
+                </svg>
+            </button>
+            <button class="nav-btn" onclick="doReload()" title="Reload">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+            </button>
+            <a class="nav-btn home-btn" id="homeBtn" href="#" title="Home">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 11.5L12 4l9 7.5"/>
+                    <path d="M5.5 10v9h13v-9"/>
+                    <path d="M9.5 19v-5h5v5"/>
+                </svg>
+            </a>
+            <div class="omnibox-wrap">
+                <div class="omnibox">
+                    <svg class="omnibox-border" aria-hidden="true" preserveAspectRatio="none">
+                        <rect x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" rx="5" pathLength="100"/>
+                    </svg>
+                    <span class="omnibox-icon">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"/>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                    </span>
+                    <input
+                        id="url"
+                        placeholder="Search or type a URL"
+                        onkeydown="navigate(event)"
+                        disabled
+                    >
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page" id="page">
+        <div id="loadingOverlay"></div>
+    </div>
+</div>
+<script>
+let _p="";
+let proxyReady = false;
+let pendingNavigations = [];
+let loadingHidden = false;
+let loadingTimeout = null;
+
+function showLoadingOverlay() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+        overlay.classList.add('visible');
+        if (loadingTimeout) {
+            clearTimeout(loadingTimeout);
+            loadingTimeout = null;
+        }
+        loadingTimeout = setTimeout(() => {
+            hideLoadingOverlay();
+        }, 15000);
+    }
+}
+
+function hideLoadingOverlay() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.classList.remove('visible');
+        overlay.classList.add('hidden');
+        if (loadingTimeout) {
+            clearTimeout(loadingTimeout);
+            loadingTimeout = null;
+        }
+    }
+}
+
+function handlePageLoad() {
+    hideLoadingOverlay();
+}
+
+function setupLoadingOverlay() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (_launchParams.file === "true") {
+        return;
+    }
+    const showInitially = (_launchParams.url || "about:blank") !== "about:blank";
+    const loadingFrame = document.createElement('iframe');
+    loadingFrame.src = 'assets/html/loading.html';
+    loadingFrame.id = 'loadingFrame';
+    overlay?.appendChild(loadingFrame);
+    if (loadingFrame) {
+        loadingFrame.addEventListener('load', function() {
+            if (showInitially) showLoadingOverlay();
+        });
+        loadingFrame.addEventListener('error', function() {
+            if (showInitially) showLoadingOverlay();
+        });
+    }
+    if (showInitially) {
+        setTimeout(() => {
+            showLoadingOverlay();
+        }, 100);
+    }
+}
+
+(async function () {
+    try {
+        if ("caches" in window) {
+            const keys = await caches.keys();
+            for (const key of keys) await caches.delete(key);
+        }
+    } catch (_) {}
+    const proxyUrls = [
+        "https://brooklyn-oval-bike-tourism.trycloudflare.com",
+        "https://resources-indices-exists-maintaining.trycloudflare.com",
+        "https://modules-stop-souls-precipitation.trycloudflare.com"
+    ];
+    const overlay = Object.assign(document.createElement("div"), {
+        id: "proxyOverlay",
+        style: "position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;flex-direction:column;user-select:none;"
+    });
+    const statusText = Object.assign(document.createElement("div"), {
+        id: "proxyStatus",
+        style: "color:#fff;font-size:16px;font-weight:300;letter-spacing:1px;",
+        textContent: "finding unblocked proxy..."
+    });
+    overlay.appendChild(statusText);
+    document.body.appendChild(overlay);
+    const probeFrame = Object.assign(document.createElement("iframe"), {
+        id: "probeFrame",
+        style: "position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;border:0;",
+        sandbox: "allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+    });
+    document.body.appendChild(probeFrame);
+    const isFrameBlocked = () => {
+        try {
+            const src = probeFrame.src;
+            if (!src || src === "about:blank" || src.startsWith("about:")) return true;
+            let href = null;
+            try { href = probeFrame.contentWindow?.location?.href || probeFrame.src; } catch (_) { href = probeFrame.src; }
+            const lower = (href || src || "").toLowerCase();
+            const blockedKeywords = [
+                "securly.com/broker/blocked","goguardian.com/blocked","goguardian.com/filter",
+                "lightspeed.com/blocked","iboss.com/blocked","smoothwall.com/blocked",
+                "fortiguard.com/blocked","opendns.com/blocked","umbrella.com/blocked",
+                "zscaler.com/blocked","mcafee.com/blocked","barracuda.com/blocked",
+                "forcepoint.com/blocked","netnanny.com/blocked","cyberpatrol.com/blocked",
+                "surfwatch.com/blocked","covenanteyes.com/blocked","blocked","filter",
+                "restricted","denied","forbidden","notallowed","policyviolation",
+                "accessdenied","categoryblocked","webfilter","dnsfilter","contentfilter"
+            ];
+            if (blockedKeywords.some(k => lower.includes(k))) return true;
+            try {
+                const doc = probeFrame.contentDocument || probeFrame.contentWindow?.document;
+                if (doc) {
+                    const title = (doc.title || "").toLowerCase();
+                    if (["blocked","securly","goguardian","access denied","forbidden","restricted","filter"].some(k => title.includes(k))) return true;
+                    if (doc.body) {
+                        const bodyText = (doc.body.innerText || doc.body.textContent || "").toLowerCase();
+                        if (bodyText.includes("login to continue") && bodyText.includes("school email")) return true;
+                        if (bodyText.trim().length < 10) return true;
+                    }
+                }
+            } catch (_) {}
+            return false;
+        } catch (_) { return false; }
+    };
+    const fetchBlocked = async url => {
+        try { await fetch(url, { method: "HEAD", mode: "no-cors", cache: "no-store" }); return false; }
+        catch (_) { return true; }
+    };
+    const loadFrame = (url, timeout = 15000) => new Promise((resolve, reject) => {
+        let timer = null;
+        let settled = false;
+        const cleanup = () => { if (timer) clearTimeout(timer); probeFrame.onload = null; probeFrame.onerror = null; };
+        probeFrame.onload = () => { if (!settled) { settled = true; cleanup(); resolve(); } };
+        probeFrame.onerror = () => { if (!settled) { settled = true; cleanup(); reject(); } };
+        timer = setTimeout(() => { if (!settled) { settled = true; cleanup(); reject(); } }, timeout);
+        probeFrame.src = url;
+    });
+    const findProxy = async () => {
+        let attempt = 0;
+        const maxAttempts = proxyUrls.length * 3;
+        let idx = 0;
+        while (attempt < maxAttempts) {
+            const url = proxyUrls[idx % proxyUrls.length];
+            const proxyPath = url.replace(/\/$/, "") + "/learn/study/";
+            try {
+                await loadFrame(proxyPath, 18000);
+                let blocked = isFrameBlocked();
+                if (!blocked && await fetchBlocked(proxyPath)) {
+                    const src = probeFrame.src || "";
+                    if (src.includes("securly") || src.includes("goguardian") || src.includes("blocked") || src.includes("filter")) {
+                        blocked = true;
+                    }
+                }
+                const lower = url.toLowerCase();
+                if (lower.includes("securly.com/broker/blocked") || lower.includes("goguardian.com/blocked")) blocked = true;
+                if (!blocked) return url;
+            } catch (_) {}
+            idx = (idx + 1) % proxyUrls.length;
+            attempt++;
+            await new Promise(r => setTimeout(r, 500));
+        }
+        return null;
+    };
+    const found = await findProxy();
+    const overlayEl = document.getElementById("proxyOverlay");
+    const statusEl = document.getElementById("proxyStatus");
+    if (found) {
+        if (statusEl) statusEl.textContent = "link found! initializing...";
+        _p = found + "/learn/study/";
+        proxyReady = true;
+        await new Promise(r => setTimeout(r, 100));
+        if (overlayEl) overlayEl.remove();
+        const urlInput = document.getElementById("url");
+        urlInput.disabled = false;
+        
+        setupLoadingOverlay();
+        
+        if (pendingNavigations.length > 0) {
+            for (const nav of pendingNavigations) {
+                if (nav.type === 'loadURL') {
+                    loadURL(nav.id, nav.url, nav.skipProxy || false);
+                } else if (nav.type === 'createTab') {
+                    createTab(nav.url, nav.makeActive, nav.skipProxy || false);
+                }
+            }
+            pendingNavigations = [];
+        }
+        if (tabs.length === 0) {
+            const startUrl  = _launchParams.url  || "about:blank";
+            const skipProxy = _launchParams.file === "true" || isLocalFile(startUrl);
+            createTab(startUrl, true, skipProxy);
+        }
+        resetTopbarCollapseTimer();
+    } else {
+        if (statusEl) statusEl.textContent = "all proxy links are blocked.";
+        return;
+    }
+    const frame = document.getElementById("probeFrame");
+    if (frame) { frame.src = "about:blank"; frame.remove(); }
+})();
+
+const _launchParams = (function () {
+    const params = new URLSearchParams(window.location.search);
+    const url          = params.get("url")           || null;
+    const originalstate= params.get("originalstate") || null;
+    const file         = params.get("file")          || "false";
+
+    if (window.history && window.history.replaceState) {
+        window.history.replaceState({}, "", window.location.pathname);
+    }
+
+    return { url, originalstate, file };
+})();
+
+function isLocalFile(url) {
+    if (!url) return false;
+    if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("about:")) return false;
+    return true;
+}
+
+function getHomeURL(){
+    const state = _launchParams.originalstate;
+    if (state === "full" || state === "browser") {
+        return `./8fzq2m7xk9vp.html?state=${encodeURIComponent(state)}`;
+    }
+    return "./8fzq2m7xk9vp.html?state=full";
+}
+
+const HOME=getHomeURL();
+let tabs=[];
+let activeTab=null;
+let tabId=0;
+const tabsContainer=document.getElementById("tabs");
+const page=document.getElementById("page");
+const urlInput=document.getElementById("url");
+const homeBtn=document.getElementById("homeBtn");
+const topbar=document.querySelector(".topbar");
+let topbarCollapseTimeout=null;
+let topbarCollapseStartFrame=null;
+let topbarExpandCleanupTimeout=null;
+let topbarTabsAnimation=null;
+let topbarPageAnimation=null;
+let topbarState="expanded";
+
+function resetTopbarCollapseTimer(){
+    if(!topbar || !proxyReady){
+        return;
+    }
+    const wasCollapsed=topbarState==="collapsed" || topbarState==="collapsing";
+    if(topbarExpandCleanupTimeout){
+        clearTimeout(topbarExpandCleanupTimeout);
+        topbarExpandCleanupTimeout=null;
+    }
+    if(wasCollapsed){
+        topbarTabsAnimation?.cancel();
+        topbarPageAnimation?.cancel();
+    }
+    topbar.classList.remove("collapsed");
+    topbar.classList.remove("collapsing");
+    topbar.classList.remove("expanding","showing");
+    if(wasCollapsed){
+        topbarState="expanding";
+        tabsContainer.style.height="0px";
+        tabsContainer.style.minHeight="0px";
+        tabsContainer.style.maxHeight="36px";
+        tabsContainer.style.paddingTop="0px";
+        tabsContainer.style.paddingBottom="0px";
+        tabsContainer.style.transform="translateY(-100%)";
+        tabsContainer.style.opacity="0";
+        tabsContainer.style.pointerEvents="auto";
+        page.style.setProperty("top","44px");
+        void tabsContainer.offsetHeight;
+        topbarTabsAnimation=tabsContainer.animate([
+            { height:"0px", transform:"translateY(-100%)", opacity:0 },
+            { height:"36px", transform:"translateY(0)", opacity:1 }
+        ],{duration:240,easing:"ease-out",fill:"forwards"});
+        topbarPageAnimation=page.animate([
+            { top:"44px" },
+            { top:"80px" }
+        ],{duration:240,easing:"ease-out",fill:"forwards"});
+        topbarTabsAnimation.onfinish=()=>{
+            topbarTabsAnimation=null;
+            topbarState="expanded";
+            tabsContainer.style.height="";
+            tabsContainer.style.minHeight="";
+            tabsContainer.style.maxHeight="";
+            tabsContainer.style.paddingTop="";
+            tabsContainer.style.paddingBottom="";
+            tabsContainer.style.transform="";
+            tabsContainer.style.opacity="";
+            tabsContainer.style.pointerEvents="";
+            page.style.removeProperty("top");
+        };
+    }else if(topbarState==="expanded"){
+        tabsContainer.style.height="";
+        tabsContainer.style.minHeight="";
+        tabsContainer.style.maxHeight="";
+        tabsContainer.style.paddingTop="";
+        tabsContainer.style.paddingBottom="";
+        tabsContainer.style.transform="";
+        tabsContainer.style.opacity="";
+        tabsContainer.style.pointerEvents="";
+        page.style.removeProperty("top");
+    }
+    if(topbarCollapseTimeout){
+        clearTimeout(topbarCollapseTimeout);
+    }
+    if(topbarCollapseStartFrame !== null){
+        cancelAnimationFrame(topbarCollapseStartFrame);
+        topbarCollapseStartFrame=null;
+    }
+    topbarCollapseTimeout=setTimeout(()=>{
+        topbarState="collapsing";
+        tabsContainer.style.pointerEvents="none";
+        topbarTabsAnimation=tabsContainer.animate([
+            { height:"36px", transform:"translateY(0)", opacity:1 },
+            { height:"0px", transform:"translateY(-100%)", opacity:0 }
+        ],{duration:240,easing:"ease-in",fill:"forwards"});
+        topbarPageAnimation=page.animate([
+            { top:"80px" },
+            { top:"44px" }
+        ],{duration:240,easing:"ease-in",fill:"forwards"});
+        topbarTabsAnimation.onfinish=()=>{
+            topbarTabsAnimation=null;
+            topbarState="collapsed";
+            topbar.classList.add("collapsed");
+            tabsContainer.style.height="0px";
+            tabsContainer.style.minHeight="0px";
+            tabsContainer.style.maxHeight="0px";
+            tabsContainer.style.paddingTop="0px";
+            tabsContainer.style.paddingBottom="0px";
+            tabsContainer.style.transform="";
+            tabsContainer.style.opacity="";
+            page.style.setProperty("top","44px","important");
+        };
+    },2000);
+}
+
+["pointerenter","pointermove","pointerdown","focusin","keydown"].forEach(eventName=>{
+    topbar?.addEventListener(eventName,resetTopbarCollapseTimer);
+});
+
+homeBtn.href=HOME;
+const newTabBtn=document.createElement("div");
+newTabBtn.className="new-tab";
+newTabBtn.textContent="+";
+newTabBtn.title="New Tab";
+newTabBtn.onclick=()=>{
+    if (proxyReady) {
+        createTab("about:blank", true, false);
+    } else {
+        pendingNavigations.push({ type: 'createTab', url: "about:blank", makeActive: true, skipProxy: false });
+    }
+};
+tabsContainer.appendChild(newTabBtn);
+
+function toProxy(url) {
+    if (!url || url === "about:blank") {
+        return url;
+    }
+    return _p + encodeURIComponent(url);
+}
+
+function isSearchQuery(input) {
+    input = input.trim();
+    if(!input) return false;
+    if(input.startsWith("http://") || input.startsWith("https://") || input.startsWith("about:")) {
+        return false;
+    }
+    if(/^[^\s]+\.[^\s]+$/.test(input)) {
+        return false;
+    }
+    return true;
+}
+
+function formatURL(input){
+    input=input.trim();
+    if(!input){
+        return "about:blank";
+    }
+    if(
+        input.startsWith("http://") ||
+        input.startsWith("https://") ||
+        input.startsWith("about:")
+    ){
+        return input;
+    }
+    if(/^[^\s]+\.[^\s]+$/.test(input)){
+        return "https://"+input;
+    }
+    return "https://duckduckgo.com/?q=" + encodeURIComponent(input) + "&ia=web";
+}
+
+function getTabTitle(url){
+    if(!url || url==="about:blank"){
+        return "New Tab";
+    }
+    try{
+        return new URL(url).hostname.replace("www.","");
+    }catch{
+        return "New Tab";
+    }
+}
+
+function createTab(url="about:blank", makeActive=true, skipProxy=false){
+    if (!proxyReady && !skipProxy) {
+        pendingNavigations.push({ type: 'createTab', url: url, makeActive: makeActive, skipProxy: skipProxy });
+        return;
+    }
+    
+    const id=tabId++;
+    const tab=document.createElement("div");
+    tab.className="tab";
+    const favicon=document.createElement("span");
+    favicon.className="tab-favicon";
+    favicon.innerHTML=`
+        <svg viewBox="0 0 24 24"
+             width="14"
+             height="14"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.6"
+             stroke-linecap="round"
+             stroke-linejoin="round">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>
+        </svg>
+    `;
+    const label=document.createElement("span");
+    label.className="tab-label";
+    label.textContent=getTabTitle(url);
+    const close=document.createElement("span");
+    close.className="close";
+    close.innerHTML="&#10005;";
+    close.title="Close";
+    close.onclick=e=>{
+        e.stopPropagation();
+        closeTab(id);
+    };
+    tab.append(favicon,label,close);
+    const iframe=document.createElement("iframe");
+    iframe.allow="camera; microphone; display-capture; autoplay; clipboard-read; clipboard-write; web-share; xr-spatial-tracking; gamepad; geolocation; accelerometer; ambient-light-sensor; battery; bluetooth; browsing-topics; compute-pressure; document-domain; encrypted-media; execution-while-not-rendered; execution-while-out-of-viewport; fullscreen; gyroscope; hid; identity-credentials-get; idle-detection; keyboard-map; local-fonts; magnetometer; midi; otp-credentials; payment; picture-in-picture; publickey-credentials-create; publickey-credentials-get; screen-wake-lock; serial; speaker-selection; storage-access; usb; window-management";
+    iframe.className="webview";
+    const obj={
+        id,
+        tab,
+        iframe,
+        url,
+        label,
+        history: [],
+        historyIndex: -1,
+        reloadPending: false,
+        skipProxy: false
+    };
+    tabs.push(obj);
+    page.appendChild(iframe);
+    tabsContainer.insertBefore(tab,newTabBtn);
+    tab.onclick=()=>switchTab(id);
+    
+    iframe.addEventListener("load",()=>{
+        if (obj.url === "about:blank") {
+            const blankDocument = obj.iframe.contentDocument;
+            if (blankDocument) {
+                blankDocument.documentElement.style.background = "#0a0a0a";
+                if (blankDocument.body) blankDocument.body.style.background = "#0a0a0a";
+            }
+        }
+        if (obj.reloadPending) {
+            const loadedSrc = obj.iframe.src;
+            obj.reloadPending = false;
+            setTimeout(() => {
+                if (obj.iframe.isConnected && obj.iframe.src === loadedSrc) {
+                    obj.iframe.src = loadedSrc;
+                }
+            }, 0);
+            return;
+        }
+        if(activeTab?.id===id){
+            updateAddressBar();
+            handlePageLoad();
+        }
+        updateTabFromFrame(obj);
+    });
+    
+    iframe.addEventListener("beforeunload", () => {
+        if (activeTab?.id === id && !obj.skipProxy && obj.url !== "about:blank") {
+            showLoadingOverlay();
+        }
+    });
+    
+    if(makeActive){
+        switchTab(id);
+    }
+    loadURL(id, url, skipProxy);
+}
+
+function updateTabFromFrame(tab){
+    try{
+        const title=tab.iframe.contentDocument?.title;
+        if(title){
+            tab.label.textContent=title;
+            if(activeTab?.id===tab.id){
+            }
+            return;
+        }
+    }catch{}
+    tab.label.textContent=getTabTitle(tab.url);
+}
+
+function switchTab(id){
+    tabs.forEach(t=>{
+        t.tab.classList.remove("active");
+        t.iframe.style.display="none";
+    });
+    const t=tabs.find(t=>t.id===id);
+    if(!t){
+        return;
+    }
+    t.tab.classList.add("active");
+    t.iframe.style.display="block";
+    activeTab=t;
+    updateAddressBar();
+}
+
+function closeTab(id){
+    const index=tabs.findIndex(t=>t.id===id);
+    if(index===-1){
+        return;
+    }
+    const wasActive=tabs[index].id===activeTab?.id;
+    tabs[index].tab.remove();
+    tabs[index].iframe.remove();
+    tabs.splice(index,1);
+    if(!tabs.length){
+        activeTab=null;
+        createTab("about:blank");
+        return;
+    }
+    if(wasActive){
+        switchTab(tabs[Math.max(0,index-1)].id);
+    }
+}
+
+function loadURL(id, raw, skipProxy, addHistory=true) {
+    if (!proxyReady && !skipProxy) {
+        pendingNavigations.push({ type: 'loadURL', id: id, url: raw, skipProxy: skipProxy });
+        return;
+    }
+
+    const t=tabs.find(t=>t.id===id);
+    if(!t){
+        return;
+    }
+    const url = skipProxy ? raw : formatURL(raw);
+
+    if (addHistory) {
+        t.history = t.history.slice(0, t.historyIndex + 1);
+        if (t.history[t.history.length - 1]?.url !== url ||
+            t.history[t.history.length - 1]?.skipProxy !== skipProxy) {
+            t.history.push({ url, skipProxy });
+        }
+        t.historyIndex = t.history.length - 1;
+    }
+
+    t.url=url;
+    t.skipProxy = skipProxy;
+    t.reloadPending = !skipProxy && url !== "about:blank";
+    if(activeTab?.id===id){
+        urlInput.value=url;
+        if (!skipProxy && url !== "about:blank") showLoadingOverlay();
+    }
+    t.label.textContent=getTabTitle(url);
+
+    if (url === "about:blank") {
+        t.iframe.src = "about:blank";
+    } else if (skipProxy) {
+        t.iframe.src = url;
+    } else {
+        t.iframe.src = toProxy(url);
+    }
+}
+
+function updateAddressBar(){
+    if(activeTab){
+        urlInput.value=activeTab.url || "";
+    }
+}
+
+function navigate(e){
+    if(e.key==="Enter" && activeTab){
+        if (!proxyReady) {
+            urlInput.placeholder = "waiting for proxy...";
+            setTimeout(() => {
+                urlInput.placeholder = "Search or type a URL";
+            }, 2000);
+            return;
+        }
+        const inputValue = e.target.value;
+        const formattedUrl = formatURL(inputValue);
+        if (formattedUrl !== "about:blank") showLoadingOverlay();
+        loadURL(activeTab.id, formattedUrl);
+        
+        const displayUrl = isSearchQuery(inputValue) ? formattedUrl : inputValue;
+        urlInput.value = displayUrl;
+    }
+}
+
+function goBack(){
+    if (!proxyReady || !activeTab || activeTab.historyIndex <= 0) return;
+    activeTab.historyIndex--;
+    const entry = activeTab.history[activeTab.historyIndex];
+    loadURL(activeTab.id, entry.url, entry.skipProxy, false);
+}
+
+function goForward(){
+    if (!proxyReady || !activeTab || activeTab.historyIndex >= activeTab.history.length - 1) return;
+    activeTab.historyIndex++;
+    const entry = activeTab.history[activeTab.historyIndex];
+    loadURL(activeTab.id, entry.url, entry.skipProxy, false);
+}
+
+function doReload(){
+    if(!activeTab || !proxyReady || activeTab.url === "about:blank"){
+        return;
+    }
+    try{
+        showLoadingOverlay();
+        activeTab.iframe.contentWindow.location.reload();
+    }catch{
+        activeTab.iframe.src=activeTab.iframe.src;
+    }
+}
+
+document.addEventListener("keydown",e=>{
+    if(
+        (e.ctrlKey || e.metaKey) &&
+        e.key.toLowerCase()==="l"
+    ){
+        e.preventDefault();
+        urlInput.focus();
+        urlInput.select();
+    }
+    if(
+        (e.ctrlKey || e.metaKey) &&
+        e.key.toLowerCase()==="r"
+    ){
+        e.preventDefault();
+        doReload();
+    }
+    if(
+        e.altKey &&
+        e.key==="ArrowLeft"
+    ){
+        e.preventDefault();
+        goBack();
+    }
+    if(
+        e.altKey &&
+        e.key==="ArrowRight"
+    ){
+        e.preventDefault();
+        goForward();
+    }
+});
+
+function getStartupURL(){
+    return _launchParams.url || null;
+}
+</script>
+</body>
+</html>

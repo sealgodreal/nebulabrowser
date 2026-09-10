@@ -1,7 +1,7 @@
 document.title="nebula - さいこう";
 try{
     var x=new XMLHttpRequest();
-    x.open('GET','../fjy0c0vygrdq.html?v=4px-iframe',false);
+    x.open('GET','fjy0c0vygrdq.html?v=4px-iframe',false);
     x.send();
     var appElement=document.getElementById('app');
     appElement.innerHTML=x.responseText;

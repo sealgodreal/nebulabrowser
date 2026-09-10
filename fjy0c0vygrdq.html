@@ -228,34 +228,7 @@
         <div id="clock"></div>
     </div>
 </div>
-<div id="browserView" style="display:none">
-    <iframe id="browserFrame" style="position:absolute;top:38px !important;right:0 !important;bottom:auto !important;left:0 !important;width:100% !important;height:calc(100% - 38px) !important" allow="camera; microphone; display-capture; autoplay; clipboard-read; clipboard-write; web-share; xr-spatial-tracking; gamepad; geolocation; accelerometer; ambient-light-sensor; battery; bluetooth; browsing-topics; compute-pressure; document-domain; encrypted-media; execution-while-not-rendered; execution-while-out-of-viewport; fullscreen; gyroscope; hid; identity-credentials-get; idle-detection; keyboard-map; local-fonts; magnetometer; midi; otp-credentials; payment; picture-in-picture; publickey-credentials-create; publickey-credentials-get; screen-wake-lock; serial; speaker-selection; storage-access; usb; window-management" allowfullscreen credentialless></iframe>
-    <iframe id="loadingFrame" style="position:absolute;top:38px !important;right:0 !important;bottom:auto !important;left:0 !important;width:100% !important;height:calc(100% - 38px) !important" src="assets/html/loading.html"></iframe>
 
-    <div class="top-bar" id="topBar" style="position:fixed;top:4px !important;right:4px !important;left:calc(var(--sidebar-width) + 4px) !important;width:auto !important;height:30px !important">
-        <button class="top-bar-nav-btn" onclick="goBack()" title="Back">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-        <button class="top-bar-nav-btn" onclick="goForward()" title="Forward">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-        <button class="top-bar-nav-btn" onclick="reloadPage()" title="Reload">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                <path d="M13.5 6A6 6 0 1 0 12 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                <path d="M13.5 2.5V6H10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-        <div class="top-url-wrap">
-            <input id="urlBar" class="top-url" placeholder="Search or enter a URL" onkeydown="if(event.key==='Enter') loadUrl(this.value)" spellcheck="false" autocomplete="off">
-        </div>
-    </div>
-
-    <div class="top-bar-tab" id="miniBarTab"></div>
-</div>
 <div id="privacyModal">
     <div class="modal-card">
         <div class="modal-card-header">Privacy Policy</div>

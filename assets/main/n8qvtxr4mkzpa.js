@@ -21,22 +21,12 @@ const REDIRECT_URLS = [
     "https://www.oercommons.org/"
 ];
 
-let historyStack = [];
-let historyIndex = -1;
-let loadProgress = 0;
-let loadProgressInterval = null;
-let isLoading = false;
-let miniBarTimeout = null;
-let miniBarHidden = false;
-let miniBarAnimating = false;
 let currentTheme = "default";
 let settingsOpen = false;
 let altHeld = false;
 let tapCount = 0;
 let tapTimer = null;
 let cloakWindow = null;
-
-const MINI_BAR_HIDE_DELAY = 3000;
 
 const SUBTEXTS = [
     "usenebula.netlify.app",
@@ -54,6 +44,7 @@ const SUBTEXTS = [
     '<img src="./assets/images/letskeepthings.png" width="60" height="80">',
     "\"this website sucks i cant even read ao3\"",
     "\"yo bro did you know that deleting 'C:\\Windows\\System32' gives you higher fps\"",
+    "\"farex pull\"",
     "sudo rm -rf --no-preserve-root /*",
     "sudo apt install opsec",
 ];
@@ -118,135 +109,6 @@ function nebulaToast(text, isWarning) {
     }
 }
 
-let _p = "";
-(async function () {
-    const keys = await caches.keys();
-    for (const key of keys) await caches.delete(key);
-    sessionStorage.clear();
-
-    const proxyUrls = [
-        "https://brooklyn-oval-bike-tourism.trycloudflare.com",
-        "https://resources-indices-exists-maintaining.trycloudflare.com",
-        "https://modules-stop-souls-precipitation.trycloudflare.com"
-    ];
-
-    const overlay = Object.assign(document.createElement("div"), {
-        id: "proxyOverlay",
-        style: "position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;flex-direction:column;user-select:none;"
-    });
-    const statusText = Object.assign(document.createElement("div"), {
-        id: "proxyStatus",
-        style: "color:#fff;font-size:16px;font-weight:300;letter-spacing:1px;",
-        textContent: "finding unblocked proxy..."
-    });
-    overlay.appendChild(statusText);
-    document.body.appendChild(overlay);
-
-    const probeFrame = Object.assign(document.createElement("iframe"), {
-        id: "probeFrame",
-        style: "position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;border:0;",
-        sandbox: "allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
-    });
-    document.body.appendChild(probeFrame);
-
-    const isFrameBlocked = () => {
-        try {
-            const src = probeFrame.src;
-            if (!src || src === "about:blank" || src.startsWith("about:")) return true;
-
-            let href = null;
-            try { href = probeFrame.contentWindow?.location?.href || probeFrame.src; } catch (_) { href = probeFrame.src; }
-
-            const lower = (href || src || "").toLowerCase();
-            const blockedKeywords = [
-                "securly.com/broker/blocked","goguardian.com/blocked","goguardian.com/filter",
-                "lightspeed.com/blocked","iboss.com/blocked","smoothwall.com/blocked",
-                "fortiguard.com/blocked","opendns.com/blocked","umbrella.com/blocked",
-                "zscaler.com/blocked","mcafee.com/blocked","barracuda.com/blocked",
-                "forcepoint.com/blocked","netnanny.com/blocked","cyberpatrol.com/blocked",
-                "surfwatch.com/blocked","covenanteyes.com/blocked","blocked","filter",
-                "restricted","denied","forbidden","notallowed","policyviolation",
-                "accessdenied","categoryblocked","webfilter","dnsfilter","contentfilter"
-            ];
-            if (blockedKeywords.some(k => lower.includes(k))) return true;
-
-            try {
-                const doc = probeFrame.contentDocument || probeFrame.contentWindow?.document;
-                if (doc) {
-                    const title = (doc.title || "").toLowerCase();
-                    if (["blocked","securly","goguardian","access denied","forbidden","restricted","filter"].some(k => title.includes(k))) return true;
-                    if (doc.body) {
-                        const bodyText = (doc.body.innerText || doc.body.textContent || "").toLowerCase();
-                        if (bodyText.includes("login to continue") && bodyText.includes("school email")) return true;
-                        if (bodyText.trim().length < 10) return true;
-                    }
-                }
-            } catch (_) {}
-            return false;
-        } catch (_) { return false; }
-    };
-
-    const fetchBlocked = async url => {
-        try { await fetch(url, { method: "HEAD", mode: "no-cors", cache: "no-store" }); return false; }
-        catch (_) { return true; }
-    };
-
-    const loadFrame = (url, timeout = 15000) => new Promise((resolve, reject) => {
-        let timer = null;
-        let settled = false;
-        const cleanup = () => { if (timer) clearTimeout(timer); probeFrame.onload = null; probeFrame.onerror = null; };
-        probeFrame.onload = () => { if (!settled) { settled = true; cleanup(); resolve(); } };
-        probeFrame.onerror = () => { if (!settled) { settled = true; cleanup(); reject(); } };
-        timer = setTimeout(() => { if (!settled) { settled = true; cleanup(); reject(); } }, timeout);
-        probeFrame.src = url;
-    });
-
-    const findProxy = async () => {
-        let attempt = 0;
-        const maxAttempts = proxyUrls.length * 3;
-        let idx = 0;
-
-        while (attempt < maxAttempts) {
-            const url = proxyUrls[idx % proxyUrls.length];
-            try {
-                await loadFrame(url, 18000);
-                let blocked = isFrameBlocked();
-                if (!blocked && await fetchBlocked(url)) {
-                    const src = probeFrame.src || "";
-                    if (src.includes("securly") || src.includes("goguardian") || src.includes("blocked") || src.includes("filter")) {
-                        blocked = true;
-                    }
-                }
-                const lower = url.toLowerCase();
-                if (lower.includes("securly.com/broker/blocked") || lower.includes("goguardian.com/blocked")) blocked = true;
-                if (!blocked) return url;
-            } catch (_) {}
-            idx = (idx + 1) % proxyUrls.length;
-            attempt++;
-            await new Promise(r => setTimeout(r, 500));
-        }
-        return null;
-    };
-
-    const found = await findProxy();
-    const overlayEl = document.getElementById("proxyOverlay");
-    const statusEl = document.getElementById("proxyStatus");
-
-    if (found) {
-        if (statusEl) statusEl.textContent = "link found! initializing...";
-        _p = found + "/learn/study/";
-        await new Promise(r => setTimeout(r, 100));
-        if (overlayEl) overlayEl.remove();
-    } else {
-        if (statusEl) statusEl.textContent = "all proxy links are blocked.";
-        return;
-    }
-
-    const frame = document.getElementById("probeFrame");
-    if (frame) { frame.src = "about:blank"; frame.remove(); }
-})();
-
-
 function openAppEntry(app) {
     if (app.noP) openAppWithNoP(app.url);
     else openApp(app.url);
@@ -283,10 +145,6 @@ function getSearchUrl(query) {
 }
 
 async function navigate(value) {
-    const keys = await caches.keys();
-    for (const key of keys) await caches.delete(key);
-    sessionStorage.clear();
-    
     value = String(value || "").trim();
     if (!value) return;
 
@@ -294,151 +152,32 @@ async function navigate(value) {
         ? (value.startsWith("http") ? value : "https://" + value)
         : getSearchUrl(value);
 
-    try {
-        const p_Url = _p.trim();
-        if (!p_Url) throw new Error("Proxy URL not ready.");
-        openBrowser(p_Url + encodeURIComponent(targetUrl));
-    } catch (error) {
-        console.error("Nebula search failed:", error);
-        openBrowser(targetUrl);
-    }
-}
+    openBrowser(targetUrl);
 
-function stripP(url) {
     try {
-        const decoded = decodeURIComponent(url);
-        let result = decoded.startsWith(_p) ? decoded.slice(_p.length) : decoded;
-        return result.replace(/^https?:\/\//, "");
-    } catch {
-        return url;
-    }
+        const keys = await caches.keys();
+        for (const key of keys) await caches.delete(key);
+    } catch (_) {}
 }
 
 function openApp(url) {
-    try {
-        const p_Url = _p.trim();
-        if (!p_Url) throw new Error("Proxy URL not ready.");
-        openBrowser(p_Url + encodeURIComponent(url));
-    } catch (err) {
-        console.error("Fetch failed, falling back to direct:", err);
-        openBrowser(url);
-    }
+    openBrowser(url);
 }
 
 function openAppWithNoP(url) {
     openBrowser(url);
 }
 
-function startLoadingProgress() {
-    isLoading = true;
-    loadProgress = 0;
-
-    const fill = document.getElementById("miniBarLoaderFill");
-    const loader = document.getElementById("miniBarLoader");
-
-    loader?.classList.add("visible");
-    if (fill) fill.style.width = "0%";
-
-    clearInterval(loadProgressInterval);
-
-    loadProgressInterval = setInterval(() => {
-        if (!isLoading) return;
-        const remaining = 100 - loadProgress;
-        loadProgress = Math.min(loadProgress + remaining * 0.08 + Math.random() * 2, 85);
-        if (fill) fill.style.width = loadProgress + "%";
-    }, 200);
-}
-
-function finishLoadingProgress() {
-    isLoading = false;
-
-    const fill = document.getElementById("miniBarLoaderFill");
-    const loader = document.getElementById("miniBarLoader");
-
-    if (fill) fill.style.width = "100%";
-
-    setTimeout(() => {
-        loader?.classList.remove("visible");
-        setTimeout(() => { if (fill) fill.style.width = "0%"; }, 300);
-    }, 400);
-
-    clearInterval(loadProgressInterval);
-    loadProgressInterval = null;
+function isLocalFile(url) {
+    if (!url) return false;
+    if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("about:")) return false;
+    return true;
 }
 
 function openBrowser(url) {
-    const popup = document.getElementById("tetoPopup");
-    popup.classList.remove("show");
-    popup.style.opacity = "0";
-
-    document.getElementById("mainPage").style.display = "none";
-    document.getElementById("browserView").style.display = "block";
-
-    const frame = document.getElementById("browserFrame");
-    const bar = document.getElementById("urlBar");
-
-    showLoading();
-    startLoadingProgress();
-
-    if (!frame._loadListenerAdded) {
-        frame._loadListenerAdded = true;
-        frame.addEventListener("load", () => {
-            hideLoading();
-            finishLoadingProgress();
-        });
-    }
-
-    frame.src = url;
-
-    historyStack = historyStack.slice(0, historyIndex + 1);
-    historyStack.push(url);
-    historyIndex++;
-
-    bar.value = stripP(url);
-
-    setTimeout(resetMiniBarTimer, 100);
-}
-
-function loadUrl(input) {
-    input = String(input || "").trim();
-    if (!input) return;
-
-    const targetUrl = looksLikeUrl(input)
-        ? (input.startsWith("http") ? input : "https://" + input)
-        : "https://duckduckgo.com/?q=" + encodeURIComponent(input) + "&ia=web";
-
-    try {
-        const p_Url = _p.trim();
-        if (!p_Url) throw new Error("Proxy URL not ready.");
-        openBrowser(p_Url + encodeURIComponent(targetUrl));
-    } catch (error) {
-        console.error("Nebula URL navigation failed:", error);
-        openBrowser(targetUrl);
-    }
-}
-
-function showLoading() {
-    const browser = document.getElementById("browserView");
-    let loader = document.getElementById("loadingFrame");
-
-    if (!loader) {
-        loader = document.createElement("iframe");
-        loader.id = "loadingFrame";
-        loader.src = "./assets/html/loading.html";
-        browser.appendChild(loader);
-    }
-
-    loader.style.display = "block";
-    loader.style.opacity = "1";
-}
-
-function hideLoading() {
-    setTimeout(() => {
-        const loader = document.getElementById("loadingFrame");
-        if (!loader) return;
-        loader.style.opacity = "0";
-        setTimeout(() => { loader.style.display = "none"; }, 350);
-    }, 500);
+    const file = isLocalFile(url) ? "true" : "false";
+    const searchUrl = "./search.html?url=" + encodeURIComponent(url) + "&originalstate=full&file=" + file;
+    window.location.href = searchUrl;
 }
 
 function openGame()        { openAppWithNoP("edu/study.html"); }
@@ -447,7 +186,6 @@ function openRemoteConn()  { openAppWithNoP("edu/remote.html"); }
 function openCloudG()      { openAppWithNoP("edu/cloud.html"); }
 
 window.goHome              = goHome;
-window.toggleTopBar        = toggleTopBar;
 window.openTools           = openTools;
 window.openAppEntry        = openAppEntry;
 window.toggleSettings      = toggleSettings;
@@ -458,12 +196,6 @@ window.renderThemeGrid     = renderThemeGrid;
 window.setAnimatedBg       = setAnimatedBg;
 window.setShowSeconds      = setShowSeconds;
 window.setSearchEngine     = setSearchEngine;
-window.goBack              = goBack;
-window.goForward           = goForward;
-window.reloadPage          = reloadPage;
-window.goHomeFromBrowser   = goHomeFromBrowser;
-window.showMiniBar         = showMiniBar;
-window.loadUrl             = loadUrl;
 window.navigate            = navigate;
 window.triggerSearch       = triggerSearch;
 window.doSearch            = doSearch;
@@ -473,47 +205,7 @@ window.openGame            = openGame;
 window.openCloudG          = openCloudG;
 window.openRemoteConn      = openRemoteConn;
 
-function navigateFrame(url, updateHistory = false) {
-    const frame = document.getElementById("browserFrame");
-    const bar = document.getElementById("urlBar");
-    if (!frame || !url) return;
 
-    showLoading();
-    startLoadingProgress();
-
-    frame.src = url;
-    if (bar) bar.value = stripP(url);
-
-    if (updateHistory) {
-        historyStack = historyStack.slice(0, historyIndex + 1);
-        historyStack.push(url);
-        historyIndex++;
-    }
-}
-
-function goBack() {
-    if (historyIndex <= 0) return;
-    historyIndex--;
-    navigateFrame(historyStack[historyIndex], false);
-}
-
-function goForward() {
-    if (historyIndex >= historyStack.length - 1) return;
-    historyIndex++;
-    navigateFrame(historyStack[historyIndex], false);
-}
-
-function reloadPage() {
-    const frame = document.getElementById("browserFrame");
-    if (!frame) return;
-    showLoading();
-    startLoadingProgress();
-    try {
-        frame.contentWindow.location.reload();
-    } catch {
-        frame.src = frame.src;
-    }
-}
 
 async function doSearch(event) {
     if (event.key === "Enter") await navigate(event.target.value);
@@ -523,73 +215,13 @@ async function triggerSearch() {
     await navigate(document.getElementById("searchInput").value);
 }
 
-function hideMiniBar() {
-    const bar = document.getElementById("topBar");
-    const tab = document.getElementById("miniBarTab");
-    const input = document.getElementById("urlBar");
 
-    if (document.activeElement === input) return;
-    if (!bar || !tab || miniBarHidden || miniBarAnimating) return;
-
-    miniBarAnimating = true;
-    bar.classList.add("hidden");
-
-    const frame = document.getElementById("browserFrame");
-    const loadFrame = document.getElementById("loadingFrame");
-    if (frame) frame.classList.add("bar-hidden");
-    if (loadFrame) loadFrame.classList.add("bar-hidden");
-
-    setTimeout(() => {
-        tab.classList.add("visible");
-        miniBarHidden = true;
-        miniBarAnimating = false;
-    }, 380);
-}
-
-function toggleTopBar() {
-    miniBarHidden ? showMiniBar() : hideMiniBar();
-}
-
-function showMiniBar() {
-    const bar = document.getElementById("topBar");
-    const tab = document.getElementById("miniBarTab");
-
-    if (!bar || !tab) return;
-
-    clearTimeout(miniBarTimeout);
-
-    if (!miniBarHidden && !miniBarAnimating) {
-        resetMiniBarTimer();
-        return;
-    }
-
-    if (miniBarAnimating) return;
-
-    miniBarAnimating = true;
-    tab.classList.remove("visible");
-    bar.classList.remove("hidden");
-
-    const frame = document.getElementById("browserFrame");
-    const loadFrame = document.getElementById("loadingFrame");
-    if (frame) frame.classList.remove("bar-hidden");
-    if (loadFrame) loadFrame.classList.remove("bar-hidden");
-
-    miniBarHidden = false;
-
-    setTimeout(() => {
-        miniBarAnimating = false;
-        resetMiniBarTimer();
-    }, 380);
-}
-
-function resetMiniBarTimer() {
-    clearTimeout(miniBarTimeout);
-    miniBarTimeout = setTimeout(hideMiniBar, MINI_BAR_HIDE_DELAY);
-}
 
 function updateClock() {
     const now = new Date();
     const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    const clock = document.getElementById("clock");
+    if (!clock) return;
 
     let hours = now.getHours();
     const ampm = hours >= 12 ? "pm" : "am";
@@ -599,22 +231,35 @@ function updateClock() {
     const seconds = String(now.getSeconds()).padStart(2, "0");
 
     const showSec = localStorage.getItem("nebula-clock-seconds") !== "0";
-    document.getElementById("clock").textContent = showSec
+    clock.textContent = showSec
         ? `${days[now.getDay()]} · ${hours}:${minutes}:${seconds} ${ampm}`
         : `${days[now.getDay()]} · ${hours}:${minutes} ${ampm}`;
 }
 
 async function updateBattery() {
-    if (!navigator.getBattery) return;
-    const battery = await navigator.getBattery();
+    const widget = document.getElementById("batteryWidget");
+    const fill = document.getElementById("batteryFill");
+    const text = document.getElementById("batteryText");
+    if (!widget || !fill || !text) return;
+
+    widget.style.display = "flex";
+    if (!navigator.getBattery) {
+        fill.style.width = "0%";
+        text.textContent = "N/A";
+        return;
+    }
+
+    let battery;
+    try {
+        battery = await navigator.getBattery();
+    } catch {
+        fill.style.width = "0%";
+        text.textContent = "N/A";
+        return;
+    }
 
     function refresh() {
         const pct = Math.round(battery.level * 100);
-        const widget = document.getElementById("batteryWidget");
-        const fill = document.getElementById("batteryFill");
-        const text = document.getElementById("batteryText");
-
-        widget.style.display = "flex";
         fill.style.width = pct + "%";
         text.textContent = pct + "%";
 
@@ -626,7 +271,6 @@ async function updateBattery() {
     battery.addEventListener("chargingchange", refresh);
 }
 
-// replaced with mp4 shit
 function updateShades() {}
 function resizeCanvas() {}
 function animate() {}
@@ -903,32 +547,16 @@ window.addEventListener("keyup", event => {
 window.addEventListener("click", registerTap);
 window.addEventListener("touchend", registerTap);
 
-document.getElementById("browserView").addEventListener("mousemove", resetMiniBarTimer);
-document.getElementById("browserView").addEventListener("mousedown", resetMiniBarTimer);
-document.getElementById("browserView").addEventListener("touchstart", resetMiniBarTimer);
-
-document.getElementById("topBar")?.addEventListener("mousemove", resetMiniBarTimer);
-document.getElementById("topBar")?.addEventListener("mousedown", resetMiniBarTimer);
-
-document.addEventListener("pointerdown", event => {
-    const bar = document.getElementById("topBar");
-    if (bar && bar.contains(event.target)) {
-        bar.classList.remove("hidden");
-        miniBarHidden = false;
-        miniBarAnimating = false;
-        clearTimeout(miniBarTimeout);
-        resetMiniBarTimer();
-    }
-}, true);
-
-document.getElementById("privacyModal").addEventListener("click", event => {
-    if (event.target === event.currentTarget) event.currentTarget.style.display = "none";
-});
+const privacyModal = document.getElementById("privacyModal");
+if (privacyModal) {
+    privacyModal.addEventListener("click", event => {
+        if (event.target === event.currentTarget) event.currentTarget.style.display = "none";
+    });
+}
 
 async function wireNavigationInputs() {
     const search = document.getElementById("searchInput");
     const searchBtn = document.querySelector(".search-btn");
-    const url = document.getElementById("urlBar");
 
     if (search) {
         search.disabled = false;
@@ -950,20 +578,6 @@ async function wireNavigationInputs() {
             event.stopPropagation();
             if (search) await navigate(search.value);
         });
-    }
-
-    if (url) {
-        url.disabled = false;
-        url.readOnly = false;
-        url.addEventListener("keydown", event => {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                event.stopPropagation();
-                loadUrl(url.value);
-            }
-        });
-        url.addEventListener("click", event => event.stopPropagation());
-        url.addEventListener("pointerdown", event => event.stopPropagation());
     }
 }
 
