@@ -4,6 +4,7 @@
 <title>nebula - さいこう</title>
 <link rel="icon" href="assets/main/favicon.ico">
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#171717">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,10 +38,8 @@ body{
     -webkit-font-smoothing:antialiased;
 }
 .browser-wrapper {
-    transform: scale(0.8);
-    transform-origin: top left;
-    width: 125%;
-    height: 125%;
+    width: 100%;
+    height: 100%;
     position: absolute;
     top: 0;
     left: 0;
@@ -50,7 +49,11 @@ body{
     user-select:none;
     border-bottom:1px solid var(--border-subtle);
     position:relative;
-    z-index:9
+    z-index:9;
+    width:111.111111%;
+    height:80px;
+    transform:scale(.9);
+    transform-origin:top left
 }
 .tabs{
     display:flex;
@@ -84,6 +87,9 @@ body{
     transform:translateY(-100%);
     opacity:0;
     pointer-events:none
+}
+.topbar.collapsed{
+    height:44px
 }
 .tab{
     background:transparent;
@@ -302,7 +308,7 @@ body{
 }
 .page{
     position:absolute;
-    top:80px;
+    top:72px;
     bottom:0;
     left:0;
     right:0;
@@ -310,7 +316,7 @@ body{
     transition:none
 }
 .topbar.collapsed + .page{
-    top:44px
+    top:40px
 }
 .webview{
     position:absolute;
@@ -318,7 +324,11 @@ body{
     height:100%;
     border:none;
     display:none;
-    background:var(--bg)
+    background:var(--bg);
+    overflow:auto;
+    -webkit-overflow-scrolling:touch;
+    touch-action:auto;
+    overscroll-behavior:contain
 }
 #proxyOverlay {
     position:fixed !important;
@@ -691,15 +701,15 @@ function resetTopbarCollapseTimer(){
         tabsContainer.style.transform="translateY(-100%)";
         tabsContainer.style.opacity="0";
         tabsContainer.style.pointerEvents="auto";
-        page.style.setProperty("top","44px");
+        page.style.setProperty("top","40px");
         void tabsContainer.offsetHeight;
         topbarTabsAnimation=tabsContainer.animate([
             { height:"0px", transform:"translateY(-100%)", opacity:0 },
             { height:"36px", transform:"translateY(0)", opacity:1 }
         ],{duration:240,easing:"ease-out",fill:"forwards"});
         topbarPageAnimation=page.animate([
-            { top:"44px" },
-            { top:"80px" }
+            { top:"40px" },
+            { top:"72px" }
         ],{duration:240,easing:"ease-out",fill:"forwards"});
         topbarTabsAnimation.onfinish=()=>{
             topbarTabsAnimation=null;
@@ -740,8 +750,8 @@ function resetTopbarCollapseTimer(){
             { height:"0px", transform:"translateY(-100%)", opacity:0 }
         ],{duration:240,easing:"ease-in",fill:"forwards"});
         topbarPageAnimation=page.animate([
-            { top:"80px" },
-            { top:"44px" }
+            { top:"72px" },
+            { top:"40px" }
         ],{duration:240,easing:"ease-in",fill:"forwards"});
         topbarTabsAnimation.onfinish=()=>{
             topbarTabsAnimation=null;
@@ -754,7 +764,7 @@ function resetTopbarCollapseTimer(){
             tabsContainer.style.paddingBottom="0px";
             tabsContainer.style.transform="";
             tabsContainer.style.opacity="";
-            page.style.setProperty("top","44px","important");
+            page.style.setProperty("top","40px","important");
         };
     },2000);
 }
@@ -861,6 +871,7 @@ function createTab(url="about:blank", makeActive=true, skipProxy=false){
     };
     tab.append(favicon,label,close);
     const iframe=document.createElement("iframe");
+    iframe.setAttribute("scrolling", "yes");
     iframe.allow="camera; microphone; display-capture; autoplay; clipboard-read; clipboard-write; web-share; xr-spatial-tracking; gamepad; geolocation; accelerometer; ambient-light-sensor; battery; bluetooth; browsing-topics; compute-pressure; document-domain; encrypted-media; execution-while-not-rendered; execution-while-out-of-viewport; fullscreen; gyroscope; hid; identity-credentials-get; idle-detection; keyboard-map; local-fonts; magnetometer; midi; otp-credentials; payment; picture-in-picture; publickey-credentials-create; publickey-credentials-get; screen-wake-lock; serial; speaker-selection; storage-access; usb; window-management";
     iframe.className="webview";
     const obj={
@@ -875,6 +886,7 @@ function createTab(url="about:blank", makeActive=true, skipProxy=false){
         skipProxy: false
     };
     tabs.push(obj);
+    iframe.allowFullscreen = true;
     page.appendChild(iframe);
     tabsContainer.insertBefore(tab,newTabBtn);
     tab.onclick=()=>switchTab(id);
