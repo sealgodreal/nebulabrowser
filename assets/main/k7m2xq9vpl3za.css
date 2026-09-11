@@ -96,24 +96,6 @@ body.theme-light img[src*="nebula.png"] {
     filter: invert(1);
 }
 
-body.theme-teto {
-    --bg: #100306;
-    --sidebar-bg: rgba(22,4,8,.92);
-    --sidebar-border: rgba(255,59,90,.2);
-    --surface: rgba(255,59,90,.06);
-    --surface-hover: rgba(255,59,90,.12);
-    --surface-strong: rgba(255,59,90,.09);
-    --border: rgba(255,59,90,.2);
-    --border-hover: rgba(255,107,139,.4);
-    --text: #fff1f4;
-    --text-secondary: #d09aa5;
-    --text-muted: #8c4c59;
-    --accent: #ff5a76;
-    --accent-strong: #ffb3c1;
-    --settings-bg: rgba(25,5,9,.95);
-    --input-bg: rgba(15,2,5,.35);
-}
-
 body.theme-light .wordmark {
     color: #18181b;
 }
@@ -1138,29 +1120,6 @@ body.theme-light .search-box input {
 
 
 
-#tetoPopup {
-    position: fixed;
-    left: 110px;
-    bottom: 45px;
-    z-index: 20;
-    display: none;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(12px);
-    transition: opacity .35s ease, transform .35s ease;
-}
-
-#tetoPopup.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-#tetoPopup img {
-    width: 210px;
-    user-select: none;
-    pointer-events: none;
-}
-
 @keyframes fadeUp {
     from {
         opacity: 0;
@@ -1331,14 +1290,6 @@ body.theme-light .search-box input {
         transform: translateX(-50%) rotate(45deg);
     }
 
-    #tetoPopup {
-        left: 8px;
-        bottom: 62px;
-    }
-
-    #tetoPopup img {
-        width: 125px;
-    }
 }
 
 @media (max-width: 768px) and (orientation: landscape) {

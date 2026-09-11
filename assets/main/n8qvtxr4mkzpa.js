@@ -279,8 +279,7 @@ const THEME_CLASSES = {
     default: "",
     light: "theme-light",
     twilight: "theme-twilight",
-    sakura: "theme-sakura",
-    teto: "theme-teto"
+    sakura: "theme-sakura"
 };
 
 function applyBodyClass() {
@@ -295,20 +294,9 @@ function applyBodyClass() {
 }
 
 function setTheme(name) {
+    if (!Object.prototype.hasOwnProperty.call(THEME_CLASSES, name)) return;
     currentTheme = name;
     localStorage.setItem("nebula-theme", name);
-
-    if (name === "teto") {
-        localStorage.setItem("nebula-teto-popup", "1");
-        location.reload();
-        return;
-    }
-
-    localStorage.setItem("nebula-teto-popup", "0");
-
-    const popup = document.getElementById("tetoPopup");
-    popup.classList.remove("show");
-    setTimeout(() => { popup.style.display = "none"; }, 350);
 
     applyBodyClass();
     updateShades(name);
@@ -318,7 +306,11 @@ function setTheme(name) {
 }
 
 function loadTheme() {
-    currentTheme = localStorage.getItem("nebula-theme") || "default";
+    const savedTheme = localStorage.getItem("nebula-theme");
+    currentTheme = Object.prototype.hasOwnProperty.call(THEME_CLASSES, savedTheme)
+        ? savedTheme
+        : "default";
+    localStorage.setItem("nebula-theme", currentTheme);
     applyBodyClass();
     updateShades(currentTheme);
 
@@ -374,11 +366,6 @@ const THEME_DEFS = [
         bg: "#10070d", accent: "rgba(244,114,182,0.9)",
         dots: ["rgba(255,170,205,0.5)", "rgba(245,130,180,0.3)", "rgba(225,110,160,0.2)"]
     },
-    {
-        id: "teto", name: "Kasane Teto",
-        bg: "#100306", accent: "rgba(255,90,118,0.9)",
-        dots: ["rgba(255,75,105,0.5)", "rgba(255,105,130,0.3)", "rgba(220,45,75,0.2)"]
-    }
 ];
 
 function renderThemeGrid() {
@@ -469,11 +456,6 @@ function goHome() {
         document.getElementById("mainPage").style.display = "";
         initSubtext();
 
-        if (currentTheme === "teto") {
-            const popup = document.getElementById("tetoPopup");
-            popup.style.display = "block";
-            requestAnimationFrame(() => popup.classList.add("show"));
-        }
     }, 350);
 }
 
@@ -492,11 +474,6 @@ function goHomeFromBrowser() {
         document.getElementById("mainPage").style.display = "";
         initSubtext();
 
-        if (currentTheme === "teto") {
-            const popup = document.getElementById("tetoPopup");
-            popup.style.display = "block";
-            requestAnimationFrame(() => popup.classList.add("show"));
-        }
     }, 350);
 }
 
@@ -601,13 +578,6 @@ window.nebulaPostInit = function () {
     checkStorageQuota();
     setInterval(checkStorageQuota, 60 * 1000);
 
-    if (currentTheme === "teto") {
-        const popup = document.getElementById("tetoPopup");
-        if (popup) {
-            popup.style.display = "block";
-            setTimeout(() => popup.classList.add("show"), 250);
-        }
-    }
 };
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -633,5 +633,15 @@ function tagScripts(mode) {
 
 </script>
 
+<script>
+  function protectBeforeUnload(event) {
+    event.preventDefault();
+    event.returnValue = true;
+  }
+  function armBeforeUnload() { window.addEventListener("beforeunload", protectBeforeUnload); }
+  window.addEventListener("pointerdown", armBeforeUnload, { once: true });
+  window.addEventListener("keydown", armBeforeUnload, { once: true });
+</script>
+
 </body>
 </html>
