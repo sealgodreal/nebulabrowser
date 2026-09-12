@@ -475,9 +475,9 @@ function _waitForProxy() {
     sessionStorage.clear();
 
     const proxyUrls = [
-        "https://closure-guided-refused-furthermore.trycloudflare.com",
-        "https://calvin-stanley-reg-tournament.trycloudflare.com",
-        "https://pty-nicole-consider-collectibles.trycloudflare.com"
+        "https://lived-dealing-bald-birth.trycloudflare.com",
+        "https://suse-clarity-customers-glad.trycloudflare.com",
+        "https://grand-summer-compaq-lives.trycloudflare.com"
     ];
 
     const overlay = Object.assign(document.createElement("div"), {
@@ -558,7 +558,7 @@ function _waitForProxy() {
 
         while (attempt < maxAttempts) {
             const url = proxyUrls[idx % proxyUrls.length];
-            const proxyPath = url.replace(/\/$/, "") + "/learn/study/";
+            const proxyPath = url.replace(/\/$/, "") + "/ixl/";
             try {
                 await loadFrame(proxyPath, 18000);
                 let blocked = isFrameBlocked();
@@ -585,12 +585,11 @@ function _waitForProxy() {
 
     if (found) {
         if (statusEl) statusEl.textContent = "link found! initializing...";
-        _p = found + "/learn/study/";
+        _p = found + "/ixl/";
         await new Promise(r => setTimeout(r, 100));
         if (overlayEl) overlayEl.remove();
     } else {
         if (statusEl) statusEl.textContent = "all proxy links are blocked.";
-        _p = "https://pennsylvania-discussed-perform-dot.trycloudflare.com/learn/study/";
     }
 
     _pReady = true;

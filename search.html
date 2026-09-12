@@ -453,6 +453,8 @@ body{
 </div>
 <script>
 let _p="";
+const NEW_TAB_URL="assets/html/home.html";
+const NEW_TAB_ADDRESS="nebula://new";
 let proxyReady = false;
 let pendingNavigations = [];
 let loadingHidden = false;
@@ -522,9 +524,9 @@ function setupLoadingOverlay() {
         }
     } catch (_) {}
     const proxyUrls = [
-        "https://closure-guided-refused-furthermore.trycloudflare.com",
-        "https://calvin-stanley-reg-tournament.trycloudflare.com",
-        "https://pty-nicole-consider-collectibles.trycloudflare.com"
+        "https://lived-dealing-bald-birth.trycloudflare.com",
+        "https://suse-clarity-customers-glad.trycloudflare.com",
+        "https://grand-summer-compaq-lives.trycloudflare.com"
     ];
     const overlay = Object.assign(document.createElement("div"), {
         id: "proxyOverlay",
@@ -595,7 +597,7 @@ function setupLoadingOverlay() {
         let idx = 0;
         while (attempt < maxAttempts) {
             const url = proxyUrls[idx % proxyUrls.length];
-            const proxyPath = url.replace(/\/$/, "") + "/learn/study/";
+            const proxyPath = url.replace(/\/$/, "") + "/ixl/";
             try {
                 await loadFrame(proxyPath, 18000);
                 let blocked = isFrameBlocked();
@@ -620,7 +622,7 @@ function setupLoadingOverlay() {
     const statusEl = document.getElementById("proxyStatus");
     if (found) {
         if (statusEl) statusEl.textContent = "link found! initializing...";
-        _p = found + "/learn/study/";
+        _p = found + "/ixl/";
         proxyReady = true;
         await new Promise(r => setTimeout(r, 100));
         if (overlayEl) overlayEl.remove();
@@ -632,17 +634,18 @@ function setupLoadingOverlay() {
         if (pendingNavigations.length > 0) {
             for (const nav of pendingNavigations) {
                 if (nav.type === 'loadURL') {
-                    loadURL(nav.id, nav.url, nav.skipProxy || false);
+                    loadURL(nav.id, nav.url, nav.skipProxy || false, true, nav.displayUrl);
                 } else if (nav.type === 'createTab') {
-                    createTab(nav.url, nav.makeActive, nav.skipProxy || false);
+                    createTab(nav.url, nav.makeActive, nav.skipProxy || false, nav.displayUrl);
                 }
             }
             pendingNavigations = [];
         }
         if (tabs.length === 0) {
-            const startUrl  = _launchParams.url  || "about:blank";
+            const startUrl  = _launchParams.url  || NEW_TAB_URL;
             const skipProxy = _launchParams.file === "true" || isLocalFile(startUrl);
-            createTab(startUrl, true, skipProxy);
+            const displayUrl = _launchParams.url ? null : NEW_TAB_ADDRESS;
+            createTab(startUrl, true, skipProxy, displayUrl);
         }
         resetTopbarCollapseTimer();
     } else {
@@ -807,9 +810,9 @@ newTabBtn.textContent="+";
 newTabBtn.title="New Tab";
 newTabBtn.onclick=()=>{
     if (proxyReady) {
-        createTab("about:blank", true, false);
+        createTab(NEW_TAB_URL, true, true, NEW_TAB_ADDRESS);
     } else {
-        pendingNavigations.push({ type: 'createTab', url: "about:blank", makeActive: true, skipProxy: false });
+        pendingNavigations.push({ type: 'createTab', url: NEW_TAB_URL, makeActive: true, skipProxy: true, displayUrl: NEW_TAB_ADDRESS });
     }
 };
 tabsContainer.appendChild(newTabBtn);
@@ -877,9 +880,9 @@ function getTabTitle(url){
     }
 }
 
-function createTab(url="about:blank", makeActive=true, skipProxy=false){
+function createTab(url="about:blank", makeActive=true, skipProxy=false, displayUrl=null){
     if (!proxyReady && !skipProxy) {
-        pendingNavigations.push({ type: 'createTab', url: url, makeActive: makeActive, skipProxy: skipProxy });
+        pendingNavigations.push({ type: 'createTab', url: url, makeActive: makeActive, skipProxy: skipProxy, displayUrl: displayUrl });
         return;
     }
     
@@ -921,6 +924,7 @@ function createTab(url="about:blank", makeActive=true, skipProxy=false){
         tab,
         iframe,
         url,
+        displayUrl: displayUrl || url,
         label,
         history: [],
         historyIndex: -1,
@@ -967,10 +971,14 @@ function createTab(url="about:blank", makeActive=true, skipProxy=false){
     if(makeActive){
         switchTab(id);
     }
-    loadURL(id, url, skipProxy);
+    loadURL(id, url, skipProxy, true, displayUrl);
 }
 
 function updateTabFromFrame(tab){
+    if(tab.displayUrl===NEW_TAB_ADDRESS){
+        tab.label.textContent="New Tab";
+        return;
+    }
     const eduTitle=getEduTabTitle(tab.url);
     if(eduTitle){
         tab.label.textContent=eduTitle;
@@ -1014,7 +1022,7 @@ function closeTab(id){
     tabs.splice(index,1);
     if(!tabs.length){
         activeTab=null;
-        createTab("about:blank");
+        createTab(NEW_TAB_URL, true, true, NEW_TAB_ADDRESS);
         return;
     }
     if(wasActive){
@@ -1022,9 +1030,9 @@ function closeTab(id){
     }
 }
 
-function loadURL(id, raw, skipProxy, addHistory=true) {
+function loadURL(id, raw, skipProxy, addHistory=true, displayUrl=null) {
     if (!proxyReady && !skipProxy) {
-        pendingNavigations.push({ type: 'loadURL', id: id, url: raw, skipProxy: skipProxy });
+        pendingNavigations.push({ type: 'loadURL', id: id, url: raw, skipProxy: skipProxy, displayUrl: displayUrl });
         return;
     }
 
@@ -1038,19 +1046,20 @@ function loadURL(id, raw, skipProxy, addHistory=true) {
         t.history = t.history.slice(0, t.historyIndex + 1);
         if (t.history[t.history.length - 1]?.url !== url ||
             t.history[t.history.length - 1]?.skipProxy !== skipProxy) {
-            t.history.push({ url, skipProxy });
+            t.history.push({ url, skipProxy, displayUrl: displayUrl || url });
         }
         t.historyIndex = t.history.length - 1;
     }
 
     t.url=url;
+    t.displayUrl=displayUrl || url;
     t.skipProxy = skipProxy;
     t.reloadPending = !skipProxy && url !== "about:blank";
     if(activeTab?.id===id){
-        urlInput.value=url;
+        urlInput.value=t.displayUrl;
         if (!skipProxy && url !== "about:blank") showLoadingOverlay();
     }
-    t.label.textContent=getTabTitle(url);
+    t.label.textContent=t.displayUrl===NEW_TAB_ADDRESS ? "New Tab" : getTabTitle(url);
 
     if (url === "about:blank") {
         t.iframe.src = "about:blank";
@@ -1063,7 +1072,7 @@ function loadURL(id, raw, skipProxy, addHistory=true) {
 
 function updateAddressBar(){
     if(activeTab){
-        urlInput.value=activeTab.url || "";
+        urlInput.value=activeTab.displayUrl || activeTab.url || "";
     }
 }
 
@@ -1090,14 +1099,14 @@ function goBack(){
     if (!proxyReady || !activeTab || activeTab.historyIndex <= 0) return;
     activeTab.historyIndex--;
     const entry = activeTab.history[activeTab.historyIndex];
-    loadURL(activeTab.id, entry.url, entry.skipProxy, false);
+    loadURL(activeTab.id, entry.url, entry.skipProxy, false, entry.displayUrl);
 }
 
 function goForward(){
     if (!proxyReady || !activeTab || activeTab.historyIndex >= activeTab.history.length - 1) return;
     activeTab.historyIndex++;
     const entry = activeTab.history[activeTab.historyIndex];
-    loadURL(activeTab.id, entry.url, entry.skipProxy, false);
+    loadURL(activeTab.id, entry.url, entry.skipProxy, false, entry.displayUrl);
 }
 
 function doReload(){
