@@ -177,8 +177,54 @@ function isLocalFile(url) {
 function openBrowser(url) {
     const file = isLocalFile(url) ? "true" : "false";
     const searchUrl = "./search.html?url=" + encodeURIComponent(url) + "&originalstate=full&file=" + file;
-    window.location.href = searchUrl;
+    let overlay = document.getElementById("browserOverlay");
+    let frame = overlay?.querySelector("iframe");
+    if (!overlay) {
+        if (!document.getElementById("browserOverlayStyles")) {
+            const styles = document.createElement("style");
+            styles.id = "browserOverlayStyles";
+            styles.textContent = "#browserOverlay{position:fixed;inset:0;z-index:999999;background:#000;overflow:hidden;transform:translateY(100%);opacity:1;transition:transform .25s ease-out,opacity .25s ease-out}#browserOverlay.visible{transform:translateY(0)}#browserOverlay.closing{opacity:0}#browserOverlay iframe{display:block;width:100%;height:100%;border:0;overflow:hidden}";
+            document.head.appendChild(styles);
+        }
+        overlay = document.createElement("div");
+        overlay.id = "browserOverlay";
+        frame = document.createElement("iframe");
+        frame.setAttribute("scrolling", "no");
+        frame.setAttribute("allowfullscreen", "true");
+        overlay.appendChild(frame);
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => overlay.classList.add("visible"));
+    }
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    frame.src = searchUrl;
 }
+
+function destroyBrowserFrame(frame, delay = 250) {
+    if (!frame) return;
+    frame.style.transition = `opacity ${delay}ms ease-out`;
+    frame.style.opacity = "0";
+    setTimeout(() => {
+        frame.src = "about:blank";
+        frame.remove();
+    }, delay);
+}
+
+function closeBrowserOverlay() {
+    const overlay = document.getElementById("browserOverlay");
+    if (!overlay) return;
+    destroyBrowserFrame(overlay.querySelector("iframe"));
+    overlay.classList.add("closing");
+    document.documentElement.style.overflow = "";
+    document.body.style.overflow = "";
+    setTimeout(() => overlay.remove(), 250);
+}
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+        closeBrowserOverlay();
+    }
+});
 
 function openGame()        { openAppWithNoP("edu/study.html"); }
 function openTools()       { openAppWithNoP("edu/apps.html"); }
@@ -445,6 +491,7 @@ function goHome() {
     if (window.location.search) history.replaceState(null, "", window.location.pathname);
 
     const browser = document.getElementById("browserView");
+    const frame = document.getElementById("browserFrame");
     if (browser.style.display === "none") return;
 
     browser.style.opacity = "0";
@@ -452,7 +499,7 @@ function goHome() {
     setTimeout(() => {
         browser.style.display = "none";
         browser.style.opacity = "";
-        document.getElementById("browserFrame").src = "";
+        destroyBrowserFrame(frame);
         document.getElementById("mainPage").style.display = "";
         initSubtext();
 
@@ -470,7 +517,7 @@ function goHomeFromBrowser() {
     setTimeout(() => {
         browser.style.display = "none";
         browser.style.opacity = "";
-        frame.src = "";
+        destroyBrowserFrame(frame);
         document.getElementById("mainPage").style.display = "";
         initSubtext();
 

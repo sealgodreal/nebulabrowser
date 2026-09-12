@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>nebula - さいこう</title>
 <link rel="icon" href="assets/main/favicon.ico">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -329,6 +328,28 @@ body{
     -webkit-overflow-scrolling:touch;
     touch-action:auto;
     overscroll-behavior:contain
+}
+@media (max-width: 768px){
+    .browser-wrapper{
+        height:100dvh;
+        min-height:100dvh
+    }
+    .page{
+        height:calc(100dvh - 72px);
+        min-height:0
+    }
+    .topbar.collapsed + .page{
+        height:calc(100dvh - 40px)
+    }
+    .webview{
+        display:none;
+        height:100%;
+        min-height:0;
+        overflow-y:scroll;
+        -webkit-overflow-scrolling:touch;
+        touch-action:pan-y pinch-zoom;
+        overscroll-behavior:auto
+    }
 }
 #proxyOverlay {
     position:fixed !important;
@@ -706,11 +727,11 @@ function resetTopbarCollapseTimer(){
         topbarTabsAnimation=tabsContainer.animate([
             { height:"0px", transform:"translateY(-100%)", opacity:0 },
             { height:"36px", transform:"translateY(0)", opacity:1 }
-        ],{duration:240,easing:"ease-out",fill:"forwards"});
+        ],{duration:160,easing:"cubic-bezier(0.16,1,0.3,1)",fill:"forwards"});
         topbarPageAnimation=page.animate([
             { top:"40px" },
             { top:"72px" }
-        ],{duration:240,easing:"ease-out",fill:"forwards"});
+        ],{duration:160,easing:"cubic-bezier(0.16,1,0.3,1)",fill:"forwards"});
         topbarTabsAnimation.onfinish=()=>{
             topbarTabsAnimation=null;
             topbarState="expanded";
@@ -748,11 +769,11 @@ function resetTopbarCollapseTimer(){
         topbarTabsAnimation=tabsContainer.animate([
             { height:"36px", transform:"translateY(0)", opacity:1 },
             { height:"0px", transform:"translateY(-100%)", opacity:0 }
-        ],{duration:240,easing:"ease-in",fill:"forwards"});
+        ],{duration:160,easing:"cubic-bezier(0.16,1,0.3,1)",fill:"forwards"});
         topbarPageAnimation=page.animate([
             { top:"72px" },
             { top:"40px" }
-        ],{duration:240,easing:"ease-in",fill:"forwards"});
+        ],{duration:160,easing:"cubic-bezier(0.16,1,0.3,1)",fill:"forwards"});
         topbarTabsAnimation.onfinish=()=>{
             topbarTabsAnimation=null;
             topbarState="collapsed";
@@ -774,6 +795,12 @@ function resetTopbarCollapseTimer(){
 });
 
 homeBtn.href=HOME;
+homeBtn.onclick=e=>{
+    if(window.parent!==window && typeof window.parent.closeBrowserOverlay==="function"){
+        e.preventDefault();
+        window.parent.closeBrowserOverlay();
+    }
+};
 const newTabBtn=document.createElement("div");
 newTabBtn.className="new-tab";
 newTabBtn.textContent="+";
@@ -824,9 +851,24 @@ function formatURL(input){
     return "https://duckduckgo.com/?q=" + encodeURIComponent(input) + "&ia=web";
 }
 
+const EDU_TAB_TITLES={
+    "edu/study.html":"Study",
+    "edu/apps.html":"Apps",
+    "edu/remote.html":"Remote",
+    "edu/cloud.html":"Cloud"
+};
+
+function getEduTabTitle(url){
+    return EDU_TAB_TITLES[url] || null;
+}
+
 function getTabTitle(url){
     if(!url || url==="about:blank"){
         return "New Tab";
+    }
+    const eduTitle=getEduTabTitle(url);
+    if(eduTitle){
+        return eduTitle;
     }
     try{
         return new URL(url).hostname.replace("www.","");
@@ -929,6 +971,11 @@ function createTab(url="about:blank", makeActive=true, skipProxy=false){
 }
 
 function updateTabFromFrame(tab){
+    const eduTitle=getEduTabTitle(tab.url);
+    if(eduTitle){
+        tab.label.textContent=eduTitle;
+        return;
+    }
     try{
         const title=tab.iframe.contentDocument?.title;
         if(title){
@@ -1100,16 +1147,6 @@ document.addEventListener("keydown",e=>{
 function getStartupURL(){
     return _launchParams.url || null;
 }
-</script>
-
-<script>
-  function protectBeforeUnload(event) {
-    event.preventDefault();
-    event.returnValue = true;
-  }
-  function armBeforeUnload() { window.addEventListener("beforeunload", protectBeforeUnload); }
-  window.addEventListener("pointerdown", armBeforeUnload, { once: true });
-  window.addEventListener("keydown", armBeforeUnload, { once: true });
 </script>
 
 </body>
