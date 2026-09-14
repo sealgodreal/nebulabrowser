@@ -253,8 +253,6 @@ html, body {
     text-shadow: 0 1px 5px rgba(0,0,0,0.45);
 }
 
-.overlay-gradient { display: none; }
-
 .empty-state {
     grid-column: 1 / -1;
     display: flex;
@@ -345,7 +343,6 @@ html, body {
     .header-title { font-size: 17px; }
     .search-wrap { width: 160px; }
     .search-wrap:focus-within { width: 200px; }
-    .provider-btn span { display: none; }
 }
 
 @media (max-width: 480px) {
@@ -381,10 +378,8 @@ html, body {
     <div class="grid" id="grid"></div>
 </div>
 
-<div class="disclaimer" id="disclaimer">
+<div class="disclaimer">
     Nebula Cloud uses the service "nowgg.fun" by Frogiee1 (frogiee.one). This service is not owned or controlled by us.
-</div>
-
 </div>
 
 <div id="serviceOverlay">
@@ -408,41 +403,36 @@ html, body {
 </div>
 
 <script>
-const SERVICES = {
-    nowggfun: [
-        {
-            name: "Android",
-            icon: "../images/android.webp",
-            url: "https://nowgg.fun/apps/uncube/7074/now.html"
-        },
-        {
-            name: "Aptoide",
-            icon: "../images/aptoide.png",
-            url: "https://nowgg.fun/apps/aptoide/5874/aptoide.html"
-        },
-        {
-            name: "Roblox",
-            icon: "../images/roblox.jpg",
-            url: "https://nowgg.fun/apps/a/19900/b.html"
-        },
-        {
-            name: "Geometry Dash",
-            icon: "../images/gd.png",
-            url: "https://nowgg.fun/apps/robtop-games/1400/geometry-dash.html"
-        },
-        {
-            name: "Minecraft Trial",
-            icon: "../images/mctrial.png",
-            url: "https://nowgg.fun/apps/aptoide/5874/aptoide.html?deep_link=aptoidesearch://com.mojang.minecrafttrialpe"
-        }
-    ]
-};
+const PROXY_BASE = "https://except-fails-offered-registered.trycloudflare.com/ixl/";
 
-const DISCLAIMERS = {
-    nowggfun: 'Nebula Cloud uses the service "nowgg.fun" by Frogiee1 (frogiee.one). This service is not owned or controlled by us.'
-};
+const SERVICES = [
+    {
+        name: "Android",
+        icon: "../images/android.webp",
+        url: "https://nowgg.fun/apps/uncube/7074/now.html"
+    },
+    {
+        name: "Aptoide",
+        icon: "../images/aptoide.png",
+        url: "https://nowgg.fun/apps/aptoide/5874/aptoide.html"
+    },
+    {
+        name: "Roblox",
+        icon: "../images/roblox.jpg",
+        url: "https://nowgg.fun/apps/a/19900/b.html"
+    },
+    {
+        name: "Geometry Dash",
+        icon: "../images/gd.png",
+        url: "https://nowgg.fun/apps/robtop-games/1400/geometry-dash.html"
+    },
+    {
+        name: "Minecraft Trial",
+        icon: "../images/mctrial.png",
+        url: "https://nowgg.fun/apps/aptoide/5874/aptoide.html?deep_link=aptoidesearch://com.mojang.minecrafttrialpe"
+    }
+];
 
-let currentProvider = "nowggfun";
 let searchQuery = "";
 
 const grid = document.getElementById("grid");
@@ -450,7 +440,6 @@ const overlay = document.getElementById("serviceOverlay");
 const loadingScreen = document.getElementById("loadingScreen");
 const closeOverlayBtn = document.getElementById("closeOverlayBtn");
 const serviceCount = document.getElementById("serviceCount");
-const disclaimer = document.getElementById("disclaimer");
 
 let frame = document.getElementById("serviceFrame");
 let loadToken = 0;
@@ -460,156 +449,12 @@ document.getElementById("searchInput").addEventListener("input", e => {
     renderGrid();
 });
 
-let _p = "";
-let _pReady = false;
-let _pResolvers = [];
-
-function _waitForProxy() {
-    if (_pReady) return Promise.resolve(_p);
-    return new Promise(resolve => _pResolvers.push(resolve));
-}
-
-(async function () {
-    const keys = await caches.keys();
-    for (const key of keys) await caches.delete(key);
-    sessionStorage.clear();
-
-    const proxyUrls = [
-        "https://use-either-scope-lower.trycloudflare.com",
-        "https://schedule-marcus-genome-precise.trycloudflare.com",
-        "https://elementary-brings-miracle-consumer.trycloudflare.com"
-    ];
-
-    const overlay = Object.assign(document.createElement("div"), {
-        id: "proxyOverlay",
-        style: "position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;flex-direction:column;user-select:none;"
-    });
-    const statusText = Object.assign(document.createElement("div"), {
-        id: "proxyStatus",
-        style: "color:#fff;font-size:16px;font-weight:300;letter-spacing:1px;",
-        textContent: "finding unblocked proxy..."
-    });
-    overlay.appendChild(statusText);
-    document.body.appendChild(overlay);
-
-    const probeFrame = Object.assign(document.createElement("iframe"), {
-        id: "probeFrame",
-        style: "position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;border:0;",
-        sandbox: "allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
-    });
-    document.body.appendChild(probeFrame);
-
-    const isFrameBlocked = () => {
-        try {
-            const src = probeFrame.src;
-            if (!src || src === "about:blank" || src.startsWith("about:")) return true;
-
-            let href = null;
-            try { href = probeFrame.contentWindow?.location?.href || probeFrame.src; } catch (_) { href = probeFrame.src; }
-
-            const lower = (href || src || "").toLowerCase();
-            const blockedKeywords = [
-                "securly.com/broker/blocked","goguardian.com/blocked","goguardian.com/filter",
-                "lightspeed.com/blocked","iboss.com/blocked","smoothwall.com/blocked",
-                "fortiguard.com/blocked","opendns.com/blocked","umbrella.com/blocked",
-                "zscaler.com/blocked","mcafee.com/blocked","barracuda.com/blocked",
-                "forcepoint.com/blocked","netnanny.com/blocked","cyberpatrol.com/blocked",
-                "surfwatch.com/blocked","covenanteyes.com/blocked","blocked","filter",
-                "restricted","denied","forbidden","notallowed","policyviolation",
-                "accessdenied","categoryblocked","webfilter","dnsfilter","contentfilter"
-            ];
-            if (blockedKeywords.some(k => lower.includes(k))) return true;
-
-            try {
-                const doc = probeFrame.contentDocument || probeFrame.contentWindow?.document;
-                if (doc) {
-                    const title = (doc.title || "").toLowerCase();
-                    if (["blocked","securly","goguardian","access denied","forbidden","restricted","filter"].some(k => title.includes(k))) return true;
-                    if (doc.body) {
-                        const bodyText = (doc.body.innerText || doc.body.textContent || "").toLowerCase();
-                        if (bodyText.includes("login to continue") && bodyText.includes("school email")) return true;
-                        if (bodyText.trim().length < 10) return true;
-                    }
-                }
-            } catch (_) {}
-            return false;
-        } catch (_) { return false; }
-    };
-
-    const fetchBlocked = async url => {
-        try { await fetch(url, { method: "HEAD", mode: "no-cors", cache: "no-store" }); return false; }
-        catch (_) { return true; }
-    };
-
-    const loadFrame = (url, timeout = 15000) => new Promise((resolve, reject) => {
-        let timer = null;
-        let settled = false;
-        const cleanup = () => { if (timer) clearTimeout(timer); probeFrame.onload = null; probeFrame.onerror = null; };
-        probeFrame.onload = () => { if (!settled) { settled = true; cleanup(); resolve(); } };
-        probeFrame.onerror = () => { if (!settled) { settled = true; cleanup(); reject(); } };
-        timer = setTimeout(() => { if (!settled) { settled = true; cleanup(); reject(); } }, timeout);
-        probeFrame.src = url;
-    });
-
-    const findProxy = async () => {
-        let attempt = 0;
-        const maxAttempts = proxyUrls.length * 3;
-        let idx = 0;
-
-        while (attempt < maxAttempts) {
-            const url = proxyUrls[idx % proxyUrls.length];
-            const proxyPath = url.replace(/\/$/, "") + "/ixl/";
-            try {
-                await loadFrame(proxyPath, 18000);
-                let blocked = isFrameBlocked();
-                if (!blocked && await fetchBlocked(proxyPath)) {
-                    const src = probeFrame.src || "";
-                    if (src.includes("securly") || src.includes("goguardian") || src.includes("blocked") || src.includes("filter")) {
-                        blocked = true;
-                    }
-                }
-                const lower = url.toLowerCase();
-                if (lower.includes("securly.com/broker/blocked") || lower.includes("goguardian.com/blocked")) blocked = true;
-                if (!blocked) return url;
-            } catch (_) {}
-            idx = (idx + 1) % proxyUrls.length;
-            attempt++;
-            await new Promise(r => setTimeout(r, 500));
-        }
-        return null;
-    };
-
-    const found = await findProxy();
-    const overlayEl = document.getElementById("proxyOverlay");
-    const statusEl = document.getElementById("proxyStatus");
-
-    if (found) {
-        if (statusEl) statusEl.textContent = "link found! initializing...";
-        _p = found + "/ixl/";
-        await new Promise(r => setTimeout(r, 100));
-        if (overlayEl) overlayEl.remove();
-    } else {
-        if (statusEl) statusEl.textContent = "all proxy links are blocked.";
-    }
-
-    _pReady = true;
-    _pResolvers.forEach(resolve => resolve(_p));
-    _pResolvers = [];
-
-    const probeEl = document.getElementById("probeFrame");
-    if (probeEl) { probeEl.src = "about:blank"; probeEl.remove(); }
-})();
-
 async function resetLoadingScreen() {
     const old = loadingScreen.querySelector("iframe");
-
-    if (old) {
-        old.remove();
-    }
+    if (old) old.remove();
 
     const f = document.createElement("iframe");
     f.src = "./loading.html";
-
     loadingScreen.appendChild(f);
 
     await new Promise(resolve => {
@@ -626,7 +471,6 @@ function createServiceFrame() {
     }
 
     const newFrame = document.createElement("iframe");
-
     newFrame.id = "serviceFrame";
     newFrame.allow = "camera; microphone; display-capture; autoplay; " +
         "clipboard-read; clipboard-write; web-share; " +
@@ -644,9 +488,7 @@ function createServiceFrame() {
     newFrame.style.cssText = "width:100%;height:100%;border:none;display:none;";
 
     overlay.appendChild(newFrame);
-
     frame = newFrame;
-
     return newFrame;
 }
 
@@ -654,7 +496,6 @@ async function openService(url) {
     const token = ++loadToken;
 
     overlay.style.display = "flex";
-
     frame = createServiceFrame();
     frame.style.display = "none";
 
@@ -662,29 +503,20 @@ async function openService(url) {
     loadingScreen.style.display = "flex";
 
     await resetLoadingScreen();
-
-    if (token !== loadToken) {
-        return;
-    }
+    if (token !== loadToken) return;
 
     frame.onload = () => {
-        if (token !== loadToken) {
-            return;
-        }
+        if (token !== loadToken) return;
 
         loadingScreen.style.opacity = "0";
-
         setTimeout(() => {
-            if (token === loadToken) {
-                loadingScreen.style.display = "none";
-            }
+            if (token === loadToken) loadingScreen.style.display = "none";
         }, 500);
 
         frame.style.display = "block";
     };
 
-    const proxyBase = await _waitForProxy();
-    frame.src = proxyBase + encodeURIComponent(url);
+    frame.src = PROXY_BASE + encodeURIComponent(url);
 }
 
 function closeService() {
@@ -699,10 +531,8 @@ function closeService() {
     }
 
     frame = null;
-
     loadingScreen.style.opacity = "1";
     loadingScreen.style.display = "flex";
-
     resetLoadingScreen();
 }
 
@@ -714,38 +544,19 @@ let hasDragged = false;
 closeOverlayBtn.addEventListener("pointerdown", e => {
     isDragging = true;
     hasDragged = false;
-
     closeOverlayBtn.setPointerCapture(e.pointerId);
     closeOverlayBtn.classList.add("dragging");
-
     dragOffsetX = e.clientX - closeOverlayBtn.offsetLeft;
     dragOffsetY = e.clientY - closeOverlayBtn.offsetTop;
 });
 
 closeOverlayBtn.addEventListener("pointermove", e => {
-    if (!isDragging) {
-        return;
-    }
-
+    if (!isDragging) return;
     hasDragged = true;
-
     e.preventDefault();
 
-    const nx = Math.max(
-        0,
-        Math.min(
-            e.clientX - dragOffsetX,
-            overlay.clientWidth - closeOverlayBtn.offsetWidth
-        )
-    );
-
-    const ny = Math.max(
-        0,
-        Math.min(
-            e.clientY - dragOffsetY,
-            overlay.clientHeight - closeOverlayBtn.offsetHeight
-        )
-    );
+    const nx = Math.max(0, Math.min(e.clientX - dragOffsetX, overlay.clientWidth - closeOverlayBtn.offsetWidth));
+    const ny = Math.max(0, Math.min(e.clientY - dragOffsetY, overlay.clientHeight - closeOverlayBtn.offsetHeight));
 
     closeOverlayBtn.style.left = nx + "px";
     closeOverlayBtn.style.top = ny + "px";
@@ -767,46 +578,30 @@ closeOverlayBtn.addEventListener("click", e => {
         e.stopPropagation();
         return;
     }
-
     closeService();
 });
 
 overlay.addEventListener("click", e => {
-    if (e.target === overlay) {
-        closeService();
-    }
+    if (e.target === overlay) closeService();
 });
 
 function renderGrid() {
-    const services = SERVICES[currentProvider];
-
-    const filtered = services.filter(service =>
-        service.name.toLowerCase().includes(searchQuery)
+    const filtered = SERVICES.filter(s =>
+        s.name.toLowerCase().includes(searchQuery)
     );
 
-    serviceCount.textContent =
-        filtered.length +
-        " Service" +
-        (filtered.length !== 1 ? "s" : "");
+    serviceCount.textContent = filtered.length + " Service" + (filtered.length !== 1 ? "s" : "");
 
     if (!filtered.length) {
         grid.innerHTML = `
             <div class="empty-state">
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="11" cy="11" r="8"/>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
                 <p>No services found matching "${searchQuery}"</p>
             </div>
         `;
-
         return;
     }
 
@@ -814,12 +609,9 @@ function renderGrid() {
 
     filtered.forEach((service, i) => {
         const card = document.createElement("div");
-
         card.className = "service-card";
         card.style.animationDelay = `${i * 0.04}s`;
-
         card.onclick = () => openService(service.url);
-
         card.innerHTML = `
             <div class="service-icon">
                 <img src="${service.icon}" alt="${service.name}" loading="lazy">
@@ -828,7 +620,6 @@ function renderGrid() {
                 <span class="service-name">${service.name}</span>
             </div>
         `;
-
         grid.appendChild(card);
     });
 }
@@ -838,52 +629,50 @@ renderGrid();
 
 <canvas id="stars"></canvas>
 <style>
-#stars{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+#stars { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
 </style>
 <script>
-function setupstars(canvas) {
-  if (!canvas) return;
-  var ctx = canvas.getContext('2d');
-  var w = canvas.width = canvas.offsetWidth || window.innerWidth;
-  var h = canvas.height = canvas.offsetHeight || window.innerHeight;
-  var stars = [];
-  for (var i = 0; i < 200; i++) {
-    stars.push({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: Math.random() * 1.2 + 0.3,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      o: Math.random() * 0.8 + 0.2
-    });
-  }
-  function draw() {
-    ctx.clearRect(0, 0, w, h);
-    var t = Date.now() / 1000;
-    var c = '70,70,75';
-    for (var i = 0; i < stars.length; i++) {
-      var s = stars[i];
-      s.x += s.vx;
-      s.y += s.vy;
-      if (s.x < 0 || s.x > w) s.vx *= -1;
-      if (s.y < 0 || s.y > h) s.vy *= -1;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(' + c + ', ' + (s.o + Math.sin(t + s.x) * 0.2) + ')';
-      ctx.fill();
+function setupStars(canvas) {
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var w = canvas.width = canvas.offsetWidth || window.innerWidth;
+    var h = canvas.height = canvas.offsetHeight || window.innerHeight;
+    var stars = [];
+    for (var i = 0; i < 200; i++) {
+        stars.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            r: Math.random() * 1.2 + 0.3,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3,
+            o: Math.random() * 0.8 + 0.2
+        });
     }
-    requestAnimationFrame(draw);
-  }
-  function setsize() {
-    w = canvas.width = canvas.offsetWidth || window.innerWidth;
-    h = canvas.height = canvas.offsetHeight || window.innerHeight;
-  }
-  window.addEventListener('resize', setsize);
-  draw();
+    function draw() {
+        ctx.clearRect(0, 0, w, h);
+        var t = Date.now() / 1000;
+        for (var i = 0; i < stars.length; i++) {
+            var s = stars[i];
+            s.x += s.vx;
+            s.y += s.vy;
+            if (s.x < 0 || s.x > w) s.vx *= -1;
+            if (s.y < 0 || s.y > h) s.vy *= -1;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(70,70,75,' + (s.o + Math.sin(t + s.x) * 0.2) + ')';
+            ctx.fill();
+        }
+        requestAnimationFrame(draw);
+    }
+    function setSize() {
+        w = canvas.width = canvas.offsetWidth || window.innerWidth;
+        h = canvas.height = canvas.offsetHeight || window.innerHeight;
+    }
+    window.addEventListener('resize', setSize);
+    draw();
 }
-setupstars(document.getElementById('stars'));
+setupStars(document.getElementById('stars'));
 </script>
 
 </body>
 </html>
-
