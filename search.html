@@ -3,7 +3,7 @@
 <head>
 <link rel="icon" href="assets/main/favicon.ico">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#171717">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,6 +29,10 @@ html, body {
     background: var(--bg);
     margin: 0;
     padding: 0;
+    position: fixed;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: auto;
+    touch-action: manipulation;
 }
 body{
     color:var(--text);
@@ -326,8 +330,11 @@ body{
     background:var(--bg);
     overflow:auto;
     -webkit-overflow-scrolling:touch;
-    touch-action:auto;
-    overscroll-behavior:contain
+    touch-action:pan-x pan-y pinch-zoom;
+    overscroll-behavior:contain;
+    pointer-events:auto;
+    user-select:auto;
+    -webkit-user-select:auto;
 }
 @media (max-width: 768px){
     .browser-wrapper{
@@ -345,10 +352,13 @@ body{
         display:none;
         height:100%;
         min-height:0;
-        overflow-y:scroll;
+        overflow:scroll;
         -webkit-overflow-scrolling:touch;
-        touch-action:pan-y pinch-zoom;
-        overscroll-behavior:auto
+        touch-action:pan-x pan-y pinch-zoom;
+        overscroll-behavior:auto;
+        pointer-events:auto;
+        user-select:auto;
+        -webkit-user-select:auto;
     }
 }
 #proxyOverlay {
@@ -373,8 +383,8 @@ body{
     width: 100%;
     height: 100%;
     background: #0a0a0a;
-    z-index: 10;
-    display: flex;
+    z-index: -1;
+    display: none;
     align-items: center;
     justify-content: center;
     opacity: 0;
@@ -384,11 +394,13 @@ body{
 #loadingOverlay.visible {
     opacity: 1;
     pointer-events: auto;
+    transition: opacity 0.2s ease-in;
 }
 #loadingOverlay.hidden {
     opacity: 0;
     transition: opacity 0.3s ease-out;
     pointer-events: none;
+    z-index: -1;
 }
 #loadingOverlay iframe {
     width: 100%;
@@ -462,29 +474,60 @@ let loadingTimeout = null;
 
 function showLoadingOverlay() {
     const overlay = document.getElementById('loadingOverlay');
-    if (overlay) {
-        overlay.classList.remove('hidden');
-        overlay.classList.add('visible');
-        if (loadingTimeout) {
-            clearTimeout(loadingTimeout);
-            loadingTimeout = null;
-        }
-        loadingTimeout = setTimeout(() => {
-            hideLoadingOverlay();
-        }, 15000);
+    if (!overlay) return;
+    if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+        loadingTimeout = null;
     }
+    overlay._hideAborted = true;
+    const old = document.getElementById('loadingFrame');
+    if (old) { old.src = 'about:blank'; old.remove(); }
+    const loadingFrame = document.createElement('iframe');
+    loadingFrame.src = 'assets/html/loading.html';
+    loadingFrame.id = 'loadingFrame';
+    overlay.appendChild(loadingFrame);
+    overlay.style.display = 'flex';
+    overlay.style.zIndex = '10';
+    void overlay.offsetHeight;
+    overlay.classList.remove('hidden');
+    overlay.classList.add('visible');
+    loadingTimeout = setTimeout(() => {
+        hideLoadingOverlay();
+    }, 15000);
 }
 
 function hideLoadingOverlay() {
     const overlay = document.getElementById('loadingOverlay');
-    if (overlay) {
-        overlay.classList.remove('visible');
-        overlay.classList.add('hidden');
-        if (loadingTimeout) {
-            clearTimeout(loadingTimeout);
-            loadingTimeout = null;
-        }
+    if (!overlay) return;
+
+    if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+        loadingTimeout = null;
     }
+
+    overlay._hideAborted = false;
+    overlay.classList.remove('visible');
+    overlay.classList.add('hidden');
+
+    const cleanup = () => {
+        if (overlay._hideAborted) return;
+        const frame = document.getElementById('loadingFrame');
+        if (frame) { frame.src = 'about:blank'; frame.remove(); }
+        overlay.style.display = 'none';
+        overlay.style.zIndex = '-1';
+    };
+
+    const onTransitionEnd = (e) => {
+        if (e.propertyName !== 'opacity') return;
+        overlay.removeEventListener('transitionend', onTransitionEnd);
+        clearTimeout(fallback);
+        cleanup();
+    };
+    overlay.addEventListener('transitionend', onTransitionEnd);
+    const fallback = setTimeout(() => {
+        overlay.removeEventListener('transitionend', onTransitionEnd);
+        cleanup();
+    }, 500);
 }
 
 function handlePageLoad() {
@@ -524,9 +567,9 @@ function setupLoadingOverlay() {
         }
     } catch (_) {}
     const proxyUrls = [
-        "https://lived-dealing-bald-birth.trycloudflare.com",
-        "https://suse-clarity-customers-glad.trycloudflare.com",
-        "https://grand-summer-compaq-lives.trycloudflare.com"
+        "https://use-either-scope-lower.trycloudflare.com",
+        "https://schedule-marcus-genome-precise.trycloudflare.com",
+        "https://elementary-brings-miracle-consumer.trycloudflare.com"
     ];
     const overlay = Object.assign(document.createElement("div"), {
         id: "proxyOverlay",
@@ -917,6 +960,10 @@ function createTab(url="about:blank", makeActive=true, skipProxy=false, displayU
     tab.append(favicon,label,close);
     const iframe=document.createElement("iframe");
     iframe.setAttribute("scrolling", "yes");
+    iframe.setAttribute("allowtransparency", "true");
+    iframe.style.touchAction = "pan-x pan-y pinch-zoom";
+    iframe.style.webkitOverflowScrolling = "touch";
+    iframe.style.overflowY = "scroll";
     iframe.allow="camera; microphone; display-capture; autoplay; clipboard-read; clipboard-write; web-share; xr-spatial-tracking; gamepad; geolocation; accelerometer; ambient-light-sensor; battery; bluetooth; browsing-topics; compute-pressure; document-domain; encrypted-media; execution-while-not-rendered; execution-while-out-of-viewport; fullscreen; gyroscope; hid; identity-credentials-get; idle-detection; keyboard-map; local-fonts; magnetometer; midi; otp-credentials; payment; picture-in-picture; publickey-credentials-create; publickey-credentials-get; screen-wake-lock; serial; speaker-selection; storage-access; usb; window-management";
     iframe.className="webview";
     const obj={
@@ -1156,6 +1203,47 @@ document.addEventListener("keydown",e=>{
 function getStartupURL(){
     return _launchParams.url || null;
 }
+
+(function applyMobileTouchFix() {
+    document.addEventListener('touchstart', function(e) {
+        const target = e.target;
+        if (target && (target.classList.contains('webview') || target.closest('.page'))) {
+        }
+    }, { passive: true });
+
+    const pageEl = document.getElementById('page');
+    if (pageEl) {
+        pageEl.addEventListener('touchmove', function(e) {
+            if (e.target === pageEl) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    }
+
+    function patchIframeTouchAction(iframe) {
+        if (!iframe) return;
+        iframe.style.touchAction = 'pan-x pan-y pinch-zoom';
+        iframe.style.webkitOverflowScrolling = 'touch';
+        iframe.style.pointerEvents = 'auto';
+        iframe.addEventListener('load', function() {
+            iframe.style.touchAction = 'pan-x pan-y pinch-zoom';
+            iframe.style.webkitOverflowScrolling = 'touch';
+            iframe.style.pointerEvents = 'auto';
+        });
+    }
+
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+            m.addedNodes.forEach(function(node) {
+                if (node.tagName === 'IFRAME') {
+                    patchIframeTouchAction(node);
+                }
+            });
+        });
+    });
+    observer.observe(document.getElementById('page') || document.body, { childList: true, subtree: true });
+    document.querySelectorAll('iframe.webview').forEach(patchIframeTouchAction);
+})();
 </script>
 
 </body>

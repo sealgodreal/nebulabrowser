@@ -32,29 +32,14 @@
       .ms-logo, .ms-label, .mode-cards { opacity: 1 !important; animation: none !important; }
     }
 
-    #ms-bg-video {
+    #ms-bg-html {
       position: fixed;
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      border: 0;
       z-index: 0;
       pointer-events: none;
-    }
-
-    #ms-acrylic {
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      background: rgba(0, 0, 0, 0.30);
-    }
-
-    @media (min-width: 769px) and (prefers-reduced-motion: no-preference) {
-      #ms-acrylic {
-        backdrop-filter: blur(7px) saturate(1.2);
-        -webkit-backdrop-filter: blur(7px) saturate(1.2);
-      }
     }
 
     #mode-selector {
@@ -226,16 +211,13 @@
 
 <body>
 
-<video id="ms-bg-video"
-  src="assets/images/background.mp4"
-  autoplay
-  muted
-  playsinline
-  disablepictureinpicture
-  preload="auto">
-</video>
-
-<div id="ms-acrylic"></div>
+<iframe
+  id="ms-bg-html"
+  src="assets/html/bg.html"
+  title="Background"
+  aria-hidden="true"
+  tabindex="-1">
+</iframe>
 
 <div id="mode-selector">
 
@@ -321,7 +303,7 @@
   <span id="toastNotificationText"></span>
 </div>
 
-<script> // will take a sec to init
+<script>
 (function () {
   const params = new URLSearchParams(window.location.search);
   const state = params.get('state');
@@ -335,33 +317,6 @@
 
 <script>
 document.title = "Student Account Initializer";
-
-(function () {
-  const vid = document.getElementById('ms-bg-video');
-
-  if (!vid) return;
-
-  function tryPlay() {
-    if (!document.hidden && vid.paused) {
-      vid.play().catch(() => {});
-    }
-  }
-
-  vid.addEventListener('ended', () => {
-    vid.currentTime = 0;
-    vid.play().catch(() => {});
-  });
-
-  vid.addEventListener('pause', tryPlay);
-
-  window.addEventListener('focus', tryPlay);
-
-  document.addEventListener('visibilitychange', () => {
-    document.hidden ? vid.pause() : tryPlay();
-  });
-
-  vid.play().catch(() => {});
-})();
 
 let _scriptsLoaded = {
   full: false,
