@@ -516,8 +516,14 @@ function handlePageLoad() { hideLoadingOverlay(); }
 
 function isLocalFile(url) {
     if (!url) return false;
-    if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("about:")) return false;
-    return true;
+    if (url.startsWith("about:") || url.startsWith("data:") || url.startsWith("blob:")) return true;
+    if (url.startsWith("file:")) return true;
+    try {
+        const resolved = new URL(url, document.baseURI);
+        return resolved.origin === window.location.origin;
+    } catch {
+        return false;
+    }
 }
 
 function getHomeURL(){
@@ -743,25 +749,26 @@ function closeTab(id){
 function loadURL(id, raw, skipProxy, addHistory=true, displayUrl=null){
     const t = tabs.find(t=>t.id===id);
     if(!t) return;
-    const url = skipProxy ? raw : formatURL(raw);
+    const bypassProxy = skipProxy || isLocalFile(raw);
+    const url = bypassProxy ? raw : formatURL(raw);
     if(addHistory){
         t.history = t.history.slice(0, t.historyIndex+1);
-        if(t.history[t.history.length-1]?.url !== url || t.history[t.history.length-1]?.skipProxy !== skipProxy){
-            t.history.push({ url, skipProxy, displayUrl: displayUrl||url });
+        if(t.history[t.history.length-1]?.url !== url || t.history[t.history.length-1]?.skipProxy !== bypassProxy){
+            t.history.push({ url, skipProxy: bypassProxy, displayUrl: displayUrl||url });
         }
         t.historyIndex = t.history.length-1;
     }
     t.url = url;
     t.displayUrl = displayUrl || url;
-    t.skipProxy = skipProxy;
-    t.reloadPending = !skipProxy && url !== "about:blank";
+    t.skipProxy = bypassProxy;
+    t.reloadPending = !bypassProxy && url !== "about:blank";
     if(activeTab?.id === id){
         urlInput.value = t.displayUrl;
-        if(!skipProxy && url !== "about:blank") showLoadingOverlay();
+        if(!bypassProxy && url !== "about:blank") showLoadingOverlay();
     }
     t.label.textContent = t.displayUrl===NEW_TAB_ADDRESS ? "New Tab" : getTabTitle(url);
     if(url === "about:blank"){ t.iframe.src = "about:blank"; }
-    else if(skipProxy){ t.iframe.src = url; }
+    else if(bypassProxy){ t.iframe.src = url; }
     else{ t.iframe.src = toProxy(url); }
 }
 
