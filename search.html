@@ -529,9 +529,9 @@ function isLocalFile(url) {
 function getHomeURL(){
     const state = _launchParams.originalstate;
     if (state === "full" || state === "browser") {
-        return `./8fzq2m7xk9vp.html?state=${encodeURIComponent(state)}`;
+        return `./dashboard.html?state=${encodeURIComponent(state)}`;
     }
-    return "./8fzq2m7xk9vp.html?state=full";
+    return "./dashboard.html";
 }
 
 const HOME = getHomeURL();
