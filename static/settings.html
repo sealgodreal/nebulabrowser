@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+  <title>Home - Classroom</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/gclassroom.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/gclassroom.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/gclassroom.png" />
+  <link rel="stylesheet" href="index.css" />
+  <script src="assets/js/settings.js"></script>
+</head>
+<body>
+  <iframe id="background-frame" src="assets/bg.html" title="Background"></iframe>
+  <header id="topbar">
+    <a class="topbar-brand" href="/" title="Nebula Unblocker">
+      <img src="assets/icon.png" alt="" aria-hidden="true" />
+      <span>Nebula Unblocker</span>
+    </a>
+    <nav class="topbar-actions">
+      <a class="topbar-btn" href="/" title="Back home" aria-label="Back home">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        <span class="topbar-btn-label">Home</span>
+      </a>
+    </nav>
+  </header>
+  <main class="settings-page">
+    <div class="settings-wrap">
+      <h1 class="settings-title">Settings</h1>
+      <p class="settings-sub">Set your preferences.</p>
+      <div class="settings-grid">
+        <section class="setting-card">
+          <h2>About:Blank Cloak</h2>
+          <p>Disguises the page as an about:blank url.</p>
+          <div class="card-controls">
+            <button id="set-autoCloak" type="button" class="switch" role="switch" aria-checked="false" aria-label="Auto Cloak"><span class="knob"></span></button>
+            <button id="cloak-now" type="button" class="pill">One-time cloak</button>
+          </div>
+        </section>
+        <section class="setting-card">
+          <h2>Anti-Close</h2>
+          <p>Shows a popup before tab closes. Useful for GoGuardian users.</p>
+          <div class="card-controls">
+            <button id="set-antiClose" type="button" class="switch" role="switch" aria-checked="false" aria-label="Anti-Close"><span class="knob"></span></button>
+          </div>
+        </section>
+        <section class="setting-card">
+          <h2>Search Engine</h2>
+          <p>Used to show your search results.</p>
+          <div class="card-controls" id="engine-pills">
+            <button type="button" class="pill" data-value="duckduckgo">DuckDuckGo</button>
+            <button type="button" class="pill" data-value="startpage">Startpage</button>
+            <button type="button" class="pill" data-value="google">Google</button>
+            <button type="button" class="pill" data-value="bing">Bing</button>
+            <button type="button" class="pill" data-value="brave">Brave</button>
+          </div>
+        </section>
+        <section class="setting-card">
+          <h2>Transport</h2>
+          <p>How traffic reaches the network.</p>
+          <div class="card-controls" id="transport-pills">
+            <button type="button" class="pill" data-value="auto">Auto</button>
+            <button type="button" class="pill" data-value="epoxy">Epoxy</button>
+            <button type="button" class="pill" data-value="libcurl">Libcurl</button>
+          </div>
+        </section>
+        <section class="setting-card">
+          <h2>Proxy scope</h2>
+          <p>Which worker handles the site. I'd recommend keeping it auto.</p>
+          <div class="card-controls" id="scope-pills">
+            <button type="button" class="pill" data-value="auto">Auto</button>
+            <button type="button" class="pill" data-value="service">Service</button>
+            <button type="button" class="pill" data-value="assignments">Assignments</button>
+          </div>
+        </section>
+      </div>
+      <span id="settings-status" class="settings-status"></span>
+    </div>
+  </main>
+  <script>
+    (function () {
+      const s = getNebulaSettings();
+      const status = document.getElementById("settings-status");
+      function say(msg) {
+        if (!status) return;
+        status.textContent = msg;
+        clearTimeout(say._t);
+        say._t = setTimeout(() => (status.textContent = ""), 1800);
+      }
+      function bindSwitch(id, key, onChange) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.setAttribute("aria-checked", String(!!s[key]));
+        el.classList.toggle("on", !!s[key]);
+        el.addEventListener("click", () => {
+          const next = saveNebulaSettings({ [key]: !getNebulaSettings()[key] });
+          el.setAttribute("aria-checked", String(!!next[key]));
+          el.classList.toggle("on", !!next[key]);
+          if (onChange) onChange(next);
+          say("Saved");
+        });
+      }
+      function bindPills(id, key, onChange) {
+        const box = document.getElementById(id);
+        if (!box) return;
+        const pills = Array.from(box.querySelectorAll(".pill"));
+        function paint(value) {
+          pills.forEach((p) => p.classList.toggle("active", p.dataset.value === value));
+        }
+        paint(s[key]);
+        pills.forEach((p) => {
+          p.addEventListener("click", () => {
+            const next = saveNebulaSettings({ [key]: p.dataset.value });
+            paint(next[key]);
+            if (onChange) onChange(next);
+            say("Saved");
+          });
+        });
+      }
+      bindSwitch("set-autoCloak", "autoCloak");
+      bindSwitch("set-antiClose", "antiClose", () => applyNebulaAntiClose());
+      bindPills("engine-pills", "searchEngine");
+      bindPills("scope-pills", "scope");
+      bindPills("transport-pills", "transport", (next) => {
+        try {
+          localStorage.removeItem("nebulaTransport");
+          if (next.transport !== "auto") {
+            localStorage.setItem("nebulaTransport", next.transport === "libcurl" ? "/libcurl/index.mjs" : "/epoxy/index.mjs");
+          }
+        } catch {}
+      });
+      const now = document.getElementById("cloak-now");
+      if (now) {
+        now.addEventListener("click", () => {
+          cloakNebulaSite();
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

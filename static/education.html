@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+  <title>Home - Classroom</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/gclassroom.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/gclassroom.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/gclassroom.png" />
+  <link rel="stylesheet" href="index.css" />
+  <style>
+    html,
+    body {
+      height: auto;
+      min-height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior-y: auto;
+    }
+    body {
+      display: block;
+    }
+    .settings-page {
+      overflow: visible;
+    }
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 22px;
+    }
+    @media (max-width: 640px) {
+      .games-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+    .game-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 14px;
+      min-height: 0;
+      padding: 18px 12px;
+      border: none;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      color: #fff;
+      font: 500 19px "Roboto", Arial, Helvetica, sans-serif;
+      letter-spacing: 0.01em;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .game-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      object-fit: contain;
+      display: block;
+      flex-shrink: 0;
+      background: transparent;
+      padding: 0;
+      transition: transform 0.2s ease;
+    }
+    .game-icon-fallback {
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font-size: 30px;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .game-name {
+      display: block;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+    .game-card small {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      font-weight: 300;
+    }
+    .game-card:hover {
+      border-color: transparent;
+      background: transparent;
+      transform: translateY(-2px);
+    }
+    .game-card:hover .game-icon {
+      transform: scale(1.08);
+    }
+    .game-card:active {
+      transform: translateY(0);
+    }
+    .topbar-btn.active {
+      opacity: 1;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+    .games-search {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin: 0 0 6px;
+    }
+    .games-search-box {
+      position: relative;
+      flex: 0 1 420px;
+      width: 100%;
+      max-width: 100%;
+    }
+    .games-search-box .games-search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      z-index: 2;
+      display: block;
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      transform: translateY(-50%);
+      color: #5c5c65;
+      pointer-events: none;
+    }
+    .games-search input {
+      width: 100%;
+      height: 44px;
+      padding: 0 18px 0 42px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 10px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.045);
+      color: #fff;
+      font: 400 14px "Roboto", Arial, Helvetica, sans-serif;
+      letter-spacing: 0.005em;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .games-search input::placeholder {
+      color: #5c5c65;
+    }
+    .games-search input:hover {
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+    .games-search input:focus {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+    .games-search input::-webkit-search-cancel-button {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      padding: 0;
+      cursor: pointer;
+      border: none;
+      background-color: #4a4a52;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 4l8 8M12 4l-8 8' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 4l8 8M12 4l-8 8' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+    }
+    .games-search input::-ms-clear {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <script src="/baremux/index.js"></script>
+  <script src="/wk/wk2.js"></script>
+  <script src="/wk/wk3.js"></script>
+  <script src="/assets/js/settings.js"></script>
+  <script src="/assets/js/transport.js"></script>
+  <header id="topbar">
+    <a class="topbar-brand" href="/" title="Nebula Unblocker">
+      <img src="assets/icon.png" alt="" aria-hidden="true" />
+      <span>Nebula Unblocker</span>
+    </a>
+    <nav class="topbar-actions">
+      <a class="topbar-btn active" href="/geometry" title="Games" aria-label="Games">
+        <svg width="32" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="12" rx="5"></rect>
+          <path d="M7 11v4M5 13h4"></path>
+          <circle cx="17" cy="12" r="1" fill="currentColor"></circle>
+          <circle cx="15" cy="14" r="1" fill="currentColor"></circle>
+        </svg>
+        <span class="topbar-btn-label">Games</span>
+      </a>
+      <a class="topbar-btn" href="/stem" title="Apps" aria-label="Apps">
+        <svg width="32" height="22" viewBox="0 0 18 18" fill="none">
+          <rect x="1" y="1" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"></rect>
+          <rect x="10" y="1" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"></rect>
+          <rect x="1" y="10" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"></rect>
+          <rect x="10" y="10" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"></rect>
+          </svg>
+        <span class="topbar-btn-label">Apps</span>
+      </a>
+      <a class="topbar-btn" href="/algebra" title="Settings" aria-label="Settings">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+        <span class="topbar-btn-label">Settings</span>
+      </a>
+    </nav>
+  </header>
+  <iframe id="background-frame" src="assets/bg.html" title="Background"></iframe>
+  <main class="settings-page">
+    <div class="settings-wrap">
+      <h1 class="settings-title">Games</h1>
+      <p id="games-status" class="settings-sub">Loading games...</p>
+      <div class="games-search">
+        <div class="games-search-box">
+          <svg class="games-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <line x1="16.5" y1="16.5" x2="21" y2="21" />
+          </svg>
+          <input id="games-search" type="search" placeholder="Search any game..." autocomplete="off" aria-label="Search games" />
+        </div>
+      </div>
+      <div id="games-grid" class="games-grid"></div>
+    </div>
+  </main>
+  <span class="whoami-link">dsc.gg/nebulabest</span>
+  <script>
+    const game_list = "/data/gms.json";
+
+    function faviconFor(url, size) {
+      try {
+        const host = new URL(url).hostname;
+        return "https://www.google.com/s2/favicons?domain=" + encodeURIComponent(host) + "&sz=" + (size || 128);
+      } catch {
+        return "";
+      }
+    }
+
+    function iconFor(game, size) {
+      const custom = game && (game.icon || game.favicon);
+      if (typeof custom === "string" && custom.trim()) return custom.trim();
+      return faviconFor(game.url, size);
+    }
+
+    async function loadGames() {
+      const res = await fetch(game_list, { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+      if (Array.isArray(data)) return data;
+      if (data && Array.isArray(data.games)) return data.games;
+      return [];
+    }
+
+    function normalizeText(s) {
+      return (s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().replace(/\s+/g, " ");
+    }
+
+    function isSubsequence(needle, haystack) {
+      if (!needle) return true;
+      let j = 0;
+      for (let i = 0; i < haystack.length && j < needle.length; i++) {
+        if (haystack[i] === needle[j]) j++;
+      }
+      return j === needle.length;
+    }
+
+    function smartMatch(name, query) {
+      const n = normalizeText(name);
+      const q = normalizeText(query);
+      if (!q) return true;
+      if (n.includes(q)) return true;
+      const compactName = n.replace(/ /g, "");
+      return q.split(" ").every((tok) => {
+        if (!tok) return true;
+        return n.includes(tok) || isSubsequence(tok, compactName);
+      });
+    }
+
+    function filterGames(games, query) {
+      if (!normalizeText(query)) return games.slice();
+      return games.filter((g) => g && g.name && smartMatch(g.name, query));
+    }
+    function playGame(url) {
+      if (!url) return;
+      const encodedUrl = __uv$config.encodeUrl(url);
+      localStorage.setItem("targeturl", encodedUrl);
+      window.location.href = "/math";
+    }
+
+    function renderGames(grid, games) {
+      grid.textContent = "";
+      games.forEach((game) => {
+        if (!game || !game.url || !game.name) return;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "game-card";
+        btn.title = game.name;
+
+        const fallback = document.createElement("span");
+        fallback.className = "game-icon-fallback";
+        fallback.textContent = (game.name || "?").trim().charAt(0).toUpperCase();
+        fallback.setAttribute("aria-hidden", "true");
+
+        const icon = document.createElement("img");
+        icon.className = "game-icon";
+        icon.alt = "";
+        icon.loading = "lazy";
+        icon.decoding = "async";
+        icon.draggable = false;
+        const src = iconFor(game, 128);
+        if (src) icon.src = src;
+        icon.addEventListener("error", () => {
+          icon.style.display = "none";
+          fallback.style.display = "flex";
+        });
+        if (icon.complete && icon.naturalWidth === 0 && src) {
+          icon.style.display = "none";
+          fallback.style.display = "flex";
+        }
+
+        const label = document.createElement("span");
+        label.className = "game-name";
+        label.textContent = game.name;
+
+        btn.appendChild(icon);
+        btn.appendChild(fallback);
+        btn.appendChild(label);
+        btn.addEventListener("click", () => playGame(game.url));
+        grid.appendChild(btn);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const grid = document.getElementById("games-grid");
+      const status = document.getElementById("games-status");
+      const search = document.getElementById("games-search");
+      let allGames = [];
+      let loadFailed = false;
+
+      function applySearch() {
+        if (loadFailed) return;
+        const query = search ? search.value : "";
+        if (!normalizeText(query)) {
+          renderGames(grid, allGames);
+          status.textContent = "Loaded " + grid.children.length + " games.";
+          return;
+        }
+        const results = filterGames(allGames, query);
+        renderGames(grid, results);
+        if (!results.length || !grid.children.length) {
+          status.textContent = "No games matched your search.";
+        } else {
+          status.textContent = "Found " + grid.children.length + " results.";
+        }
+      }
+
+      try {
+        status.textContent = "Loading games...";
+        allGames = await loadGames();
+        renderGames(grid, allGames);
+        if (!grid.children.length) {
+          loadFailed = true;
+          status.textContent = "Failed to load, consider reloading.";
+        } else {
+          status.textContent = "Loaded " + grid.children.length + " games.";
+        }
+      } catch (err) {
+        console.error("Failed to load games:", err);
+        loadFailed = true;
+        status.textContent = "Failed to load, consider reloading.";
+      }
+      if (search) search.addEventListener("input", applySearch);
+      try { if (typeof maybeNebulaAutoCloak === "function") maybeNebulaAutoCloak(); } catch {}
+    });
+  </script>
+</body>
+</html>

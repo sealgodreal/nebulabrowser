@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+  <title>Home - Classroom</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/gclassroom.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/gclassroom.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/gclassroom.png" />
+  <link rel="stylesheet" href="index.css" />
+  <style>
+    .site-info-link {
+      position: fixed;
+      right: 18px;
+      bottom: 16px;
+      z-index: 10;
+      color: rgba(255, 255, 255, 0.45);
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    .site-info-link:hover {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <script src="/baremux/index.js"></script>
+  <script src="/wk/wk2.js"></script>
+  <script src="/wk/wk3.js"></script>
+  <script src="/assets/js/settings.js"></script>
+  <script src="/assets/js/transport.js"></script>
+  <header id="topbar">
+    <a class="topbar-brand" href="/" title="Nebula Unblocker">
+      <img src="assets/icon.png" alt="" aria-hidden="true" />
+      <span>Nebula Unblocker</span>
+    </a>
+    <nav class="topbar-actions">
+      <a class="topbar-btn" href="/geometry" title="Games" aria-label="Games">
+        <svg width="32" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="12" rx="5"></rect>
+          <path d="M7 11v4M5 13h4"></path>
+          <circle cx="17" cy="12" r="1" fill="currentColor"></circle>
+          <circle cx="15" cy="14" r="1" fill="currentColor"></circle>
+        </svg>
+        <span class="topbar-btn-label">Games</span>
+      </a>
+      <a class="topbar-btn" href="/stem" title="Apps" aria-label="Apps">
+        <svg width="32" height="22" viewBox="0 0 18 18" fill="none">
+          <rect x="1" y="1" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"></rect>
+          <rect x="10" y="1" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"></rect>
+          <rect x="1" y="10" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"></rect>
+          <rect x="10" y="10" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"></rect>
+          </svg>
+        <span class="topbar-btn-label">Apps</span>
+      </a>
+      <a class="topbar-btn" href="/algebra" title="Settings" aria-label="Settings">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+        <span class="topbar-btn-label">Settings</span>
+      </a>
+    </nav>
+  </header>
+  <iframe id="background-frame" src="assets/bg.html" title="Background"></iframe>
+  <main class="center-stack">
+    <div title="logo" class="flex-center logo-wrapper header-center">
+      <img class="logo" src="logo.png" alt="neb" />
+    </div>
+    <form id="form" class="flex-center">
+      <div class="search-box">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4" />
+          <path d="M10.5 10.5L13.5 13.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+        </svg>
+        <input id="address" type="text" placeholder="Search or enter URL" autocomplete="off" spellcheck="false" />
+        <button class="search-btn" type="submit" title="Search" aria-label="Search">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M2.5 7h9M8 3.5L11.5 7 8 10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+    </form>
+    <div class="subtitle-wrapper">
+      <p id="nebula-subtitle"></p>
+    </div>
+    <div class="desc left-margin">
+      <p id="sj-error"></p>
+      <pre id="sj-error-code"></pre>
+    </div>
+  </main>
+  <script src="/assets/js/subtexts.js"></script>
+  <script src="/assets/js/index.js"></script>
+  <script src="/assets/js/register.js" defer></script>
+  <script>
+    try { if (typeof maybeNebulaAutoCloak === "function") maybeNebulaAutoCloak(); } catch {}
+  </script>
+  <span class="whoami-link">dsc.gg/nebulabest</span>
+  <a href="/reading" class="site-info-link">Site Info</a>
+</body>
+</html>
