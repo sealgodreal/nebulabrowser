@@ -6,7 +6,7 @@ const nebulaSubtexts = [
   "follow our tiktok! (@nebulaunbl0cking)",
   "best unblocker!",
   "nebula on top",
-  "please dont expect this to work well on every single website"
+  "please dont expect this to work well on every single website",
   "sudo rm -rf --no-preserve-root /*",
   "sudo apt install opsec",
   "def not vibecoded",
@@ -97,7 +97,7 @@ const nebulaSubtexts = [
   "mercuryworkshop the goat",
   "my boy leo LITERALLY said \"nebula on top\" so thats another reason to use it",
   "yes bro WE are making mysterious potions in lunch",
-  "hmmmmmm?",
+  "hmmmmmm?"
 ]
 
 nebulaSubtexts.push("there are: " + (nebulaSubtexts.length + 1) + " total subtexts");
