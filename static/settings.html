@@ -69,15 +69,6 @@
             <button type="button" class="pill" data-value="libcurl">Libcurl</button>
           </div>
         </section>
-        <section class="setting-card">
-          <h2>Proxy scope</h2>
-          <p>Which worker handles the site. I'd recommend keeping it auto.</p>
-          <div class="card-controls" id="scope-pills">
-            <button type="button" class="pill" data-value="auto">Auto</button>
-            <button type="button" class="pill" data-value="service">Service</button>
-            <button type="button" class="pill" data-value="assignments">Assignments</button>
-          </div>
-        </section>
       </div>
       <span id="settings-status" class="settings-status"></span>
     </div>
@@ -125,7 +116,6 @@
       bindSwitch("set-autoCloak", "autoCloak");
       bindSwitch("set-antiClose", "antiClose", () => applyNebulaAntiClose());
       bindPills("engine-pills", "searchEngine");
-      bindPills("scope-pills", "scope");
       bindPills("transport-pills", "transport", (next) => {
         try {
           localStorage.removeItem("nebulaTransport");

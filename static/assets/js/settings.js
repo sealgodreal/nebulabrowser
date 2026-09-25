@@ -7,7 +7,6 @@ const NEBULA_DEFAULTS = {
   antiClose: false,
   searchEngine: "duckduckgo",
   transport: "auto",
-  scope: "auto",
 };
 
 const NEBULA_ENGINES = {
@@ -23,14 +22,18 @@ function getNebulaSettings() {
     const raw = localStorage.getItem(NEBULA_SETTINGS_KEY);
     if (!raw) return { ...NEBULA_DEFAULTS };
     const parsed = JSON.parse(raw);
-    return { ...NEBULA_DEFAULTS, ...parsed };
+    const merged = { ...NEBULA_DEFAULTS, ...parsed };
+    delete merged.scope;
+    return merged;
   } catch {
     return { ...NEBULA_DEFAULTS };
   }
 }
 
 function saveNebulaSettings(patch) {
-  const next = { ...getNebulaSettings(), ...patch };
+  const clean = { ...patch };
+  delete clean.scope;
+  const next = { ...getNebulaSettings(), ...clean };
   try {
     localStorage.setItem(NEBULA_SETTINGS_KEY, JSON.stringify(next));
   } catch {}
@@ -217,8 +220,8 @@ function nebulaShowTapToCloak() {
     btn.style.cssText =
       "padding:9px 18px;border:1.5px solid rgba(255,255,255,0.9);border-radius:10px;background:rgba(255,255,255,0.9);color:#161616;" +
       "font-size:13px;font-weight:400;cursor:pointer;";
-    // NOTE: window.open MUST run synchronously inside this tap or mobile
-    // browsers will block it again (leaving the real URL visible).
+    
+    
     btn.addEventListener("click", () => {
       const ok = cloakNebulaSite({ silent: true });
       if (ok) nebulaDisarmAutoCloakRetry();
@@ -241,9 +244,9 @@ function nebulaShowTapToCloak() {
 function nebulaArmAutoCloakRetry() {
   try {
     if (window.__nebulaCloakGestureHandler) return;
-    // First tap/keypress after load counts as a user gesture, so a
-    // synchronous window.open("about:blank") inside it is allowed on
-    // mobile Safari / Chrome iOS where load-time popups are blocked.
+    
+    
+    
     const handler = () => {
       let ok = false;
       try { ok = cloakNebulaSite({ silent: true }); } catch { ok = false; }
@@ -277,9 +280,9 @@ function cloakNebulaSite(opts) {
   const targetUrl = nebulaCloakTargetUrl();
   let popup = null;
   try {
-    // No feature string and no "noopener": some mobile browsers treat
-    // window.open with features/noopener as a new unscriptable tab, which
-    // breaks the document.write below and leaves the real URL visible.
+    
+    
+    
     popup = window.open("about:blank", "_blank");
   } catch {
     popup = null;
@@ -294,8 +297,8 @@ function cloakNebulaSite(opts) {
     if (!opts.silent) nebulaShowCloakBlocked();
     return false;
   }
-  // If the write was blocked (e.g. delayed popup on iOS), the tab is an
-  // empty about:blank — treat as failure so callers can retry on next tap.
+  
+  
   try {
     if (popup.closed) return false;
   } catch {}
@@ -328,10 +331,10 @@ function maybeNebulaAutoCloak() {
     try { sessionStorage.removeItem("nebula_autocloaked"); } catch {}
     const s = getNebulaSettings();
     if (!s.autoCloak) return;
-    // Desktop: load-time window.open usually succeeds and the new tab's
-    // address bar reads "about:blank". Mobile / hardened browsers block
-    // load-time popups (no user activation), so arm a retry on the first
-    // tap/keypress which runs window.open synchronously in a gesture.
+    
+    
+    
+    
     const ok = cloakNebulaSite();
     if (!ok) {
       nebulaArmAutoCloakRetry();

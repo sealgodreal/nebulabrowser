@@ -19,44 +19,13 @@ function scopeOverride() {
     if (q === "assignments") return ASSIGNMENTS_PREFIX;
   } catch {
   }
-  try {
-    if (typeof getNebulaSettings === "function") {
-      const s = getNebulaSettings();
-      if (s && s.scope === "service") return SERVICE_PREFIX;
-      if (s && s.scope === "assignments") return ASSIGNMENTS_PREFIX;
-    }
-  } catch {
-  }
-  try {
-    const stored = localStorage.getItem("nebulaScope");
-    if (stored === "service") return SERVICE_PREFIX;
-    if (stored === "assignments") return ASSIGNMENTS_PREFIX;
-  } catch {
-  }
   return null;
-}
-
-function isVercelHost() {
-
-
-  try { localStorage.removeItem("isVercel"); } catch {}
-  try {
-    return location.hostname.endsWith(".vercel.app");
-  } catch {
-    return false;
-  }
 }
 
 function activePrefix() {
   const forced = scopeOverride();
   if (forced) return forced;
-  try {
-    const stored = localStorage.getItem("proxyScope");
-    if (stored === ASSIGNMENTS_PREFIX || stored === SERVICE_PREFIX) return stored;
-  } catch {
-  }
-  if (isVercelHost()) return ASSIGNMENTS_PREFIX;
-  return SERVICE_PREFIX;
+  return ASSIGNMENTS_PREFIX;
 }
 
 function rememberPrefix(prefix) {
@@ -136,16 +105,7 @@ async function resolvePrefixForUrl(decodedUrl) {
     rememberPrefix(forced);
     return forced;
   }
-  if (isVercelHost()) return ASSIGNMENTS_PREFIX;
-  try {
-    const hosts = await getBListHosts();
-    if (decodedUrl && hostNeedsAssignments(decodedUrl, hosts)) {
-      return ASSIGNMENTS_PREFIX;
-    }
-  } catch (error) {
-    console.warn("Could not resolve proxy scope, defaulting to /service/:", error);
-  }
-  return SERVICE_PREFIX;
+  return ASSIGNMENTS_PREFIX;
 }
 
 function encodeUrl(url) {
@@ -290,18 +250,9 @@ function entryTargetUrl(entry) {
 }
 
 async function entryPrefix(entry) {
-  if (entry && isValidPrefix(entry.p)) return entry.p;
-  const encoded = entryTargetUrl(entry);
-  if (!encoded) return activePrefix();
-  let decoded = null;
-  try {
-    decoded = decodeUrl(encoded);
-  } catch {
-    decoded = null;
-  }
-  const prefix = await resolvePrefixForUrl(decoded || encoded);
-  entry.p = prefix;
-  return prefix;
+  const forced = scopeOverride();
+  if (forced) return forced;
+  return ASSIGNMENTS_PREFIX;
 }
 
 function persistEntryPrefix(encodedUrl, prefix) {

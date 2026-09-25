@@ -9,6 +9,30 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/gclassroom.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/gclassroom.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/gclassroom.png" />
+  <script>
+    (function () {
+      try {
+        var q = null;
+        try { q = new URLSearchParams(location.search).get("firstLoad"); } catch (e) { q = null; }
+        if (q === "yes") {
+          try { localStorage.setItem("firstLoad", "no"); } catch (e) {}
+          var u = new URL(location.href);
+          u.searchParams.set("firstLoad", "no");
+          location.replace(u.toString());
+          return;
+        }
+        if (q === "no") {
+          try { localStorage.setItem("firstLoad", "no"); } catch (e) {}
+          return;
+        }
+        var stored = null;
+        try { stored = localStorage.getItem("firstLoad"); } catch (e) { stored = "no"; }
+        if (stored === "no") return;
+        try { localStorage.setItem("firstLoad", "no"); } catch (e) { return; }
+        location.reload();
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="index.css" />
   <script src="assets/js/settings.js"></script>
   <script src="assets/js/transport.js"></script>

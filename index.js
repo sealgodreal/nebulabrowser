@@ -11,6 +11,7 @@ import wisp from "wisp-server-node";
 const __dirname = path.resolve();
 const server = http.createServer();
 const bareServer = createBareServer('/seal/');
+const legacyBareServer = createBareServer('/bare/');
 const app = express(server);
 const PORT = 8000;
 
@@ -38,23 +39,27 @@ app.use((req, res) => {
 server.on("request", (req, res) => {
   if (bareServer.shouldRoute(req)) {
     bareServer.routeRequest(req, res);
+  } else if (legacyBareServer.shouldRoute(req)) {
+    legacyBareServer.routeRequest(req, res);
   } else app(req, res);
 });
 
 server.on("upgrade", (req, socket, head) => {
   if (bareServer.shouldRoute(req)) {
     bareServer.routeUpgrade(req, socket, head);
+  } else if (legacyBareServer.shouldRoute(req)) {
+    legacyBareServer.routeUpgrade(req, socket, head);
   } else if (req.url.endsWith("/wisp/")) {
     wisp.routeRequest(req, socket, head);
   } else socket.end();
 });
 
 server.on('listening', () => {
-  console.log("     welcome to \x1b[38;5;205mNebula Static\x1b[0m!");
-  console.log("    \x1b[38;5;242m---------------------------\x1b[0m");
-  console.log("     \x1b[38;5;117mhttp://localhost:" + PORT + "\x1b[0m");
-  console.log("     \x1b[38;5;117mhttp://127.0.0.1:" + PORT + "\x1b[0m");
-  console.log("     \x1b[38;5;117mhttp://0.0.0.0:" + PORT + "\x1b[0m");
+  console.log("     welcome to \x1b[38;5;205mNebula Unblocker\x1b[0m!");
+  console.log("    \x1b[38;5;242m------------------------------\x1b[0m");
+  console.log("       \x1b[38;5;117mhttp://localhost:" + PORT + "\x1b[0m");
+  console.log("       \x1b[38;5;117mhttp://127.0.0.1:" + PORT + "\x1b[0m");
+  console.log("       \x1b[38;5;117mhttp://0.0.0.0:" + PORT + "\x1b[0m");
   console.log("\x1b[38;5;238m\n   best unbl0cker - by seal\x1b[0m");
 });
 

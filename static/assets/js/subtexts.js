@@ -6,6 +6,7 @@ const nebulaSubtexts = [
   "follow our tiktok! (@nebulaunbl0cking)",
   "best unblocker!",
   "nebula on top",
+  "please dont expect this to work well on every single website"
   "sudo rm -rf --no-preserve-root /*",
   "sudo apt install opsec",
   "def not vibecoded",
@@ -32,7 +33,6 @@ const nebulaSubtexts = [
   "if youre seeing this, you are now a catboy",
   "no",
   "yes",
-  "frogiee1 PLEASE teach me your ways",
   "\"yo seal can i use ur vps for obfuscator bot\" - blast",
   "no subtext for you",
   "fuck now.gg",
@@ -41,7 +41,7 @@ const nebulaSubtexts = [
   "you should enable anti-close + auto about:blank cloaking",
   "\"whats the difference between a vpn and a vps?\"",
   "you guys are goated ❤️",
-  "is this hosted on vercel?",
+  "is this hosted on vercel? " + (window.location.origin.includes(".vercel.app") ? "yes it is" : "no it isnt"),
   "1.1.1.1 > 1.0.0.1",
   "ethernet > wifi",
   "digbar so tuff boiiii",
@@ -61,9 +61,10 @@ const nebulaSubtexts = [
   "please dont attempt to log into any of your personal accounts with this",
   "🎵 \"now youre stuck with me forever, dont need chloroform\"",
   "🎵 \"im having a bad day, im already mad today\"",
+  "🎵 \"now you gotta- i dont even feel like rapping no more\"",
   "WE are larping nebula 🤤",
-  "before nebula i actually used to make roblox scripts and a gtag mod menu",
-  "so you doxxed me because i said something back to you for shitting on me? lmfao",
+  "before nebula i actually used to make roblox scripts and gtag mod menus",
+  "so you doxxed me because i said something back to you for shitting on me? 😂",
   "dayum 👀",
   "nebula was supposed to be a dumb project",
   "super \"opsex\" (as blast/nitrix says)",
@@ -73,7 +74,33 @@ const nebulaSubtexts = [
   "larp larp larp sahur",
   "\"duuddeeee that was so fucking funnyyy\"",
   "index.html",
-];
+  "poorly coded 😔",
+  "nuh uh uh!",
+  "booyah!",
+  "yo the subtext ran away",
+  "me: trying to help nitrix wtih his unblocker\nnitrix: \"oh fuck, my toe slipped\"\nlegit fucks up the WHOLE project",
+  "\"bro my menu is the best\"",
+  "\"use my unblocker!!\"\nand then its so obviously 100% vibecoded",
+  "yo 8th period teach gotta chilllllll",
+  "ranking my classes: 1 ❤️, 2 ❤️, 3 💔, 4 💔, 5 ❤️, 6 ❤️❤️, 7 ❤️❤️❤️, 8 💔",
+  "\"bro can you give me the new link\"",
+  "\"bro fix roblox, its tweaking\" - literally fucking EVERYONE in my school",
+  "bleh",
+  "please note: some/most of the games may not work",
+  "this kid in my class searched the hub on a school computer lol",
+  "one two three, ayyyyy bee cee,",
+  "brr",
+  "sixty-seven.",
+  "ai",
+  "\"no miss im looking at the time\" except yes, theyre on they phone",
+  "javascript:void(0)",
+  "mercuryworkshop the goat",
+  "my boy leo LITERALLY said \"nebula on top\" so thats another reason to use it",
+  "yes bro WE are making mysterious potions in lunch",
+  "hmmmmmm?",
+]
+
+nebulaSubtexts.push("there are: " + (nebulaSubtexts.length + 1) + " total subtexts");
 
 const subtitle = document.getElementById("nebula-subtitle");
-subtitle.textContent = nebulaSubtexts[Math.floor(Math.random() * nebulaSubtexts.length)];
+if (subtitle) subtitle.textContent = nebulaSubtexts[Math.floor(Math.random() * nebulaSubtexts.length)];
