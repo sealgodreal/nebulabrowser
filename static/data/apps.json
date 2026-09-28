@@ -1,0 +1,63 @@
+[
+  {
+    "name": "YouTube",
+    "url": "https://www.youtube.com"
+  },
+  {
+    "name": "Discord",
+    "url": "https://discord.com"
+  },
+  {
+    "name": "Twitch",
+    "url": "https://twitch.tv"
+  },
+  {
+    "name": "Snapchat",
+    "url": "https://snapchat.com"
+  },
+  {
+    "name": "Instagram",
+    "url": "https://instagram.com"
+  },
+  {
+    "name": "SoundCloud",
+    "url": "https://soundcloud.com"
+  },
+  {
+    "name": "GeForce Now",
+    "url": "https://play.geforcenow.com"
+  },
+  {
+    "name": "CornHub",
+    "url": "https://cornhub.website"
+  },
+  {
+    "name": "Movies",
+    "url": "https://watch.spencerdevs.xyz",
+    "icon": "https://storage.googleapis.com/kaggle-datasets-images/1418899/2350192/f7eadc743f95f00a234fd02e637e3417/dataset-card.jpg"
+  },
+  {
+    "name": "Archive Of Our Own",
+    "url": "https://archiveofourown.org",
+    "icon": "https://img.icons8.com/color/1200/archive-of-our-own.jpg"
+  },
+  {
+    "name": "BlooketBot",
+    "url": "https://blooketbot.schoolcheats.net"
+  },
+  {
+    "name": "Visual Studio Code",
+    "url": "https://vscode.dev",
+    "icon": "https://avatars.fastly.steamstatic.com/25e28afd167395bc54e062fb53e1f050f46a3b2d_full.jpg"
+  },
+  {
+    "name": "Android",
+    "url": "https://nowgg.fun/apps/uncube/7074/now.html",
+    "icon": "https://pngimg.com/uploads/android_logo/android_logo_PNG17.png"
+  },
+  {
+    "name": "Aptoide",
+    "url": "https://nowgg.fun/apps/aptoide/5874/aptoide.html",
+    "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Aptoide_logo.svg/1280px-Aptoide_logo.svg.png"
+  }
+]
