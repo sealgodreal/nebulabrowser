@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Minecraftia&display=swap');
     html,
     body {
       margin: 0;
@@ -53,8 +54,17 @@
     .loading-text {
       font-size: 18px;
       font-weight: 500;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.08em;
       text-align: center;
+    }
+    .loading-text-sub {
+      margin-top: 6px;
+      font-family: 'Minecraftia', monospace;
+      font-size: 15px;
+      font-weight: normal;
+      letter-spacing: 0.04em;
+      text-align: center;
+      color: rgba(78, 78, 78, 1);
     }
     @keyframes spin {
       to {
@@ -69,6 +79,7 @@
   <div id="loading">
     <div class="loading-spinner"></div>
     <div class="loading-text">loading, be patient.</div>
+    <div class="loading-text-sub">sealsarcade.xyz</div>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script>

@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;1,300;1,400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
 
 * {
   box-sizing: border-box;
@@ -359,14 +360,20 @@ body {
   width: 100%;
 }
 
-.logo {
-  width: min(46vw, 260px);
-  height: auto;
-  max-height: 24vh;
-  max-height: 24dvh;
-  object-fit: contain;
-  margin-bottom: 12px;
-  flex-shrink: 0;
+.logo-text {
+  margin: 0 0 12px;
+  padding: 0;
+  color: #dfc2ef;
+  font-family: "Inter", "Roboto", Arial, Helvetica, sans-serif;
+  font-size: clamp(52px, 11vw, 82px);
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  text-transform: lowercase;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 .subtitle-wrapper {
@@ -547,11 +554,8 @@ body {
   .header-center {
     margin-top: 0;
   }
-  .logo {
-    width: min(66vw, 240px);
-    height: auto;
-    max-height: 22vh;
-    max-height: 22dvh;
+  .logo-text {
+    font-size: clamp(44px, 15vw, 60px);
   }
   .subtitle-wrapper {
     width: 94vw;
@@ -563,12 +567,8 @@ body {
     padding-top: 12px;
     padding-bottom: 12px;
   }
-  .logo {
-    width: min(36vw, 180px);
-    height: auto;
-    max-height: 20vh;
-    max-height: 20dvh;
-    margin-bottom: 12px;
+  .logo-text {
+    font-size: clamp(38px, 8.5vh, 52px);
   }
   .subtitle-wrapper {
     margin-bottom: 12px;

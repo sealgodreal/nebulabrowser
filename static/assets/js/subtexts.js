@@ -97,6 +97,10 @@ const nebulaSubtexts = [
   "hmmmmmm?",
   "i FINALLY added advertisements 🥹✌️",
   "bruhhh last year was PEAK",
+  "dear nikilis, FIX YOUR FUCKING GAME",
+  "mango mango mango mango mango",
+  "PLEASE stop attacking me when roblox stops working",
+  "i made $1.37 off ads so far (10/1/26)",
 ]
 
 nebulaSubtexts.push("there are: " + (nebulaSubtexts.length + 1) + " total subtexts");

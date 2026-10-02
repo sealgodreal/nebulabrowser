@@ -30,7 +30,7 @@ async function registerSW() {
     scope: '/service/',
   });
   await window.navigator.serviceWorker.register("/lab.js", {
-    scope: '/assignments/',
+    scope: '/lesson/',
   });
 }
 

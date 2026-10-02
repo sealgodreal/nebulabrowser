@@ -10,13 +10,13 @@ const TARGET_URL = "targeturl";
 const HISTORY_KEY = "browserHistory";
 const HISTORY_INDEX_KEY = "browserHistoryIndex";
 const SERVICE_PREFIX = "/service/";
-const ASSIGNMENTS_PREFIX = "/assignments/";
+const ASSIGNMENTS_PREFIX = "/lesson/";
 
 function scopeOverride() {
   try {
     const q = new URLSearchParams(location.search).get("scope");
     if (q === "service") return SERVICE_PREFIX;
-    if (q === "assignments") return ASSIGNMENTS_PREFIX;
+    if (q === "assignments" || q === "lesson") return ASSIGNMENTS_PREFIX;
   } catch {
   }
   return null;

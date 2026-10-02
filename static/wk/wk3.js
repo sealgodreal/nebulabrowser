@@ -1,5 +1,5 @@
 self.__uv$config = {
-    prefix: '/assignments/',
+    prefix: '/lesson/',
     bare: '/seal/',
     encodeUrl: Ultraviolet.codec.xor.encode,
     decodeUrl: Ultraviolet.codec.xor.decode,

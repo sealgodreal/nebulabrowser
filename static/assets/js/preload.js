@@ -1,7 +1,7 @@
 window.onload = async function () {
   let scope;
   const SERVICE_PREFIX = "/service/";
-  const ASSIGNMENTS_PREFIX = "/assignments/";
+  const ASSIGNMENTS_PREFIX = "/lesson/";
   const wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
   const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
 
@@ -26,7 +26,7 @@ window.onload = async function () {
     try {
       const q = new URLSearchParams(location.search).get("scope");
       if (q === "service") return SERVICE_PREFIX;
-      if (q === "assignments") return ASSIGNMENTS_PREFIX;
+      if (q === "assignments" || q === "lesson") return ASSIGNMENTS_PREFIX;
     } catch {
     }
     return null;
