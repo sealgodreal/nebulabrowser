@@ -4,14 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
   <title>Home - Classroom</title>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/x-icon" href="/assets/icon.png" />
+  <link rel="shortcut icon" type="image/x-icon" href="/assets/icon.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/gclassroom.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/gclassroom.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/gclassroom.png" />
   <link rel="stylesheet" href="index.css" />
   <script src="assets/js/settings.js"></script>
-  <script src="/assets/js/modules/head.js"></script>
+  <script src="assets/js/proxy.js"></script>
 </head>
 <body>
   <iframe id="background-frame" src="assets/bg.html" title="Background"></iframe>
@@ -34,40 +34,105 @@
     <div class="settings-wrap">
       <h1 class="settings-title">Settings</h1>
       <p class="settings-sub">Set your preferences.</p>
-      <div class="settings-grid">
-        <section class="setting-card">
-          <h2>About:Blank Cloak</h2>
-          <p>Disguises the page as an about:blank url.</p>
-          <div class="card-controls">
+      <div class="settings-list">
+        <section class="setting-row">
+          <div class="setting-info">
+            <h2>About:Blank Cloak</h2>
+            <p>Disguises the page as an about:blank url.</p>
+          </div>
+          <div class="setting-control">
+            <button id="cloak-now" type="button" class="ghost-btn">Cloak now</button>
             <button id="set-autoCloak" type="button" class="switch" role="switch" aria-checked="false" aria-label="Auto Cloak"><span class="knob"></span></button>
-            <button id="cloak-now" type="button" class="pill">One-time cloak</button>
           </div>
         </section>
-        <section class="setting-card">
-          <h2>Anti-Close</h2>
-          <p>Shows a popup before tab closes. Useful for GoGuardian users.</p>
-          <div class="card-controls">
+        <section class="setting-row">
+          <div class="setting-info">
+            <h2>Anti-Close</h2>
+            <p>Shows a popup before tab closes. Useful for GoGuardian users.</p>
+          </div>
+          <div class="setting-control">
             <button id="set-antiClose" type="button" class="switch" role="switch" aria-checked="false" aria-label="Anti-Close"><span class="knob"></span></button>
           </div>
         </section>
-        <section class="setting-card">
-          <h2>Search Engine</h2>
-          <p>Used to show your search results.</p>
-          <div class="card-controls" id="engine-pills">
-            <button type="button" class="pill" data-value="duckduckgo">DuckDuckGo</button>
-            <button type="button" class="pill" data-value="startpage">Startpage</button>
-            <button type="button" class="pill" data-value="google">Google</button>
-            <button type="button" class="pill" data-value="bing">Bing</button>
-            <button type="button" class="pill" data-value="brave">Brave</button>
+        <section class="setting-row">
+          <div class="setting-info">
+            <h2>Subtexts</h2>
+            <p>Toggles the rotating tagline beneath the search bar.</p>
+          </div>
+          <div class="setting-control">
+            <button id="set-subtexts" type="button" class="switch" role="switch" aria-checked="false" aria-label="Subtexts"><span class="knob"></span></button>
           </div>
         </section>
-        <section class="setting-card">
-          <h2>Transport</h2>
-          <p>How traffic reaches the network.</p>
-          <div class="card-controls" id="transport-pills">
-            <button type="button" class="pill" data-value="auto">Auto</button>
-            <button type="button" class="pill" data-value="epoxy">Epoxy</button>
-            <button type="button" class="pill" data-value="libcurl">Libcurl</button>
+        <section class="setting-row">
+          <div class="setting-info">
+            <h2>Theme Accent</h2>
+            <p>Changes the general theme of Nebula.</p>
+          </div>
+          <div class="setting-control">
+            <select id="theme-select" class="select" aria-label="Theme Accent">
+              <option value="default">Default</option>
+              <option value="moss">Moss</option>
+              <option value="blue-lavender">Blue Lavender</option>
+              <option value="rose">Rose</option>
+              <option value="sand">Sand</option>
+            </select>
+          </div>
+        </section>
+        <section class="setting-row">
+          <div class="setting-info">
+            <h2>Tab Disguise</h2>
+            <p>Disguises the tab into looking like another site.</p>
+          </div>
+          <div class="setting-control">
+            <select id="disguise-select" class="select" aria-label="Tab Disguise">
+              <option value="none">None</option>
+              <option value="google">Google</option>
+              <option value="drive">Google Drive</option>
+              <option value="classroom">Google Classroom</option>
+              <option value="docs">Google Docs</option>
+              <option value="canvas">Canvas</option>
+              <option value="clever">Clever</option>
+            </select>
+          </div>
+        </section>
+        <section class="setting-row">
+          <div class="setting-info">
+            <h2>Search Engine</h2>
+            <p>Used to show your search results.</p>
+          </div>
+          <div class="setting-control">
+            <select id="engine-select" class="select" aria-label="Search Engine">
+              <option value="duckduckgo">DuckDuckGo</option>
+              <option value="startpage">Startpage</option>
+              <option value="google">Google</option>
+              <option value="bing">Bing</option>
+              <option value="brave">Brave</option>
+            </select>
+          </div>
+        </section>
+        <section class="setting-row">
+          <div class="setting-info">
+            <h2>Transport</h2>
+            <p>How traffic reaches the network.</p>
+          </div>
+          <div class="setting-control">
+            <select id="transport-select" class="select" aria-label="Transport">
+              <option value="auto">Auto</option>
+              <option value="epoxy">Epoxy</option>
+              <option value="libcurl">Libcurl</option>
+            </select>
+          </div>
+        </section>
+        <section class="setting-row">
+          <div class="setting-info">
+            <h2>Default Proxy</h2>
+            <p>The engine which loads proxied pages.</p>
+          </div>
+          <div class="setting-control">
+            <select id="proxy-select" class="select" aria-label="Proxy">
+              <option value="ultraviolet">Ultraviolet</option>
+              <option value="scramjet">Scramjet</option>
+            </select>
           </div>
         </section>
       </div>
@@ -81,8 +146,9 @@
       function say(msg) {
         if (!status) return;
         status.textContent = msg;
+        status.classList.add("show");
         clearTimeout(say._t);
-        say._t = setTimeout(() => (status.textContent = ""), 1800);
+        say._t = setTimeout(() => status.classList.remove("show"), 1800);
       }
       function bindSwitch(id, key, onChange) {
         const el = document.getElementById(id);
@@ -94,30 +160,27 @@
           el.setAttribute("aria-checked", String(!!next[key]));
           el.classList.toggle("on", !!next[key]);
           if (onChange) onChange(next);
-          say("Saved");
+          say("Updated!");
         });
       }
-      function bindPills(id, key, onChange) {
-        const box = document.getElementById(id);
-        if (!box) return;
-        const pills = Array.from(box.querySelectorAll(".pill"));
-        function paint(value) {
-          pills.forEach((p) => p.classList.toggle("active", p.dataset.value === value));
-        }
-        paint(s[key]);
-        pills.forEach((p) => {
-          p.addEventListener("click", () => {
-            const next = saveNebulaSettings({ [key]: p.dataset.value });
-            paint(next[key]);
-            if (onChange) onChange(next);
-            say("Saved");
-          });
+      function bindSelect(id, key, onChange) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.value = s[key];
+        el.addEventListener("change", () => {
+          const next = saveNebulaSettings({ [key]: el.value });
+          if (onChange) onChange(next);
+          say("Updated!");
         });
       }
       bindSwitch("set-autoCloak", "autoCloak");
       bindSwitch("set-antiClose", "antiClose", () => applyNebulaAntiClose());
-      bindPills("engine-pills", "searchEngine");
-      bindPills("transport-pills", "transport", (next) => {
+      bindSwitch("set-subtexts", "subtexts");
+      bindSelect("engine-select", "searchEngine");
+      bindSelect("disguise-select", "tabDisguise", () => applyNebulaTabDisguise());
+      bindSelect("theme-select", "themeAccent", () => applyNebulaThemeAccent());
+      bindSelect("proxy-select", "proxy");
+      bindSelect("transport-select", "transport", (next) => {
         try {
           localStorage.removeItem("nebulaTransport");
           if (next.transport !== "auto") {
@@ -133,9 +196,5 @@
       }
     })();
   </script>
-
-  <div id="banner">
-    <script src="/assets/js/modules/body.js"></script>
-  </div>
 </body>
 </html>

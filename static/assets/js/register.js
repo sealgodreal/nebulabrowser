@@ -1,7 +1,6 @@
 const stockSW = "/uv/sw.js";
 const wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
 const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
-
 async function registerSW() {
   if (!("serviceWorker" in navigator)) {
     if (typeof window.isSecureContext !== "undefined" && !window.isSecureContext) {
@@ -12,10 +11,8 @@ async function registerSW() {
         "For phone/tablet testing use an https tunnel (e.g. ngrok), or open via localhost on this machine."
       );
     }
-
     throw new Error("Your browser doesn't support service workers.");
   }
-
   if (typeof nebulaSetTransport === "function") {
     await nebulaSetTransport(connection, wispUrl);
   } else {
@@ -32,8 +29,21 @@ async function registerSW() {
   await window.navigator.serviceWorker.register("/lab.js", {
     scope: '/lesson/',
   });
+  await window.navigator.serviceWorker.register("/sj.js", {
+    scope: '/',
+  });
+  try {
+    if (typeof ensureNebulaScramjet === "function") {
+      const needsScramjet = (function () {
+        try {
+          if (typeof getNebulaProxy === "function") return getNebulaProxy() === "scramjet";
+        } catch (e) {}
+        return false;
+      })();
+      if (needsScramjet) await ensureNebulaScramjet();
+    }
+  } catch (e) {}
 }
-
 registerSW().catch((err) => {
   console.error("Nebula service worker registration failed:", err);
 });

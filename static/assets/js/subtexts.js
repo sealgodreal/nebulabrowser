@@ -26,7 +26,6 @@ const nebulaSubtexts = [
   "fucking LOVE my hb ❤️ (no homo)",
   "yea i like mangos. wait, mango?",
   "ssh root@67.67.67.67",
-  "how did you guys GENUINELY manage to use up 1TB of proxy data in 3 weeks ✌",
   "websockets?",
   "cloudflare?",
   "dude my vps tweaked out yesterday (9/19/26)",
@@ -88,22 +87,32 @@ const nebulaSubtexts = [
   "this kid in my class searched the hub on a school computer lol",
   "one two three, ayyyyy bee cee,",
   "brr",
-  "sixty-seven.",
   "ai",
   "javascript:void(0)",
   "mercuryworkshop the goat",
   "my boy leo LITERALLY said \"nebula on top\" so thats another reason to use it",
   "yes bro WE are making mysterious potions in lunch",
   "hmmmmmm?",
-  "i FINALLY added advertisements 🥹✌️",
+  "advertisements are temporarily removed, they will be back soon",
   "bruhhh last year was PEAK",
   "dear nikilis, FIX YOUR FUCKING GAME",
   "mango mango mango mango mango",
   "PLEASE stop attacking me when roblox stops working",
-  "i made $1.37 off ads so far (10/1/26)",
 ]
 
 nebulaSubtexts.push("there are: " + (nebulaSubtexts.length + 1) + " total subtexts");
 
 const subtitle = document.getElementById("nebula-subtitle");
-if (subtitle) subtitle.textContent = nebulaSubtexts[Math.floor(Math.random() * nebulaSubtexts.length)];
+if (subtitle) {
+  let showSubtexts = true;
+  try {
+    if (typeof getNebulaSettings === "function") showSubtexts = getNebulaSettings().subtexts !== false;
+  } catch (e) {}
+  if (showSubtexts) {
+    subtitle.textContent = nebulaSubtexts[Math.floor(Math.random() * nebulaSubtexts.length)];
+  } else {
+    const wrapper = subtitle.parentElement;
+    if (wrapper) wrapper.style.display = "none";
+    else subtitle.style.display = "none";
+  }
+}

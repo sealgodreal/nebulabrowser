@@ -1,5 +1,4 @@
 "use strict";
-
 const browserUrl = document.getElementById("browser-url");
 const backBtn = document.getElementById("back-btn");
 const forwardBtn = document.getElementById("forward-btn");
@@ -11,37 +10,53 @@ const HISTORY_KEY = "browserHistory";
 const HISTORY_INDEX_KEY = "browserHistoryIndex";
 const SERVICE_PREFIX = "/service/";
 const ASSIGNMENTS_PREFIX = "/lesson/";
-
+const SCRAMJET_PREFIX = "/study/";
+const SCRAMJET_LEGACY_PREFIX = "/scramjet/";
+function currentProxy() {
+  try {
+    if (typeof getNebulaProxy === "function") return getNebulaProxy();
+  } catch (e) {}
+  return "ultraviolet";
+}
+function proxyPrefix() {
+  try {
+    if (typeof getNebulaProxyPrefix === "function") return getNebulaProxyPrefix();
+  } catch (e) {}
+  return ASSIGNMENTS_PREFIX;
+}
+function proxyForPrefix(prefix) {
+  try {
+    if (typeof nebulaProxyForPrefix === "function") return nebulaProxyForPrefix(prefix);
+  } catch (e) {}
+  if (prefix === SCRAMJET_PREFIX) return "scramjet";
+  return "ultraviolet";
+}
 function scopeOverride() {
   try {
     const q = new URLSearchParams(location.search).get("scope");
     if (q === "service") return SERVICE_PREFIX;
     if (q === "assignments" || q === "lesson") return ASSIGNMENTS_PREFIX;
-  } catch {
+    if (q === "scramjet") return SCRAMJET_PREFIX;
+  } catch (e) {
   }
   return null;
 }
-
 function activePrefix() {
   const forced = scopeOverride();
   if (forced) return forced;
-  return ASSIGNMENTS_PREFIX;
+  return proxyPrefix();
 }
-
 function rememberPrefix(prefix) {
   try {
-    if (prefix === ASSIGNMENTS_PREFIX || prefix === SERVICE_PREFIX) {
+    if (prefix === ASSIGNMENTS_PREFIX || prefix === SERVICE_PREFIX || prefix === SCRAMJET_PREFIX) {
       localStorage.setItem("proxyScope", prefix);
     }
-  } catch {
+  } catch (e) {
   }
 }
-
-
 let bListCache = null;
 let bListCacheAt = 0;
 const BLIST_TTL = 10 * 60 * 1000;
-
 function normalizeBListHost(entry) {
   let s = String(entry || "").trim().toLowerCase();
   if (!s) return null;
@@ -53,7 +68,6 @@ function normalizeBListHost(entry) {
   s = s.split(":")[0].trim();
   return s || null;
 }
-
 async function getBListHosts() {
   const now = Date.now();
   if (bListCache && now - bListCacheAt < BLIST_TTL) return bListCache;
@@ -69,7 +83,7 @@ async function getBListHosts() {
     }
     bListCache = hosts;
     bListCacheAt = now;
-    try { localStorage.setItem("nebulaBList", JSON.stringify({ at: now, hosts })); } catch {}
+    try { localStorage.setItem("nebulaBList", JSON.stringify({ at: now, hosts })); } catch (e) {}
     return hosts;
   } catch (err) {
     try {
@@ -82,34 +96,34 @@ async function getBListHosts() {
           return saved.hosts;
         }
       }
-    } catch {
+    } catch (e) {
     }
     throw err;
   }
 }
-
 function hostNeedsAssignments(decodedUrl, hosts) {
   let host = null;
   try {
     host = new URL(decodedUrl).hostname.toLowerCase();
-  } catch {
+  } catch (e) {
     const low = String(decodedUrl || "").toLowerCase();
     return hosts.some((h) => low.includes(h));
   }
   return hosts.some((h) => host === h || host.endsWith("." + h));
 }
-
 async function resolvePrefixForUrl(decodedUrl) {
   const forced = scopeOverride();
   if (forced) {
     rememberPrefix(forced);
     return forced;
   }
-  return ASSIGNMENTS_PREFIX;
+  return proxyPrefix();
 }
-
 function encodeUrl(url) {
   if (!url) return url;
+  try {
+    if (typeof nebulaEncodeProxyUrl === "function") return nebulaEncodeProxyUrl(url, currentProxy());
+  } catch (e) {}
   if (typeof Ultraviolet !== "undefined" && Ultraviolet.codec && Ultraviolet.codec.xor) {
     return Ultraviolet.codec.xor.encode(url);
   }
@@ -119,9 +133,15 @@ function encodeUrl(url) {
   console.warn("Ultraviolet codec is not available. Make sure wk2.js is loaded first.");
   return encodeURIComponent(url);
 }
-
-function decodeUrl(encodedUrl) {
+function decodeUrl(encodedUrl, prefix) {
   if (!encodedUrl) return encodedUrl;
+  let proxy = currentProxy();
+  try {
+    if (prefix) proxy = proxyForPrefix(prefix);
+  } catch (e) {}
+  try {
+    if (typeof nebulaDecodeProxyUrl === "function") return nebulaDecodeProxyUrl(encodedUrl, proxy);
+  } catch (e) {}
   if (typeof Ultraviolet !== "undefined" && Ultraviolet.codec && Ultraviolet.codec.xor) {
     return Ultraviolet.codec.xor.decode(encodedUrl);
   }
@@ -131,11 +151,10 @@ function decodeUrl(encodedUrl) {
   console.warn("Ultraviolet codec is not available. Make sure wk2.js is loaded first.");
   try {
     return decodeURIComponent(encodedUrl);
-  } catch {
+  } catch (e) {
     return encodedUrl;
   }
 }
-
 if (browserToolbar && toolbarToggle) {
   toolbarToggle.addEventListener("click", function (event) {
     event.preventDefault();
@@ -146,11 +165,9 @@ if (browserToolbar && toolbarToggle) {
     toolbarToggle.setAttribute("aria-label", isExpanded ? "Collapse browser toolbar" : "Expand browser toolbar");
   });
 }
-
 function getBrowserFrame() {
   return document.getElementById("browserframe");
 }
-
 function waitForFrame(timeout = 10000) {
   return new Promise(function (resolve) {
     const existing = getBrowserFrame();
@@ -172,13 +189,9 @@ function waitForFrame(timeout = 10000) {
     }, timeout);
   });
 }
-
 function isValidPrefix(p) {
-  return p === ASSIGNMENTS_PREFIX || p === SERVICE_PREFIX;
+  return p === ASSIGNMENTS_PREFIX || p === SERVICE_PREFIX || p === SCRAMJET_PREFIX || p === SCRAMJET_LEGACY_PREFIX;
 }
-
-
-
 function getBrowserHistory() {
   try {
     const value = localStorage.getItem(HISTORY_KEY);
@@ -193,37 +206,31 @@ function getBrowserHistory() {
       }
     }
     return out;
-  } catch {
+  } catch (e) {
     return [];
   }
 }
-
 function saveBrowserHistory(history) {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
 }
-
 function getHistoryIndex() {
   const value = localStorage.getItem(HISTORY_INDEX_KEY);
   if (value === null) return -1;
   const index = Number.parseInt(value, 10);
   return Number.isNaN(index) ? -1 : index;
 }
-
 function saveHistoryIndex(index) {
   localStorage.setItem(HISTORY_INDEX_KEY, String(index));
 }
-
 function updateButtons() {
   const history = getBrowserHistory();
   const index = getHistoryIndex();
   if (backBtn) backBtn.disabled = history.length === 0 || index <= 0;
   if (forwardBtn) forwardBtn.disabled = history.length === 0 || index < 0 || index >= history.length - 1;
 }
-
 function historyEntryEquals(a, b) {
   return !!a && !!b && a.e === b.e;
 }
-
 function addToHistory(encodedUrl, prefix) {
   if (!encodedUrl) return;
   const entry = { e: encodedUrl, p: isValidPrefix(prefix) ? prefix : null };
@@ -242,19 +249,23 @@ function addToHistory(encodedUrl, prefix) {
   saveHistoryIndex(index);
   updateButtons();
 }
-
 function entryTargetUrl(entry) {
   if (!entry) return null;
   if (typeof entry === "string") return entry;
   return entry.e || null;
 }
-
 async function entryPrefix(entry) {
   const forced = scopeOverride();
   if (forced) return forced;
-  return ASSIGNMENTS_PREFIX;
+  try {
+    if (entry && isValidPrefix(entry.p)) {
+      if (typeof nebulaNormalizePrefix === "function") return nebulaNormalizePrefix(entry.p);
+      if (entry.p === SCRAMJET_LEGACY_PREFIX) return SCRAMJET_PREFIX;
+      return entry.p;
+    }
+  } catch (e) {}
+  return proxyPrefix();
 }
-
 function persistEntryPrefix(encodedUrl, prefix) {
   if (!encodedUrl || !isValidPrefix(prefix)) return;
   try {
@@ -267,10 +278,9 @@ function persistEntryPrefix(encodedUrl, prefix) {
       }
     }
     if (changed) saveBrowserHistory(history);
-  } catch {
+  } catch (e) {
   }
 }
-
 function initializeHistory() {
   const target = localStorage.getItem(TARGET_URL);
   const history = getBrowserHistory();
@@ -289,11 +299,101 @@ function initializeHistory() {
     }
   }
 }
-
+let pendingScramjetUrl = null;
+function noteScramjetNav(url) {
+  try { pendingScramjetUrl = url || null; } catch (e) {}
+  setTimeout(function () {
+    try {
+      if (pendingScramjetUrl === url) pendingScramjetUrl = null;
+    } catch (e) {}
+  }, 3000);
+}
+function waitForScramjetFrame(timeout) {
+  const limit = timeout || 15000;
+  return new Promise(function (resolve) {
+    try {
+      if (window.__nebulaScramjetFrame) {
+        resolve(window.__nebulaScramjetFrame);
+        return;
+      }
+    } catch (e) {}
+    const started = Date.now();
+    const timer = setInterval(function () {
+      try {
+        if (window.__nebulaScramjetFrame) {
+          clearInterval(timer);
+          resolve(window.__nebulaScramjetFrame);
+          return;
+        }
+      } catch (e) {}
+      if (Date.now() - started > limit) {
+        clearInterval(timer);
+        try {
+          resolve(window.__nebulaScramjetFrame || null);
+        } catch (e) {
+          resolve(null);
+        }
+      }
+    }, 100);
+  });
+}
+function paintScramjetUrl(url) {
+  if (!browserUrl || document.activeElement === browserUrl) return;
+  try {
+    if (url) browserUrl.value = url;
+  } catch (e) {}
+}
+function attachScramjetUrlListener(scramjetFrame) {
+  if (!scramjetFrame || scramjetFrame.__nebulaUrlchangeBound) return;
+  try { scramjetFrame.__nebulaUrlchangeBound = true; } catch (e) {}
+  try {
+    scramjetFrame.addEventListener("urlchange", function (event) {
+      try {
+        const url = event && event.url ? String(event.url) : "";
+        if (!url) {
+          updateButtons();
+          return;
+        }
+        if (pendingScramjetUrl && url === pendingScramjetUrl) {
+          pendingScramjetUrl = null;
+          lastSyncedEncoded = localStorage.getItem(TARGET_URL);
+          paintScramjetUrl(url);
+          updateButtons();
+          return;
+        }
+        let encoded = "";
+        try {
+          if (typeof nebulaEncodeProxyUrl === "function") encoded = nebulaEncodeProxyUrl(url, "scramjet");
+        } catch (e) {}
+        if (!encoded) {
+          try { encoded = encodeURIComponent(url); } catch (e) {}
+        }
+        if (!encoded) return;
+        lastSyncedEncoded = encoded;
+        try { localStorage.setItem(TARGET_URL, encoded); } catch (e) {}
+        try { rememberPrefix(SCRAMJET_PREFIX); } catch (e) {}
+        paintScramjetUrl(url);
+        try {
+          const history = getBrowserHistory();
+          const index = getHistoryIndex();
+          const current = history[index] ? entryTargetUrl(history[index]) : null;
+          if (current !== encoded) addToHistory(encoded, SCRAMJET_PREFIX);
+          else updateButtons();
+        } catch (e) {
+          updateButtons();
+        }
+      } catch (e) {}
+    });
+  } catch (e) {}
+}
 async function loadEncodedUrl(encodedUrl, prefix) {
   if (!encodedUrl) return;
   localStorage.setItem(TARGET_URL, encodedUrl);
-  const usePrefix = prefix || activePrefix();
+  let usePrefix = prefix || activePrefix();
+  try {
+    if (typeof nebulaNormalizePrefix === "function") usePrefix = nebulaNormalizePrefix(usePrefix);
+    else if (usePrefix === SCRAMJET_LEGACY_PREFIX) usePrefix = SCRAMJET_PREFIX;
+  } catch (e) {}
   rememberPrefix(usePrefix);
   lastSyncedEncoded = encodedUrl;
   const frame = getBrowserFrame() || await waitForFrame();
@@ -301,16 +401,44 @@ async function loadEncodedUrl(encodedUrl, prefix) {
     console.warn("Could not find browserframe.");
     return;
   }
+  if (usePrefix === SCRAMJET_PREFIX) {
+    const scramjetFrame = window.__nebulaScramjetFrame || await waitForScramjetFrame();
+    if (scramjetFrame && typeof scramjetFrame.go === "function") {
+      attachScramjetUrlListener(scramjetFrame);
+      let destination = "";
+      try { destination = decodeUrl(encodedUrl, usePrefix); } catch (e) {}
+      if (!destination) {
+        try { destination = decodeUrl(encodedUrl); } catch (e) {}
+      }
+      if (destination) {
+        try { noteScramjetNav(destination); } catch (e) {}
+        try {
+          scramjetFrame.go(destination);
+        } catch (e) {
+          console.error("Nebula Scramjet navigation failed:", e);
+        }
+        paintScramjetUrl(destination);
+        return;
+      }
+    }
+    const fallbackFrame = getBrowserFrame() || await waitForFrame();
+    if (fallbackFrame) fallbackFrame.src = usePrefix + encodedUrl;
+    return;
+  }
+  try {
+    if (window.__nebulaScramjetFrame && usePrefix !== SCRAMJET_PREFIX) {
+      try { window.__nebulaScramjetFrame = null; } catch (e) {}
+    }
+  } catch (e) {}
   frame.src = usePrefix + encodedUrl;
   if (browserUrl) {
     try {
-      browserUrl.value = decodeUrl(encodedUrl);
-    } catch {
+      browserUrl.value = decodeUrl(encodedUrl, usePrefix);
+    } catch (e) {
       browserUrl.value = encodedUrl;
     }
   }
 }
-
 async function navigateTo(url) {
   if (!url) return;
   url = url.trim();
@@ -325,7 +453,6 @@ async function navigateTo(url) {
   addToHistory(encoded, prefix);
   await loadEncodedUrl(encoded, prefix);
 }
-
 if (backBtn) {
   backBtn.addEventListener("click", async function (event) {
     event.preventDefault();
@@ -338,12 +465,27 @@ if (backBtn) {
     }
     index--;
     saveHistoryIndex(index);
-    await loadEncodedUrl(entryTargetUrl(history[index]), await entryPrefix(history[index]));
-    persistEntryPrefix(entryTargetUrl(history[index]), history[index] && history[index].p);
+    const target = entryTargetUrl(history[index]);
+    const prefix = await entryPrefix(history[index]);
+    try {
+      const scramjetFrame = window.__nebulaScramjetFrame;
+      if (prefix === SCRAMJET_PREFIX && scramjetFrame && typeof scramjetFrame.back === "function") {
+        let destination = "";
+        try { destination = decodeUrl(target, prefix); } catch (e) {}
+        try { noteScramjetNav(destination); } catch (e) {}
+        try { localStorage.setItem(TARGET_URL, target); } catch (e) {}
+        try { lastSyncedEncoded = target; } catch (e) {}
+        try { scramjetFrame.back(); } catch (e) {}
+        persistEntryPrefix(target, history[index] && history[index].p);
+        updateButtons();
+        return;
+      }
+    } catch (e) {}
+    await loadEncodedUrl(target, prefix);
+    persistEntryPrefix(target, history[index] && history[index].p);
     updateButtons();
   });
 }
-
 if (forwardBtn) {
   forwardBtn.addEventListener("click", async function (event) {
     event.preventDefault();
@@ -356,12 +498,27 @@ if (forwardBtn) {
     }
     index++;
     saveHistoryIndex(index);
-    await loadEncodedUrl(entryTargetUrl(history[index]), await entryPrefix(history[index]));
-    persistEntryPrefix(entryTargetUrl(history[index]), history[index] && history[index].p);
+    const target = entryTargetUrl(history[index]);
+    const prefix = await entryPrefix(history[index]);
+    try {
+      const scramjetFrame = window.__nebulaScramjetFrame;
+      if (prefix === SCRAMJET_PREFIX && scramjetFrame && typeof scramjetFrame.forward === "function") {
+        let destination = "";
+        try { destination = decodeUrl(target, prefix); } catch (e) {}
+        try { noteScramjetNav(destination); } catch (e) {}
+        try { localStorage.setItem(TARGET_URL, target); } catch (e) {}
+        try { lastSyncedEncoded = target; } catch (e) {}
+        try { scramjetFrame.forward(); } catch (e) {}
+        persistEntryPrefix(target, history[index] && history[index].p);
+        updateButtons();
+        return;
+      }
+    } catch (e) {}
+    await loadEncodedUrl(target, prefix);
+    persistEntryPrefix(target, history[index] && history[index].p);
     updateButtons();
   });
 }
-
 if (reloadBtn) {
   reloadBtn.addEventListener("click", async function (event) {
     event.preventDefault();
@@ -369,8 +526,17 @@ if (reloadBtn) {
     const frame = getBrowserFrame() || await waitForFrame();
     if (!frame) return;
     try {
+      if (window.__nebulaScramjetFrame && typeof window.__nebulaScramjetFrame.reload === "function") {
+        const currentPrefix = getFramePrefix() || activePrefix();
+        if (currentPrefix === SCRAMJET_PREFIX) {
+          window.__nebulaScramjetFrame.reload();
+          return;
+        }
+      }
+    } catch (e) {}
+    try {
       frame.contentWindow.location.reload();
-    } catch {
+    } catch (e) {
       const current = localStorage.getItem(TARGET_URL);
       if (current) {
         const cur = getFramePrefix(frame.getAttribute("src") || frame.src) || activePrefix();
@@ -379,7 +545,6 @@ if (reloadBtn) {
     }
   });
 }
-
 if (browserUrl) {
   browserUrl.addEventListener("keydown", async function (event) {
     if (event.key !== "Enter") return;
@@ -402,36 +567,34 @@ if (browserUrl) {
     browserUrl.blur();
   });
 }
-
 function updateBrowserUrl() {
   if (!browserUrl) return;
   if (document.activeElement === browserUrl) return;
   const storedUrl = localStorage.getItem(TARGET_URL);
   if (!storedUrl) return;
   try {
-    const decoded = decodeUrl(storedUrl);
+    const prefix = getFramePrefix() || activePrefix();
+    const decoded = decodeUrl(storedUrl, prefix);
     if (decoded) browserUrl.value = decoded;
   } catch (error) {
     console.warn("Could not decode targeturl:", storedUrl, error);
   }
 }
-
 function extractPrefix(frameUrl) {
   if (!frameUrl) return null;
   try {
     const absolute = new URL(frameUrl, window.location.origin);
-    for (const prefix of [SERVICE_PREFIX, ASSIGNMENTS_PREFIX]) {
+    for (const prefix of [SERVICE_PREFIX, ASSIGNMENTS_PREFIX, SCRAMJET_PREFIX, SCRAMJET_LEGACY_PREFIX]) {
       if (absolute.pathname.startsWith(prefix)) return prefix;
     }
-  } catch {
+  } catch (e) {
   }
   const s = String(frameUrl);
-  for (const prefix of [SERVICE_PREFIX, ASSIGNMENTS_PREFIX]) {
+  for (const prefix of [SERVICE_PREFIX, ASSIGNMENTS_PREFIX, SCRAMJET_PREFIX, SCRAMJET_LEGACY_PREFIX]) {
     if (s.indexOf(prefix) >= 0) return prefix;
   }
   return null;
 }
-
 function extractEncodedUrl(frameUrl) {
   const prefix = extractPrefix(frameUrl);
   if (!prefix) return null;
@@ -441,7 +604,7 @@ function extractEncodedUrl(frameUrl) {
       const encoded = absolute.pathname.slice(prefix.length).split("/")[0];
       return encoded || null;
     }
-  } catch {
+  } catch (e) {
     return null;
   }
   const idx = String(frameUrl).indexOf(prefix);
@@ -451,13 +614,12 @@ function extractEncodedUrl(frameUrl) {
   }
   return null;
 }
-
-function getFramePrefix() {
+function getFramePrefix(frameSrc) {
+  if (frameSrc) return extractPrefix(frameSrc);
   const frame = getBrowserFrame();
   if (!frame) return null;
   return extractPrefix(frame.getAttribute("src") || frame.src);
 }
-
 function getFrameEncodedUrl() {
   const frame = getBrowserFrame();
   if (!frame) return null;
@@ -465,15 +627,22 @@ function getFrameEncodedUrl() {
     const href = frame.contentWindow && frame.contentWindow.location && frame.contentWindow.location.href;
     const fromHref = extractEncodedUrl(href);
     if (fromHref) return fromHref;
-  } catch {
+  } catch (e) {
   }
   const srcAttr = frame.getAttribute("src") || frame.src;
   return extractEncodedUrl(srcAttr);
 }
-
 let lastSyncedEncoded = localStorage.getItem(TARGET_URL);
-
 function syncFrameToUrl() {
+  try {
+    if (window.__nebulaScramjetFrame) {
+      const prefix = getFramePrefix() || activePrefix();
+      if (prefix === SCRAMJET_PREFIX || prefix === SCRAMJET_LEGACY_PREFIX) {
+        updateButtons();
+        return;
+      }
+    }
+  } catch (e) {}
   if (!browserUrl) {
     updateButtons();
     return;
@@ -497,8 +666,8 @@ function syncFrameToUrl() {
   }
   if (document.activeElement !== browserUrl) {
     try {
-      browserUrl.value = decodeUrl(encoded);
-    } catch {
+      browserUrl.value = decodeUrl(encoded, framePrefix || activePrefix());
+    } catch (e) {
       browserUrl.value = encoded;
     }
   }
@@ -512,18 +681,32 @@ function syncFrameToUrl() {
     updateButtons();
   }
 }
-
 initializeHistory();
 updateBrowserUrl();
 updateButtons();
-
 waitForFrame().then(function (frame) {
   if (!frame) return;
   const target = localStorage.getItem(TARGET_URL);
   lastSyncedEncoded = target;
-
-
-
+  try {
+    const scramjetFrame = window.__nebulaScramjetFrame;
+    if (scramjetFrame && currentProxy() === "scramjet") {
+      attachScramjetUrlListener(scramjetFrame);
+      updateBrowserUrl();
+      updateButtons();
+      return;
+    }
+  } catch (e) {}
+  if (currentProxy() === "scramjet") {
+    waitForScramjetFrame().then(function (scramjetFrame) {
+      if (scramjetFrame) attachScramjetUrlListener(scramjetFrame);
+      updateBrowserUrl();
+      updateButtons();
+    });
+    updateBrowserUrl();
+    updateButtons();
+    return;
+  }
   const existing = frame.getAttribute("src");
   if (target && !existing) {
     frame.src = activePrefix() + target;
@@ -531,78 +714,81 @@ waitForFrame().then(function (frame) {
   updateBrowserUrl();
   updateButtons();
 });
-
 const menuBtn = document.getElementById("menu-btn");
 const toolbarMenu = document.getElementById("toolbar-menu");
 const menuReturn = document.getElementById("menu-return");
 const menuCloak = document.getElementById("menu-cloak");
 const menuFullscreen = document.getElementById("menu-fullscreen");
 const menuSettings = document.getElementById("menu-settings");
-
 function isToolbarMenuOpen() {
   return Boolean(toolbarMenu) && !toolbarMenu.hasAttribute("hidden");
 }
-
 function openToolbarMenu() {
   if (!toolbarMenu || !menuBtn) return;
   toolbarMenu.hidden = false;
   menuBtn.setAttribute("aria-expanded", "true");
 }
-
 function closeToolbarMenu() {
   if (!toolbarMenu || !menuBtn) return;
   toolbarMenu.hidden = true;
   menuBtn.setAttribute("aria-expanded", "false");
 }
-
 function cloakSite() {
   if (typeof cloakNebulaSite === "function") {
     cloakNebulaSite();
     return;
   }
-  const targetUrl = (() => {
+  const targetUrl = (function () {
     try {
       const href = window.location.href;
       if (/^https?:\/\//i.test(href)) return href;
-    } catch {}
-    try { return window.location.origin + "/"; } catch {}
+    } catch (e) {}
+    try { return window.location.origin + "/"; } catch (e) {}
     return "/";
   })();
-  const safeUrl = String(targetUrl).replace(/"/g, "");
-  let origin = "";
-  try { origin = window.location.origin; } catch {}
-  const icon = origin ? origin + "/assets/gclassroom.png" : "/assets/gclassroom.png";
   const popup = window.open("about:blank", "_blank");
   if (!popup) return;
   try {
-    popup.document.open();
-    popup.document.write(
-      '<!doctype html><html><head><meta charset="utf-8" />' +
-        '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />' +
-        "<title>Home - Classroom</title>" +
-        '<link rel="icon" type="image/png" href="' + icon + '" />' +
-        "<style>html,body{margin:0!important;padding:0!important;width:100%;height:100%;overflow:hidden!important;background:#fff;overscroll-behavior:none}" +
-        "body{position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;overflow:hidden!important}" +
-        "iframe{position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;height:100svh!important;border:0!important;display:block!important;touch-action:auto}</style>" +
-        '</head><body><iframe src="' +
-        safeUrl +
-        '" title="content" allow="fullscreen; autoplay; clipboard-write" allowfullscreen></iframe></body></html>'
-    );
-    popup.document.close();
-    try {
-      popup.focus();
-    } catch {}
+    popup.document.title = "My Drive - Google Drive";
+  } catch (e) {}
+  try {
+    const link = popup.document.createElement("link");
+    link.rel = "icon";
+    link.href = "https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png";
+    popup.document.head.appendChild(link);
+  } catch (e) {}
+  try {
+    popup.document.body.style.margin = "0";
+    popup.document.body.style.height = "100vh";
+  } catch (e) {}
+  try {
+    const iframe = popup.document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.top = "0";
+    iframe.style.bottom = "0";
+    iframe.style.left = "0";
+    iframe.style.right = "0";
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    iframe.style.margin = "0";
+    iframe.style.border = "none";
+    iframe.style.outline = "none";
+    iframe.src = targetUrl;
+    const root = popup.document.body || popup.document.documentElement;
+    root.appendChild(iframe);
   } catch (error) {
     console.warn("Could not cloak site:", error);
     return;
   }
+  try {
+    popup.focus();
+  } catch (e) {}
   if (typeof nebulaSuspendAntiClose === "function") nebulaSuspendAntiClose();
-  setTimeout(() => {
+  setTimeout(function () {
     try { window.location.replace("https://www.google.com"); }
-    catch { try { window.location.href = "https://www.google.com"; } catch {} }
+    catch (e) { try { window.location.href = "https://www.google.com"; } catch (err) {} }
   }, 200);
 }
-
 async function toggleFullscreen() {
   try {
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
@@ -623,7 +809,6 @@ async function toggleFullscreen() {
     console.warn("Could not toggle fullscreen:", error);
   }
 }
-
 if (menuBtn && toolbarMenu) {
   menuBtn.addEventListener("click", function (event) {
     event.preventDefault();
@@ -634,13 +819,11 @@ if (menuBtn && toolbarMenu) {
       openToolbarMenu();
     }
   });
-
   document.addEventListener("click", function (event) {
     if (!isToolbarMenuOpen()) return;
     if (event.target.closest && event.target.closest("#toolbar-menu, #menu-btn")) return;
     closeToolbarMenu();
   });
-
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape" && isToolbarMenuOpen()) {
       event.stopPropagation();
@@ -649,7 +832,6 @@ if (menuBtn && toolbarMenu) {
     }
   });
 }
-
 if (menuReturn) {
   menuReturn.addEventListener("click", function (event) {
     event.preventDefault();
@@ -659,7 +841,6 @@ if (menuReturn) {
     window.location.href = "/";
   });
 }
-
 if (menuCloak) {
   menuCloak.addEventListener("click", function (event) {
     event.preventDefault();
@@ -668,7 +849,6 @@ if (menuCloak) {
     cloakSite();
   });
 }
-
 if (menuFullscreen) {
   menuFullscreen.addEventListener("click", function (event) {
     event.preventDefault();
@@ -677,7 +857,6 @@ if (menuFullscreen) {
     toggleFullscreen();
   });
 }
-
 if (menuSettings) {
   menuSettings.addEventListener("click", function (event) {
     event.preventDefault();
@@ -687,7 +866,6 @@ if (menuSettings) {
     window.location.href = "/settings.html";
   });
 }
-
 setInterval(function () {
   syncFrameToUrl();
 }, 1000);

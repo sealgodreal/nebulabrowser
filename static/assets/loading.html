@@ -3,6 +3,26 @@
 <head>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Minecraftia&display=swap');
+    :root {
+      --accent: #dfc2ef;
+      --accent-hot: #ffa3d7;
+    }
+    html[data-theme="moss"] {
+      --accent: #8fe3b8;
+      --accent-hot: #d8f79b;
+    }
+    html[data-theme="blue-lavender"] {
+      --accent: #a9c9f5;
+      --accent-hot: #8ab6ff;
+    }
+    html[data-theme="rose"] {
+      --accent: #dfa0b4;
+      --accent-hot: #f7b9cd;
+    }
+    html[data-theme="sand"] {
+      --accent: #e0c193;
+      --accent-hot: #f2d5a0;
+    }
     html,
     body {
       margin: 0;
@@ -18,8 +38,8 @@
       width: 100%;
       height: 100%;
       z-index: 0;
-      opacity: 0.6;
-      filter: blur(12px) saturate(1);
+      opacity: 0.75;
+      filter: blur(8px) saturate(1.2);
       transform: scale(1.1);
     }
     #stars {
@@ -46,7 +66,7 @@
       width: 50px;
       height: 50px;
       border: 5px solid rgba(255, 255, 255, 0.12);
-      border-top-color: rgba(255, 255, 255, 0.8);
+      border-top-color: var(--accent);
       border-radius: 50%;
       animation: spin 1s linear infinite;
       margin-bottom: 28px;
@@ -56,6 +76,7 @@
       font-weight: 500;
       letter-spacing: 0.08em;
       text-align: center;
+      color: var(--accent);
     }
     .loading-text-sub {
       margin-top: 6px;
@@ -72,6 +93,16 @@
       }
     }
   </style>
+  <script>
+    try {
+      var rawNebulaSettings = localStorage.getItem("nebulaSettings");
+      var parsedNebulaSettings = rawNebulaSettings ? JSON.parse(rawNebulaSettings) : {};
+      var themeNebulaAccent = parsedNebulaSettings && parsedNebulaSettings.themeAccent;
+      if (themeNebulaAccent === "moss" || themeNebulaAccent === "blue-lavender" || themeNebulaAccent === "rose" || themeNebulaAccent === "sand") {
+        document.documentElement.setAttribute("data-theme", themeNebulaAccent);
+      }
+    } catch (e) {}
+  </script>
 </head>
 <body>
   <div id="vanta"></div>
@@ -84,6 +115,23 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script>
   <script>
+    const NEBULA_FOG_THEMES = {
+      moss: { highlightColor: 0x33544a, midtoneColor: 0x1e2f28, lowlightColor: 0x101815, baseColor: 0x080c0a, rain: [168, 205, 178] },
+      "blue-lavender": { highlightColor: 0x33405c, midtoneColor: 0x20293d, lowlightColor: 0x12161f, baseColor: 0x080a10, rain: [150, 170, 205] },
+      rose: { highlightColor: 0x503a40, midtoneColor: 0x2e2226, lowlightColor: 0x171215, baseColor: 0x0c080a, rain: [205, 172, 180] },
+      sand: { highlightColor: 0x4a4132, midtoneColor: 0x2c2620, lowlightColor: 0x161310, baseColor: 0x0c0a08, rain: [205, 188, 160] }
+    };
+    const NEBULA_FOG_THEME_KEYS = ["moss", "blue-lavender", "rose", "sand"];
+    let nebulaFogTheme = null;
+    try {
+      const rawFogSettings = localStorage.getItem("nebulaSettings");
+      const parsedFogSettings = rawFogSettings ? JSON.parse(rawFogSettings) : {};
+      if (parsedFogSettings && NEBULA_FOG_THEME_KEYS.indexOf(parsedFogSettings.themeAccent) >= 0) {
+        nebulaFogTheme = parsedFogSettings.themeAccent;
+      }
+    } catch (e) {}
+    const nebulaFogPalette = (nebulaFogTheme && NEBULA_FOG_THEMES[nebulaFogTheme]) || null;
+    const nebulaRain = (nebulaFogPalette && nebulaFogPalette.rain) || [196, 180, 210];
     VANTA.FOG({
       el: "#vanta",
       mouseControls: true,
@@ -91,13 +139,13 @@
       gyroControls: false,
       minHeight: 200.00,
       minWidth: 200.00,
-      highlightColor: 0x2a2a2a,
-      midtoneColor: 0x1c1c1c,
-      lowlightColor: 0x101010,
-      baseColor: 0x080808,
-      blurFactor: 1,
-      speed: 5,
-      zoom: 0.6
+      highlightColor: nebulaFogPalette ? nebulaFogPalette.highlightColor : 0x3a3344,
+      midtoneColor: nebulaFogPalette ? nebulaFogPalette.midtoneColor : 0x232030,
+      lowlightColor: nebulaFogPalette ? nebulaFogPalette.lowlightColor : 0x121218,
+      baseColor: nebulaFogPalette ? nebulaFogPalette.baseColor : 0x08080c,
+      blurFactor: 0.85,
+      speed: 2,
+      zoom: 0.8
     });
   </script>
   <script>
@@ -107,32 +155,28 @@
       const ctx = canvas.getContext("2d");
       let w = canvas.width = canvas.offsetWidth || innerWidth;
       let h = canvas.height = canvas.offsetHeight || innerHeight;
-      const stars = Array.from({ length: 100 }, () => ({
-        x: Math.random() * w,
+      const drops = Array.from({ length: 130 }, () => ({
+        x: Math.random() * (w + 120),
         y: Math.random() * h,
-        r: Math.random() * 1.8 + 1.4,
-        vy: Math.random() * 1.3 + 0.6,
-        vx: (Math.random() - 0.5) * 0.15,
-        targetVx: (Math.random() - 0.5) * 3,
-        o: Math.random() * 0.35 + 0.45,
-        targetO: Math.random() * 2 + 0.15
+        len: Math.random() * 16 + 9,
+        speed: Math.random() * 9 + 7,
+        o: Math.random() * 0.16 + 0.07
       }));
       function draw() {
         ctx.clearRect(0, 0, w, h);
-        for (const star of stars) {
-          star.y -= star.vy;
-          if (star.y + star.r < 0) star.y = h + star.r;
-          if (Math.random() < 0.01) star.targetVx = (Math.random() - 0.5) * 0.8;
-          if (Math.random() < 0.02) star.targetO = Math.random() * 0.8 + 0.15;
-          star.vx += (star.targetVx - star.vx) * 0.01;
-          star.o += (star.targetO - star.o) * 0.16;
-          star.x += star.vx;
-          if (star.x - star.r > w) star.x = -star.r;
-          if (star.x + star.r < 0) star.x = w + star.r;
+        ctx.lineWidth = 1;
+        for (const d of drops) {
+          d.y += d.speed;
+          d.x -= d.speed * 0.14;
+          if (d.y > h + 24) {
+            d.y = -24;
+            d.x = Math.random() * (w + 120);
+          }
           ctx.beginPath();
-          ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(65, 65, 70, ${star.o})`;
-          ctx.fill();
+          ctx.moveTo(d.x, d.y);
+          ctx.lineTo(d.x + d.len * 0.14, d.y - d.len);
+          ctx.strokeStyle = "rgba(" + nebulaRain[0] + ", " + nebulaRain[1] + ", " + nebulaRain[2] + ", " + d.o + ")";
+          ctx.stroke();
         }
         requestAnimationFrame(draw);
       }

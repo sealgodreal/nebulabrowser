@@ -1,14 +1,29 @@
 document.addEventListener("DOMContentLoaded", () => {
   const searchForm = document.getElementById("form");
   const addressInput = document.getElementById("address");
-  
+  function encodeForProxy(url) {
+    try {
+      if (typeof nebulaEncodeProxyUrl === "function") return nebulaEncodeProxyUrl(url);
+    } catch (e) {}
+    try {
+      if (typeof self !== "undefined" && self.__uv$config && typeof self.__uv$config.encodeUrl === "function") {
+        return self.__uv$config.encodeUrl(url);
+      }
+    } catch (e) {}
+    try {
+      if (typeof __uv$config !== "undefined" && typeof __uv$config.encodeUrl === "function") {
+        return __uv$config.encodeUrl(url);
+      }
+    } catch (e) {}
+    return encodeURIComponent(url);
+  }
   function goTo(url) {
     if (!url) return;
     if (url.startsWith("now.gg") || url.startsWith("https://now.gg") || url.startsWith("http://now.gg")) {
-      alert("Hey! https://now.gg usually does not work with Ultraviolet, so you will be directed to https://nowgg.fun.");
+      alert("Hey! https://now.gg usually does not work, so you will be directed to https://nowgg.fun.");
       url = "https://nowgg.fun";
     }
-    const encodedUrl = __uv$config.encodeUrl(url);
+    const encodedUrl = encodeForProxy(url);
     localStorage.setItem("targeturl", encodedUrl);
     window.location.href = "/math";
   }

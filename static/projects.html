@@ -4,13 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
   <title>Home - Classroom</title>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/x-icon" href="/assets/icon.png" />
+  <link rel="shortcut icon" type="image/x-icon" href="/assets/icon.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/gclassroom.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/gclassroom.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/gclassroom.png" />
   <link rel="stylesheet" href="index.css" />
-  <script src="/assets/js/modules/head.js"></script>
   <style>
     html,
     body {
@@ -203,9 +202,11 @@
 </head>
 <body>
   <script src="/baremux/index.js"></script>
+  <script src="/scram/scramjet.all.js"></script>
   <script src="/wk/wk2.js"></script>
   <script src="/wk/wk3.js"></script>
   <script src="/assets/js/settings.js"></script>
+  <script src="/assets/js/proxy.js"></script>
   <script src="/assets/js/transport.js"></script>
   <header id="topbar">
     <a class="topbar-brand" href="/" title="Nebula Unblocker">
@@ -316,7 +317,11 @@
     }
     function openApp(url) {
       if (!url) return;
-      const encodedUrl = __uv$config.encodeUrl(url);
+      let encodedUrl = null;
+      try {
+        if (typeof nebulaEncodeProxyUrl === "function") encodedUrl = nebulaEncodeProxyUrl(url);
+      } catch (e) {}
+      if (!encodedUrl) encodedUrl = __uv$config.encodeUrl(url);
       localStorage.setItem("targeturl", encodedUrl);
       window.location.href = "/math";
     }
@@ -413,9 +418,5 @@
       try { if (typeof maybeNebulaAutoCloak === "function") maybeNebulaAutoCloak(); } catch {}
     });
   </script>
-
-  <div id="banner">
-    <script src="/assets/js/modules/body.js"></script>
-  </div>
 </body>
 </html>
