@@ -4,8 +4,20 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Minecraftia&display=swap');
     :root {
+      --accent: #c2c5cc;
+      --accent-hot: #e2e5ea;
+    }
+    html[data-theme="oled"] {
+      --accent: #71747a;
+      --accent-hot: #a7abb3;
+    }
+    html[data-theme="soft-pink"] {
       --accent: #dfc2ef;
       --accent-hot: #ffa3d7;
+    }
+    html[data-theme="cotton-candy"] {
+      --accent: #f9cbe4;
+      --accent-hot: #c2defb;
     }
     html[data-theme="moss"] {
       --accent: #8fe3b8;
@@ -68,13 +80,13 @@
       border: 5px solid rgba(255, 255, 255, 0.12);
       border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin 1s linear infinite;
+      animation: spin .8s linear infinite;
       margin-bottom: 28px;
     }
     .loading-text {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 500;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.065em;
       text-align: center;
       color: var(--accent);
     }
@@ -98,7 +110,7 @@
       var rawNebulaSettings = localStorage.getItem("nebulaSettings");
       var parsedNebulaSettings = rawNebulaSettings ? JSON.parse(rawNebulaSettings) : {};
       var themeNebulaAccent = parsedNebulaSettings && parsedNebulaSettings.themeAccent;
-      if (themeNebulaAccent === "moss" || themeNebulaAccent === "blue-lavender" || themeNebulaAccent === "rose" || themeNebulaAccent === "sand") {
+      if (themeNebulaAccent === "oled" || themeNebulaAccent === "soft-pink" || themeNebulaAccent === "cotton-candy" || themeNebulaAccent === "moss" || themeNebulaAccent === "blue-lavender" || themeNebulaAccent === "rose" || themeNebulaAccent === "sand") {
         document.documentElement.setAttribute("data-theme", themeNebulaAccent);
       }
     } catch (e) {}
@@ -116,12 +128,15 @@
   <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script>
   <script>
     const NEBULA_FOG_THEMES = {
+      "oled": { highlightColor: 0x101012, midtoneColor: 0x08080a, lowlightColor: 0x000000, baseColor: 0x000000, rain: [120, 120, 125] },
+      "soft-pink": { highlightColor: 0x3a3344, midtoneColor: 0x232030, lowlightColor: 0x121218, baseColor: 0x08080c, rain: [196, 180, 210] },
+      "cotton-candy": { highlightColor: 0x8e7db2, midtoneColor: 0x515e8c, lowlightColor: 0x2a2e42, baseColor: 0x161826, rain: [195, 215, 250] },
       moss: { highlightColor: 0x33544a, midtoneColor: 0x1e2f28, lowlightColor: 0x101815, baseColor: 0x080c0a, rain: [168, 205, 178] },
       "blue-lavender": { highlightColor: 0x33405c, midtoneColor: 0x20293d, lowlightColor: 0x12161f, baseColor: 0x080a10, rain: [150, 170, 205] },
       rose: { highlightColor: 0x503a40, midtoneColor: 0x2e2226, lowlightColor: 0x171215, baseColor: 0x0c080a, rain: [205, 172, 180] },
       sand: { highlightColor: 0x4a4132, midtoneColor: 0x2c2620, lowlightColor: 0x161310, baseColor: 0x0c0a08, rain: [205, 188, 160] }
     };
-    const NEBULA_FOG_THEME_KEYS = ["moss", "blue-lavender", "rose", "sand"];
+    const NEBULA_FOG_THEME_KEYS = ["oled", "soft-pink", "cotton-candy", "moss", "blue-lavender", "rose", "sand"];
     let nebulaFogTheme = null;
     try {
       const rawFogSettings = localStorage.getItem("nebulaSettings");
@@ -131,7 +146,7 @@
       }
     } catch (e) {}
     const nebulaFogPalette = (nebulaFogTheme && NEBULA_FOG_THEMES[nebulaFogTheme]) || null;
-    const nebulaRain = (nebulaFogPalette && nebulaFogPalette.rain) || [196, 180, 210];
+    const nebulaRain = (nebulaFogPalette && nebulaFogPalette.rain) || [190, 190, 195];
     VANTA.FOG({
       el: "#vanta",
       mouseControls: true,
@@ -139,13 +154,13 @@
       gyroControls: false,
       minHeight: 200.00,
       minWidth: 200.00,
-      highlightColor: nebulaFogPalette ? nebulaFogPalette.highlightColor : 0x3a3344,
-      midtoneColor: nebulaFogPalette ? nebulaFogPalette.midtoneColor : 0x232030,
-      lowlightColor: nebulaFogPalette ? nebulaFogPalette.lowlightColor : 0x121218,
-      baseColor: nebulaFogPalette ? nebulaFogPalette.baseColor : 0x08080c,
+      highlightColor: nebulaFogPalette ? nebulaFogPalette.highlightColor : 0x3f4045,
+      midtoneColor: nebulaFogPalette ? nebulaFogPalette.midtoneColor : 0x262629,
+      lowlightColor: nebulaFogPalette ? nebulaFogPalette.lowlightColor : 0x141416,
+      baseColor: nebulaFogPalette ? nebulaFogPalette.baseColor : 0x08080a,
       blurFactor: 0.85,
-      speed: 2,
-      zoom: 0.8
+      speed: 3,
+      zoom: 0.65
     });
   </script>
   <script>

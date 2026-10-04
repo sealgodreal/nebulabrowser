@@ -71,6 +71,9 @@
           <div class="setting-control">
             <select id="theme-select" class="select" aria-label="Theme Accent">
               <option value="default">Default</option>
+              <option value="oled">OLED</option>
+              <option value="soft-pink">Soft Pink</option>
+              <option value="cotton-candy">Cotton Candy</option>
               <option value="moss">Moss</option>
               <option value="blue-lavender">Blue Lavender</option>
               <option value="rose">Rose</option>
@@ -123,18 +126,6 @@
             </select>
           </div>
         </section>
-        <section class="setting-row">
-          <div class="setting-info">
-            <h2>Default Proxy</h2>
-            <p>The engine which loads proxied pages.</p>
-          </div>
-          <div class="setting-control">
-            <select id="proxy-select" class="select" aria-label="Proxy">
-              <option value="ultraviolet">Ultraviolet</option>
-              <option value="scramjet">Scramjet</option>
-            </select>
-          </div>
-        </section>
       </div>
       <span id="settings-status" class="settings-status"></span>
     </div>
@@ -179,7 +170,6 @@
       bindSelect("engine-select", "searchEngine");
       bindSelect("disguise-select", "tabDisguise", () => applyNebulaTabDisguise());
       bindSelect("theme-select", "themeAccent", () => applyNebulaThemeAccent());
-      bindSelect("proxy-select", "proxy");
       bindSelect("transport-select", "transport", (next) => {
         try {
           localStorage.removeItem("nebulaTransport");

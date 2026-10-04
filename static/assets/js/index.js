@@ -19,10 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   function goTo(url) {
     if (!url) return;
-    if (url.startsWith("now.gg") || url.startsWith("https://now.gg") || url.startsWith("http://now.gg")) {
-      alert("Hey! https://now.gg usually does not work, so you will be directed to https://nowgg.fun.");
-      url = "https://nowgg.fun";
-    }
     const encodedUrl = encodeForProxy(url);
     localStorage.setItem("targeturl", encodedUrl);
     window.location.href = "/math";

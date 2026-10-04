@@ -10,12 +10,7 @@ const HISTORY_KEY = "browserHistory";
 const HISTORY_INDEX_KEY = "browserHistoryIndex";
 const SERVICE_PREFIX = "/service/";
 const ASSIGNMENTS_PREFIX = "/lesson/";
-const SCRAMJET_PREFIX = "/study/";
-const SCRAMJET_LEGACY_PREFIX = "/scramjet/";
 function currentProxy() {
-  try {
-    if (typeof getNebulaProxy === "function") return getNebulaProxy();
-  } catch (e) {}
   return "ultraviolet";
 }
 function proxyPrefix() {
@@ -24,11 +19,7 @@ function proxyPrefix() {
   } catch (e) {}
   return ASSIGNMENTS_PREFIX;
 }
-function proxyForPrefix(prefix) {
-  try {
-    if (typeof nebulaProxyForPrefix === "function") return nebulaProxyForPrefix(prefix);
-  } catch (e) {}
-  if (prefix === SCRAMJET_PREFIX) return "scramjet";
+function proxyForPrefix() {
   return "ultraviolet";
 }
 function scopeOverride() {
@@ -36,7 +27,6 @@ function scopeOverride() {
     const q = new URLSearchParams(location.search).get("scope");
     if (q === "service") return SERVICE_PREFIX;
     if (q === "assignments" || q === "lesson") return ASSIGNMENTS_PREFIX;
-    if (q === "scramjet") return SCRAMJET_PREFIX;
   } catch (e) {
   }
   return null;
@@ -48,7 +38,7 @@ function activePrefix() {
 }
 function rememberPrefix(prefix) {
   try {
-    if (prefix === ASSIGNMENTS_PREFIX || prefix === SERVICE_PREFIX || prefix === SCRAMJET_PREFIX) {
+    if (prefix === ASSIGNMENTS_PREFIX || prefix === SERVICE_PREFIX) {
       localStorage.setItem("proxyScope", prefix);
     }
   } catch (e) {
@@ -122,7 +112,7 @@ async function resolvePrefixForUrl(decodedUrl) {
 function encodeUrl(url) {
   if (!url) return url;
   try {
-    if (typeof nebulaEncodeProxyUrl === "function") return nebulaEncodeProxyUrl(url, currentProxy());
+    if (typeof nebulaEncodeProxyUrl === "function") return nebulaEncodeProxyUrl(url, "ultraviolet");
   } catch (e) {}
   if (typeof Ultraviolet !== "undefined" && Ultraviolet.codec && Ultraviolet.codec.xor) {
     return Ultraviolet.codec.xor.encode(url);
@@ -133,14 +123,10 @@ function encodeUrl(url) {
   console.warn("Ultraviolet codec is not available. Make sure wk2.js is loaded first.");
   return encodeURIComponent(url);
 }
-function decodeUrl(encodedUrl, prefix) {
+function decodeUrl(encodedUrl) {
   if (!encodedUrl) return encodedUrl;
-  let proxy = currentProxy();
   try {
-    if (prefix) proxy = proxyForPrefix(prefix);
-  } catch (e) {}
-  try {
-    if (typeof nebulaDecodeProxyUrl === "function") return nebulaDecodeProxyUrl(encodedUrl, proxy);
+    if (typeof nebulaDecodeProxyUrl === "function") return nebulaDecodeProxyUrl(encodedUrl, "ultraviolet");
   } catch (e) {}
   if (typeof Ultraviolet !== "undefined" && Ultraviolet.codec && Ultraviolet.codec.xor) {
     return Ultraviolet.codec.xor.decode(encodedUrl);
@@ -190,7 +176,7 @@ function waitForFrame(timeout = 10000) {
   });
 }
 function isValidPrefix(p) {
-  return p === ASSIGNMENTS_PREFIX || p === SERVICE_PREFIX || p === SCRAMJET_PREFIX || p === SCRAMJET_LEGACY_PREFIX;
+  return p === ASSIGNMENTS_PREFIX || p === SERVICE_PREFIX;
 }
 function getBrowserHistory() {
   try {
@@ -260,7 +246,6 @@ async function entryPrefix(entry) {
   try {
     if (entry && isValidPrefix(entry.p)) {
       if (typeof nebulaNormalizePrefix === "function") return nebulaNormalizePrefix(entry.p);
-      if (entry.p === SCRAMJET_LEGACY_PREFIX) return SCRAMJET_PREFIX;
       return entry.p;
     }
   } catch (e) {}
@@ -299,100 +284,12 @@ function initializeHistory() {
     }
   }
 }
-let pendingScramjetUrl = null;
-function noteScramjetNav(url) {
-  try { pendingScramjetUrl = url || null; } catch (e) {}
-  setTimeout(function () {
-    try {
-      if (pendingScramjetUrl === url) pendingScramjetUrl = null;
-    } catch (e) {}
-  }, 3000);
-}
-function waitForScramjetFrame(timeout) {
-  const limit = timeout || 15000;
-  return new Promise(function (resolve) {
-    try {
-      if (window.__nebulaScramjetFrame) {
-        resolve(window.__nebulaScramjetFrame);
-        return;
-      }
-    } catch (e) {}
-    const started = Date.now();
-    const timer = setInterval(function () {
-      try {
-        if (window.__nebulaScramjetFrame) {
-          clearInterval(timer);
-          resolve(window.__nebulaScramjetFrame);
-          return;
-        }
-      } catch (e) {}
-      if (Date.now() - started > limit) {
-        clearInterval(timer);
-        try {
-          resolve(window.__nebulaScramjetFrame || null);
-        } catch (e) {
-          resolve(null);
-        }
-      }
-    }, 100);
-  });
-}
-function paintScramjetUrl(url) {
-  if (!browserUrl || document.activeElement === browserUrl) return;
-  try {
-    if (url) browserUrl.value = url;
-  } catch (e) {}
-}
-function attachScramjetUrlListener(scramjetFrame) {
-  if (!scramjetFrame || scramjetFrame.__nebulaUrlchangeBound) return;
-  try { scramjetFrame.__nebulaUrlchangeBound = true; } catch (e) {}
-  try {
-    scramjetFrame.addEventListener("urlchange", function (event) {
-      try {
-        const url = event && event.url ? String(event.url) : "";
-        if (!url) {
-          updateButtons();
-          return;
-        }
-        if (pendingScramjetUrl && url === pendingScramjetUrl) {
-          pendingScramjetUrl = null;
-          lastSyncedEncoded = localStorage.getItem(TARGET_URL);
-          paintScramjetUrl(url);
-          updateButtons();
-          return;
-        }
-        let encoded = "";
-        try {
-          if (typeof nebulaEncodeProxyUrl === "function") encoded = nebulaEncodeProxyUrl(url, "scramjet");
-        } catch (e) {}
-        if (!encoded) {
-          try { encoded = encodeURIComponent(url); } catch (e) {}
-        }
-        if (!encoded) return;
-        lastSyncedEncoded = encoded;
-        try { localStorage.setItem(TARGET_URL, encoded); } catch (e) {}
-        try { rememberPrefix(SCRAMJET_PREFIX); } catch (e) {}
-        paintScramjetUrl(url);
-        try {
-          const history = getBrowserHistory();
-          const index = getHistoryIndex();
-          const current = history[index] ? entryTargetUrl(history[index]) : null;
-          if (current !== encoded) addToHistory(encoded, SCRAMJET_PREFIX);
-          else updateButtons();
-        } catch (e) {
-          updateButtons();
-        }
-      } catch (e) {}
-    });
-  } catch (e) {}
-}
 async function loadEncodedUrl(encodedUrl, prefix) {
   if (!encodedUrl) return;
   localStorage.setItem(TARGET_URL, encodedUrl);
   let usePrefix = prefix || activePrefix();
   try {
     if (typeof nebulaNormalizePrefix === "function") usePrefix = nebulaNormalizePrefix(usePrefix);
-    else if (usePrefix === SCRAMJET_LEGACY_PREFIX) usePrefix = SCRAMJET_PREFIX;
   } catch (e) {}
   rememberPrefix(usePrefix);
   lastSyncedEncoded = encodedUrl;
@@ -401,39 +298,10 @@ async function loadEncodedUrl(encodedUrl, prefix) {
     console.warn("Could not find browserframe.");
     return;
   }
-  if (usePrefix === SCRAMJET_PREFIX) {
-    const scramjetFrame = window.__nebulaScramjetFrame || await waitForScramjetFrame();
-    if (scramjetFrame && typeof scramjetFrame.go === "function") {
-      attachScramjetUrlListener(scramjetFrame);
-      let destination = "";
-      try { destination = decodeUrl(encodedUrl, usePrefix); } catch (e) {}
-      if (!destination) {
-        try { destination = decodeUrl(encodedUrl); } catch (e) {}
-      }
-      if (destination) {
-        try { noteScramjetNav(destination); } catch (e) {}
-        try {
-          scramjetFrame.go(destination);
-        } catch (e) {
-          console.error("Nebula Scramjet navigation failed:", e);
-        }
-        paintScramjetUrl(destination);
-        return;
-      }
-    }
-    const fallbackFrame = getBrowserFrame() || await waitForFrame();
-    if (fallbackFrame) fallbackFrame.src = usePrefix + encodedUrl;
-    return;
-  }
-  try {
-    if (window.__nebulaScramjetFrame && usePrefix !== SCRAMJET_PREFIX) {
-      try { window.__nebulaScramjetFrame = null; } catch (e) {}
-    }
-  } catch (e) {}
   frame.src = usePrefix + encodedUrl;
   if (browserUrl) {
     try {
-      browserUrl.value = decodeUrl(encodedUrl, usePrefix);
+      browserUrl.value = decodeUrl(encodedUrl);
     } catch (e) {
       browserUrl.value = encodedUrl;
     }
@@ -467,20 +335,6 @@ if (backBtn) {
     saveHistoryIndex(index);
     const target = entryTargetUrl(history[index]);
     const prefix = await entryPrefix(history[index]);
-    try {
-      const scramjetFrame = window.__nebulaScramjetFrame;
-      if (prefix === SCRAMJET_PREFIX && scramjetFrame && typeof scramjetFrame.back === "function") {
-        let destination = "";
-        try { destination = decodeUrl(target, prefix); } catch (e) {}
-        try { noteScramjetNav(destination); } catch (e) {}
-        try { localStorage.setItem(TARGET_URL, target); } catch (e) {}
-        try { lastSyncedEncoded = target; } catch (e) {}
-        try { scramjetFrame.back(); } catch (e) {}
-        persistEntryPrefix(target, history[index] && history[index].p);
-        updateButtons();
-        return;
-      }
-    } catch (e) {}
     await loadEncodedUrl(target, prefix);
     persistEntryPrefix(target, history[index] && history[index].p);
     updateButtons();
@@ -500,20 +354,6 @@ if (forwardBtn) {
     saveHistoryIndex(index);
     const target = entryTargetUrl(history[index]);
     const prefix = await entryPrefix(history[index]);
-    try {
-      const scramjetFrame = window.__nebulaScramjetFrame;
-      if (prefix === SCRAMJET_PREFIX && scramjetFrame && typeof scramjetFrame.forward === "function") {
-        let destination = "";
-        try { destination = decodeUrl(target, prefix); } catch (e) {}
-        try { noteScramjetNav(destination); } catch (e) {}
-        try { localStorage.setItem(TARGET_URL, target); } catch (e) {}
-        try { lastSyncedEncoded = target; } catch (e) {}
-        try { scramjetFrame.forward(); } catch (e) {}
-        persistEntryPrefix(target, history[index] && history[index].p);
-        updateButtons();
-        return;
-      }
-    } catch (e) {}
     await loadEncodedUrl(target, prefix);
     persistEntryPrefix(target, history[index] && history[index].p);
     updateButtons();
@@ -525,15 +365,6 @@ if (reloadBtn) {
     event.stopPropagation();
     const frame = getBrowserFrame() || await waitForFrame();
     if (!frame) return;
-    try {
-      if (window.__nebulaScramjetFrame && typeof window.__nebulaScramjetFrame.reload === "function") {
-        const currentPrefix = getFramePrefix() || activePrefix();
-        if (currentPrefix === SCRAMJET_PREFIX) {
-          window.__nebulaScramjetFrame.reload();
-          return;
-        }
-      }
-    } catch (e) {}
     try {
       frame.contentWindow.location.reload();
     } catch (e) {
@@ -573,8 +404,7 @@ function updateBrowserUrl() {
   const storedUrl = localStorage.getItem(TARGET_URL);
   if (!storedUrl) return;
   try {
-    const prefix = getFramePrefix() || activePrefix();
-    const decoded = decodeUrl(storedUrl, prefix);
+    const decoded = decodeUrl(storedUrl);
     if (decoded) browserUrl.value = decoded;
   } catch (error) {
     console.warn("Could not decode targeturl:", storedUrl, error);
@@ -584,13 +414,13 @@ function extractPrefix(frameUrl) {
   if (!frameUrl) return null;
   try {
     const absolute = new URL(frameUrl, window.location.origin);
-    for (const prefix of [SERVICE_PREFIX, ASSIGNMENTS_PREFIX, SCRAMJET_PREFIX, SCRAMJET_LEGACY_PREFIX]) {
+    for (const prefix of [SERVICE_PREFIX, ASSIGNMENTS_PREFIX]) {
       if (absolute.pathname.startsWith(prefix)) return prefix;
     }
   } catch (e) {
   }
   const s = String(frameUrl);
-  for (const prefix of [SERVICE_PREFIX, ASSIGNMENTS_PREFIX, SCRAMJET_PREFIX, SCRAMJET_LEGACY_PREFIX]) {
+  for (const prefix of [SERVICE_PREFIX, ASSIGNMENTS_PREFIX]) {
     if (s.indexOf(prefix) >= 0) return prefix;
   }
   return null;
@@ -634,15 +464,6 @@ function getFrameEncodedUrl() {
 }
 let lastSyncedEncoded = localStorage.getItem(TARGET_URL);
 function syncFrameToUrl() {
-  try {
-    if (window.__nebulaScramjetFrame) {
-      const prefix = getFramePrefix() || activePrefix();
-      if (prefix === SCRAMJET_PREFIX || prefix === SCRAMJET_LEGACY_PREFIX) {
-        updateButtons();
-        return;
-      }
-    }
-  } catch (e) {}
   if (!browserUrl) {
     updateButtons();
     return;
@@ -666,7 +487,7 @@ function syncFrameToUrl() {
   }
   if (document.activeElement !== browserUrl) {
     try {
-      browserUrl.value = decodeUrl(encoded, framePrefix || activePrefix());
+      browserUrl.value = decodeUrl(encoded);
     } catch (e) {
       browserUrl.value = encoded;
     }
@@ -688,25 +509,6 @@ waitForFrame().then(function (frame) {
   if (!frame) return;
   const target = localStorage.getItem(TARGET_URL);
   lastSyncedEncoded = target;
-  try {
-    const scramjetFrame = window.__nebulaScramjetFrame;
-    if (scramjetFrame && currentProxy() === "scramjet") {
-      attachScramjetUrlListener(scramjetFrame);
-      updateBrowserUrl();
-      updateButtons();
-      return;
-    }
-  } catch (e) {}
-  if (currentProxy() === "scramjet") {
-    waitForScramjetFrame().then(function (scramjetFrame) {
-      if (scramjetFrame) attachScramjetUrlListener(scramjetFrame);
-      updateBrowserUrl();
-      updateButtons();
-    });
-    updateBrowserUrl();
-    updateButtons();
-    return;
-  }
   const existing = frame.getAttribute("src");
   if (target && !existing) {
     frame.src = activePrefix() + target;

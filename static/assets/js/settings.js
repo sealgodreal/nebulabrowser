@@ -8,7 +8,6 @@ const NEBULA_DEFAULTS = {
   subtexts: false,
   searchEngine: "duckduckgo",
   transport: "auto",
-  proxy: "ultraviolet",
   tabDisguise: "none",
   themeAccent: "default",
 };
@@ -24,7 +23,7 @@ const NEBULA_DISGUISES = {
 
 const NEBULA_DISGUISE_KEYS = ["none", "google", "drive", "classroom", "docs", "canvas", "clever"];
 
-const NEBULA_THEME_KEYS = ["default", "moss", "blue-lavender", "rose", "sand"];
+const NEBULA_THEME_KEYS = ["default", "oled", "soft-pink", "cotton-candy", "moss", "blue-lavender", "rose", "sand"];
 
 const NEBULA_ENGINES = {
   duckduckgo: (q) => "https://duckduckgo.com/?q=" + encodeURIComponent(q) + "&ia=web",
@@ -41,9 +40,7 @@ function getNebulaSettings() {
     const parsed = JSON.parse(raw);
     const merged = { ...NEBULA_DEFAULTS, ...parsed };
     delete merged.scope;
-    if (merged.proxy !== "ultraviolet" && merged.proxy !== "scramjet") {
-      merged.proxy = NEBULA_DEFAULTS.proxy;
-    }
+    delete merged.proxy;
     if (merged.transport !== "auto" && merged.transport !== "epoxy" && merged.transport !== "libcurl") {
       merged.transport = NEBULA_DEFAULTS.transport;
     }
@@ -112,15 +109,6 @@ function cloakNebulaSite(opts) {
     return false;
   }
   const targetUrl = nebulaCloakTargetUrl();
-  try {
-    popup.document.title = "My Drive - Google Drive";
-  } catch (e) {}
-  try {
-    const link = popup.document.createElement("link");
-    link.rel = "icon";
-    link.href = "https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png";
-    popup.document.head.appendChild(link);
-  } catch (e) {}
   try {
     popup.document.body.style.margin = "0";
     popup.document.body.style.height = "100vh";

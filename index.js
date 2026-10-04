@@ -7,7 +7,6 @@ import { libcurlPath } from "@mercuryworkshop/libcurl-transport";
 import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
 import { createBareServer } from "@tomphttp/bare-server-node";
 import { uvPath } from "@titaniumnetwork-dev/ultraviolet";
-import { scramjetPath } from "@mercuryworkshop/scramjet/path";
 import wisp from "wisp-server-node";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -23,7 +22,6 @@ app.use(express.urlencoded({ extended: true, }));
 
 app.use(express.static(path.join(__dirname, 'static')));
 app.use("/uv/", express.static(uvPath));
-app.use("/scram/", express.static(scramjetPath));
 app.use("/epoxy/", express.static(epoxyPath));
 app.use("/libcurl/", express.static(libcurlPath));
 app.use("/baremux/", express.static(baremuxPath));
